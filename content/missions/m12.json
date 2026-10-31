@@ -37,7 +37,8 @@
       "dos fases",
       "hash",
       "estructura"
-    ]
+    ],
+    "visual": "m12-strategy"
   },
   "contract": {
     "entryPoint": "buildAuditReport",

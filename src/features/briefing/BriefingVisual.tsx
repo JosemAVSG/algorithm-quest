@@ -20,6 +20,7 @@ import {
   scanFrame,
 } from './visualModel';
 import { M11Visual } from './visuals/M11Visual';
+import { M12Visual } from './visuals/M12Visual';
 
 type VisualId = NonNullable<Mission['briefing']['visual']>;
 
@@ -147,5 +148,6 @@ function Gauge() {
 
 export function BriefingVisual({ id }: { id: VisualId }) {
   if (id === 'm11-tally') return <M11Visual />;
+  if (id === 'm12-strategy') return <M12Visual />;
   return id === 'gauge' ? <Gauge /> : <EarlyExitScan />;
 }
