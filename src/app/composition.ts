@@ -6,6 +6,7 @@
  * or a remote progress store to a one-line change here.
  */
 
+import { createBrowserMissionLoader } from '../adapters/content/browser';
 import { createWorkerExecutionPort } from '../adapters/execution/worker/runner';
 import { createLocalProgressStore } from '../adapters/persistence/local/progress-store';
 import { createLocalSessionStore } from '../adapters/persistence/local/session-store';
@@ -42,6 +43,7 @@ function browserStorage(): { storage: KeyValueStorage; persistent: boolean } {
 export function createComposition() {
   const { storage, persistent } = browserStorage();
   return {
+    missions: createBrowserMissionLoader(),
     execution: createWorkerExecutionPort(),
     progress: createLocalProgressStore(storage),
     sessions: createLocalSessionStore(storage),

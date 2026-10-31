@@ -11,12 +11,12 @@
  * a caller can render the whole map without asking a second question.
  */
 
-import type { Mission } from '../content/schema';
+import type { MissionSummary } from '../content/summary';
 
 export type MissionState = 'locked' | 'available' | 'completed';
 
 export function missionStates(
-  missions: readonly Mission[],
+  missions: readonly MissionSummary[],
   completedIds: ReadonlySet<string>,
 ): Map<string, MissionState> {
   const states = new Map<string, MissionState>();
@@ -36,7 +36,7 @@ export function missionStates(
 
 /** Mission ids a mission is still waiting on, in declared order. */
 export function missingPrerequisites(
-  mission: Mission,
+  mission: MissionSummary,
   completedIds: ReadonlySet<string>,
 ): string[] {
   return mission.prerequisites.missions.filter((id) => !completedIds.has(id));
@@ -50,9 +50,9 @@ export function missingPrerequisites(
  * for two missions that are both available.
  */
 export function nextMission(
-  missions: readonly Mission[],
+  missions: readonly MissionSummary[],
   completedIds: ReadonlySet<string>,
-): Mission | null {
+): MissionSummary | null {
   const states = missionStates(missions, completedIds);
   const available = missions
     .filter((mission) => states.get(mission.id) === 'available')

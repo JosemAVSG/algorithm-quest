@@ -9,7 +9,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { loadBrowserContent } from '../adapters/content/browser';
+import { loadBrowserCatalog } from '../adapters/content/browser';
 import { countBySeverity } from '../domain/content/errors';
 import {
   declineReinforcement,
@@ -20,6 +20,7 @@ import {
 } from '../domain/persistence/port';
 import type { SessionSnapshot } from '../domain/session/mission-session';
 import { MissionFlow } from '../features/mission/MissionFlow';
+import { MissionGate } from '../features/mission/MissionGate';
 import { ProgressDashboard } from '../features/progress/ProgressDashboard';
 import { WorkshopMap } from '../features/workshop-map/WorkshopMap';
 import { createComposition } from './composition';
@@ -27,7 +28,7 @@ import { createComposition } from './composition';
 type View = 'map' | 'progress';
 
 export function App() {
-  const report = useMemo(() => loadBrowserContent(), []);
+  const report = useMemo(() => loadBrowserCatalog(), []);
   const app = useMemo(() => createComposition(), []);
 
   const [progress, setProgress] = useState<PlayerProgress | null>(null);
@@ -92,7 +93,7 @@ export function App() {
     setStorageWarning(null);
   }, [app.progress]);
 
-  const { bundle, issues } = report;
+  const { catalog: bundle, issues } = report;
   const { errors } = countBySeverity(issues);
 
   if (bundle === null || errors > 0) {
@@ -129,26 +130,30 @@ export function App() {
     );
   }
 
-  const activeMission =
-    activeMissionId === null
-      ? null
-      : (bundle.missions.find((mission) => mission.id === activeMissionId) ?? null);
-
-  if (activeMission !== null) {
-    const stored = app.sessions.load(activeMission.id);
-    const snapshot: SessionSnapshot | null =
-      stored !== null && stored.phase !== 'complete' ? stored : null;
-
+  if (activeMissionId !== null) {
     return (
       <div className="app">
-        <MissionFlow
-          mission={activeMission}
-          initialSnapshot={snapshot}
-          execution={app.execution}
-          sessions={app.sessions}
-          onCompleted={handleCompleted}
+        <MissionGate
+          loader={app.missions}
+          missionId={activeMissionId}
           onExit={() => setActiveMissionId(null)}
-        />
+        >
+          {(mission) => {
+            const stored = app.sessions.load(mission.id);
+            const snapshot: SessionSnapshot | null =
+              stored !== null && stored.phase !== 'complete' ? stored : null;
+            return (
+              <MissionFlow
+                mission={mission}
+                initialSnapshot={snapshot}
+                execution={app.execution}
+                sessions={app.sessions}
+                onCompleted={handleCompleted}
+                onExit={() => setActiveMissionId(null)}
+              />
+            );
+          }}
+        </MissionGate>
       </div>
     );
   }

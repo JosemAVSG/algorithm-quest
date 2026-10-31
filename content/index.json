@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "missions": [
+    {
+      "id": "M01",
+      "world": "w1",
+      "order": 1,
+      "title": "El primer diagnóstico",
+      "subtitle": "Condiciones y comparación",
+      "prerequisites": {
+        "missions": []
+      },
+      "workshop": {
+        "systemId": "sys.sensor",
+        "to": "working"
+      },
+      "reward": {
+        "narrative": "El sensor del taller vuelve a emitir lecturas."
+      }
+    },
+    {
+      "id": "M02",
+      "world": "w1",
+      "order": 2,
+      "title": "La inspección completa",
+      "subtitle": "Salida temprana",
+      "prerequisites": {
+        "missions": [
+          "M01"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.sensor",
+        "to": "reliable"
+      },
+      "reward": {
+        "narrative": "La línea se detiene sola en cuanto un sensor se pasa del límite."
+      }
+    },
+    {
+      "id": "M03",
+      "world": "w1",
+      "order": 3,
+      "title": "El lote defectuoso",
+      "subtitle": "Recolección de resultados",
+      "prerequisites": {
+        "missions": [
+          "M02"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.line",
+        "to": "working"
+      },
+      "reward": {
+        "narrative": "La línea de inspección arranca y las unidades defectuosas caen en el contenedor rojo."
+      }
+    },
+    {
+      "id": "M04",
+      "world": "w1",
+      "order": 4,
+      "title": "La auditoría del inventario",
+      "subtitle": "Acumuladores",
+      "prerequisites": {
+        "missions": [
+          "M03"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.store",
+        "to": "working"
+      },
+      "reward": {
+        "narrative": "El panel del almacén muestra totales en vivo y marca en rojo las líneas por reponer."
+      }
+    },
+    {
+      "id": "M05",
+      "world": "w1",
+      "order": 5,
+      "title": "El registro de reparaciones",
+      "subtitle": "Transformar sin tocar el original",
+      "prerequisites": {
+        "missions": [
+          "M04"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.log",
+        "to": "working"
+      },
+      "reward": {
+        "narrative": "El registro de reparaciones vuelve a ser legible y marca en color los trabajos de alta prioridad."
+      }
+    },
+    {
+      "id": "M06",
+      "world": "w1",
+      "order": 6,
+      "title": "La revisión de límites",
+      "subtitle": "Encontrar el defecto en código ajeno",
+      "prerequisites": {
+        "missions": [
+          "M05"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.guard",
+        "to": "working"
+      },
+      "reward": {
+        "narrative": "El guardia de seguridad deja de colgarse y el medidor vuelve a marcar una lectura estable."
+      }
+    },
+    {
+      "id": "M07",
+      "world": "w1",
+      "order": 7,
+      "title": "La búsqueda urgente",
+      "subtitle": "Mantener al mejor candidato",
+      "prerequisites": {
+        "missions": [
+          "M06"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.dispatch",
+        "to": "working"
+      },
+      "reward": {
+        "narrative": "El tablero de despacho resalta la orden ganadora y atiende la cola sin dudar."
+      }
+    },
+    {
+      "id": "M08",
+      "world": "w1",
+      "order": 8,
+      "title": "Las órdenes repetidas",
+      "subtitle": "Duplicados por parejas",
+      "prerequisites": {
+        "missions": [
+          "M07"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.line",
+        "to": "reliable"
+      },
+      "reward": {
+        "narrative": "La línea gana un detector de duplicados: las unidades repetidas rebotan fuera de la cinta."
+      }
+    },
+    {
+      "id": "M09",
+      "world": "w1",
+      "order": 9,
+      "title": "El costo de la inspección",
+      "subtitle": "Medir antes de ejecutar",
+      "prerequisites": {
+        "missions": [
+          "M08"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.meter",
+        "to": "installed"
+      },
+      "reward": {
+        "narrative": "El medidor de costos queda instalado: a partir de ahora cada sistema muestra cuánto cuesta."
+      }
+    },
+    {
+      "id": "M10",
+      "world": "transition",
+      "order": 1,
+      "title": "La memoria del sistema",
+      "subtitle": "Recordar para no repetir",
+      "prerequisites": {
+        "missions": [
+          "M09"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.memory",
+        "to": "installed"
+      },
+      "reward": {
+        "narrative": "La memoria del taller guarda lo que ya vio y responde sin volver a mirar la cola."
+      }
+    },
+    {
+      "id": "M11",
+      "world": "transition",
+      "order": 2,
+      "title": "El contador inteligente",
+      "subtitle": "Cuántas veces, no solo si",
+      "prerequisites": {
+        "missions": [
+          "M10"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.index",
+        "to": "installed"
+      },
+      "reward": {
+        "narrative": "El taller ya puede responder cuántas hay de cada tipo sin volver a contar."
+      }
+    },
+    {
+      "id": "M12",
+      "world": "transition",
+      "order": 3,
+      "title": "La auditoría final",
+      "subtitle": "Tres preguntas, una función",
+      "prerequisites": {
+        "missions": [
+          "M09",
+          "M10",
+          "M11"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.audit",
+        "to": "installed"
+      },
+      "reward": {
+        "narrative": "El taller completa su primer anillo y una puerta nueva se ilumina en el mapa."
+      }
+    }
+  ]
+}

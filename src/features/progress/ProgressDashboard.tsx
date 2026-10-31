@@ -12,7 +12,7 @@
 
 import { useMemo, useState } from 'react';
 
-import type { ContentBundle } from '../../domain/content/assemble';
+import type { ContentCatalog } from '../../domain/content/catalog';
 import {
   buildMasteryDashboard,
   type ConceptMasteryView,
@@ -44,7 +44,7 @@ const DIMENSIONS: ReadonlyArray<readonly [keyof Dimensions, string]> = [
 ];
 
 interface ProgressDashboardProps {
-  bundle: ContentBundle;
+  bundle: ContentCatalog;
   progress: PlayerProgress;
   onBack: () => void;
   onDeclineReinforcement: (conceptId: string) => void;
