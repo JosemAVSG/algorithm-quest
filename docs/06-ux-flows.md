@@ -51,6 +51,19 @@ art believes they are in a prototype.
 S2–S6 are a linear stepper with a progress rail. The player can move backwards (to re-read the
 briefing) but not skip forward.
 
+**Rail navigation.** Each rail step is a button. Any step already reached is enabled
+(`go_to_phase` in the session reducer); future steps are disabled with the title "Aún no llegas
+aquí", the strategy cannot be skipped, and the debrief stays locked until the tests pass. Going
+back loses nothing (strategy, code, attempts, hints, last evaluation, console). Pressing
+"Entendido →" or submitting the strategy again resumes at the furthest step reached instead of
+rewinding the lab. A finished mission disables the rail. The furthest step is part of the reload
+snapshot; older snapshots default to the current step.
+
+**Illustration placement.** When the mission has a briefing illustration, it sits beside the
+content, not under the rail: to the right of the strategy form and the debrief from 48 rem
+(stacked below), and compact at the top of the lab's right column. Missions without an
+illustration render without an empty column.
+
 ---
 
 ## 3. S1 — Workshop map

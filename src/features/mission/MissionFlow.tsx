@@ -6,7 +6,14 @@
  * an adapter. The composition root injected the execution port.
  */
 
-import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 
 import { timeoutFor } from "../../adapters/execution/worker/runner";
 import type { Mission } from "../../domain/content/schema";
@@ -19,12 +26,14 @@ import type {
   SessionStore,
 } from "../../domain/persistence/port";
 import {
+  allTestsPassed,
   createMissionSession,
   missionSessionReducer,
   restoreSession,
   toSnapshot,
   type SessionPhase,
   type SessionSnapshot,
+  type StepPhase,
 } from "../../domain/session/mission-session";
 import { Briefing } from "../briefing/Briefing";
 import { BriefingVisual } from "../briefing/BriefingVisual";
@@ -32,7 +41,7 @@ import { Debrief } from "../debrief/Debrief";
 import { Lab } from "../lab/Lab";
 import { Strategy } from "../strategy/Strategy";
 
-const STEPS: Array<{ phase: SessionPhase; label: string }> = [
+const STEPS: Array<{ phase: StepPhase; label: string }> = [
   { phase: "briefing", label: "Briefing" },
   { phase: "strategy", label: "Estrategia" },
   { phase: "lab", label: "Laboratorio" },
@@ -42,6 +51,28 @@ const STEPS: Array<{ phase: SessionPhase; label: string }> = [
 function stepIndex(phase: SessionPhase): number {
   if (phase === "complete") return STEPS.length;
   return STEPS.findIndex((step) => step.phase === phase);
+}
+
+/**
+ * Content with the briefing illustration beside it. Without an illustration it
+ * renders the content alone, exactly as before (no empty column).
+ */
+function SideBySide({
+  visual,
+  children,
+}: {
+  visual: ReactNode;
+  children: ReactNode;
+}) {
+  if (visual === null) return <>{children}</>;
+  return (
+    <div className="split">
+      <div className="split__main">{children}</div>
+      <aside className="split__aside" aria-label="Ilustración del problema">
+        {visual}
+      </aside>
+    </div>
+  );
 }
 
 interface MissionFlowProps {
@@ -162,6 +193,9 @@ export function MissionFlow({
   }, [execution, mission, state]);
 
   const currentStep = stepIndex(state.phase);
+  const visual = mission.briefing.visual ? (
+    <BriefingVisual id={mission.briefing.visual} />
+  ) : null;
 
   return (
     <div className="mission">
@@ -183,35 +217,36 @@ export function MissionFlow({
                 : index === currentStep
                   ? "current"
                   : "todo";
+            const reached =
+              state.phase !== "complete" &&
+              index <= stepIndex(state.furthestPhase) &&
+              // The debrief stays locked while the tests do not pass.
+              (step.phase !== "debrief" || allTestsPassed(state));
+            const isCurrent = status === "current";
             return (
-              <li
-                key={step.phase}
-                className={`rail__step rail__step--${status}`}
-                aria-current={status === "current" ? "step" : undefined}
-              >
-                <span className="rail__dot" aria-hidden="true" />
-                <span className="rail__label">{step.label}</span>
+              <li key={step.phase} className={`rail__step rail__step--${status}`}>
+                <button
+                  type="button"
+                  className="rail__button"
+                  aria-current={isCurrent ? "step" : undefined}
+                  aria-label={isCurrent ? undefined : `Ir a ${step.label}`}
+                  disabled={!reached || isCurrent}
+                  title={
+                    reached || isCurrent
+                      ? undefined
+                      : state.phase === "complete"
+                        ? "La misión ya está cerrada"
+                        : "Aún no llegas aquí"
+                  }
+                  onClick={() => dispatch({ type: "go_to_phase", phase: step.phase })}
+                >
+                  <span className="rail__dot" aria-hidden="true" />
+                  <span className="rail__label">{step.label}</span>
+                </button>
               </li>
             );
           })}
         </ol>
-
-        {state.phase !== "briefing" ? (
-          <details className="rail__brief">
-            <summary>Volver a leer el briefing</summary>
-            <p>{mission.briefing.body}</p>
-            <p className="rail__signature">
-              <code>{mission.contract.signature}</code>
-            </p>
-          </details>
-        ) : null}
-
-        {state.phase !== "briefing" && mission.briefing.visual ? (
-          <details className="rail__visual" open>
-            <summary>Ilustración del problema</summary>
-            <BriefingVisual id={mission.briefing.visual} />
-          </details>
-        ) : null}
       </nav>
 
       <main className="mission__screen">
@@ -223,15 +258,18 @@ export function MissionFlow({
         ) : null}
 
         {state.phase === "strategy" ? (
-          <Strategy
-            initialValue={state.strategy}
-            onSubmit={(text) => dispatch({ type: "submit_strategy", text })}
-          />
+          <SideBySide visual={visual}>
+            <Strategy
+              initialValue={state.strategy}
+              onSubmit={(text) => dispatch({ type: "submit_strategy", text })}
+            />
+          </SideBySide>
         ) : null}
 
         {state.phase === "lab" ? (
           <Lab
             state={state}
+            illustration={visual}
             consoleReport={consoleReport}
             onClearConsole={() => setConsoleReport(null)}
             onEditSource={(source) => dispatch({ type: "edit_source", source })}
@@ -244,6 +282,7 @@ export function MissionFlow({
         ) : null}
 
         {state.phase === "debrief" || state.phase === "complete" ? (
+          <SideBySide visual={visual}>
           <Debrief
             state={state}
             onAnswerComplexity={(index) =>
@@ -257,6 +296,7 @@ export function MissionFlow({
             }
             onFinish={onExit}
           />
+          </SideBySide>
         ) : null}
       </main>
     </div>

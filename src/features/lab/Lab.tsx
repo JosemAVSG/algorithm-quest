@@ -5,6 +5,8 @@
  * failed test. The run button is the only primary action.
  */
 
+import type { ReactNode } from 'react';
+
 import type { MissionSessionState } from '../../domain/session/mission-session';
 import type { ConsoleReport } from '../../domain/execution/console';
 import { ConsolePanel } from './ConsolePanel';
@@ -14,6 +16,8 @@ import { TestPanel } from './TestPanel';
 
 interface LabProps {
   state: MissionSessionState;
+  /** The briefing illustration, shown compact above the test panel. */
+  illustration?: ReactNode;
   /** Console output of the last run, already limited to visible tests. */
   consoleReport: ConsoleReport | null;
   onClearConsole: () => void;
@@ -25,6 +29,7 @@ interface LabProps {
 
 export function Lab({
   state,
+  illustration = null,
   consoleReport,
   onClearConsole,
   onEditSource,
@@ -79,6 +84,7 @@ export function Lab({
         </section>
 
         <aside className="lab__panel" aria-live="polite">
+          {illustration === null ? null : <div className="lab__visual">{illustration}</div>}
           <TestPanel report={lastEvaluation?.report ?? null} running={state.running} />
           <ConsolePanel report={consoleReport} labels={consoleLabels} onClear={onClearConsole} />
           <MentorPanel
