@@ -234,7 +234,114 @@
     "realWorld": "Array.prototype.filter, WHERE en SQL, reportes de incidencias, listas de exclusión y la recolección de errores de validación en un formulario.",
     "reasoningPrompt": "¿Por qué el return no puede estar dentro del if? Explica qué se pierde si lo mueves ahí, usando un ejemplo con dos unidades defectuosas.",
     "objectiveNouns": ["lista", "unidades", "proveedor", "devolución"],
-    "reasoningLexicon": ["acumulo", "agrego", "recorro", "completo"]
+    "reasoningLexicon": ["acumulo", "agrego", "recorro", "completo"],
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe tu código, y responde las preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Recorro {b1}. Cuando una unidad {b2}, {b3}. Devuelvo la lista {b4}; si ninguna falla, el resultado es {b5}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": [
+            "la lista entera, hasta la última unidad",
+            "la lista hasta la primera unidad defectuosa",
+            "solo las unidades que ya sé que fallan"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "id": "b2",
+          "options": [
+            "queda por debajo del límite de temperatura",
+            "iguala o supera el límite de temperatura",
+            "supera estrictamente el límite de temperatura"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "id": "b3",
+          "options": [
+            "la devuelvo enseguida y termino la función",
+            "la quito de la lista original para no repetirla",
+            "la añado a una lista nueva con su id y su temperatura"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "id": "b4",
+          "options": [
+            "cuando he revisado todas las unidades",
+            "en cuanto añado la primera unidad defectuosa",
+            "cuando la lista nueva tiene dos unidades"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "id": "b5",
+          "options": [
+            "undefined, porque no hay nada que devolver",
+            "false, porque no se encontró ninguna unidad",
+            "una lista vacía, [], porque sigue siendo una lista"
+          ],
+          "correctIndex": 2
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "Con las unidades A (95°), B (80°) y C (97°) y límite 90, ¿qué devuelve la función si el return se escribe dentro del if?",
+          "options": [
+            "Una lista con A y C, igual que si el return estuviera fuera del bucle",
+            "Una lista vacía, porque el return corta la función antes de añadir nada",
+            "Solo la unidad A: el return termina la función y C ya no se llega a revisar",
+            "Un error, porque un return no puede escribirse dentro de un if"
+          ],
+          "correctIndex": 2,
+          "whyWrong": [
+            "Con el return dentro del if, la función termina en la primera unidad defectuosa. Recórrelo a mano: ¿se llega a mirar C?",
+            "Antes de ese return la unidad A sí se añadió a la lista. ¿Qué contiene entonces lo que se devuelve?",
+            "",
+            "JavaScript permite un return dentro de un if; el problema es lo que provoca en el recorrido."
+          ],
+          "explanation": "El return sale de la función entera. Dentro del if devuelve la primera defectuosa y las demás nunca se revisan; por eso va después del bucle."
+        },
+        {
+          "id": "q2",
+          "question": "Ninguna unidad del lote supera el límite. ¿Qué debe devolver la función y por qué?",
+          "options": [
+            "Una lista vacía, para que quien llama siempre reciba una lista",
+            "false, porque no hay ninguna unidad defectuosa que devolver",
+            "undefined, porque el bucle no añadió ningún elemento nuevo",
+            "null, para avisar de que no se encontraron resultados"
+          ],
+          "correctIndex": 0,
+          "whyWrong": [
+            "",
+            "El proveedor espera una lista, no una respuesta de sí o no. Eso era M02: aquí el tipo del resultado no cambia.",
+            "Un bucle que no añade nada no hace que la función devuelva undefined: eso ocurre solo si falta el return. ¿Dónde está el tuyo?",
+            "Devolver null obliga a quien llama a comprobar el tipo antes de usar el resultado. ¿Qué devuelve el resto de casos?"
+          ],
+          "explanation": "El resultado de esta función es siempre una lista; cuando no hay unidades defectuosas, es una lista sin elementos."
+        },
+        {
+          "id": "q3",
+          "question": "Una unidad marca exactamente 90° y el límite es 90°. ¿Entra en la lista del proveedor?",
+          "options": [
+            "Sí, porque llega al límite y conviene devolverla por si acaso",
+            "Depende de en qué posición de la fila haya llegado la unidad",
+            "No, porque solo es defectuosa la que está por encima del límite",
+            "Sí, pero solo cuando es la última unidad de la fila"
+          ],
+          "correctIndex": 2,
+          "whyWrong": [
+            "El proveedor solo acepta devoluciones de unidades defectuosas, y una unidad en el límite sigue siendo segura.",
+            "La posición en la fila no cambia el criterio: cada unidad se compara solo con el límite.",
+            "",
+            "El criterio es el mismo para todas las unidades, también para la última."
+          ],
+          "explanation": "Una unidad justo en el límite no es defectuosa. Con una comparación estricta (>) queda fuera; con >= entraría por error."
+        }
+      ]
+    }
   },
   "mastery": { "transferMissionId": "M12", "reinforcementVariants": [] },
   "reward": {
