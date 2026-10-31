@@ -62,3 +62,17 @@ describe('classify E10', () => {
     expect(diagnose(mission, { total: undefined, count: 2 })!.code).toBe('E10');
   });
 });
+
+describe('classify E12 shape', () => {
+  it('reports an array where an object is expected as E12', () => {
+    expect(diagnose(missionExpecting({ total: 3 }), [3])!.code).toBe('E12');
+  });
+
+  it('reports an object where an array is expected as E12', () => {
+    expect(diagnose(missionExpecting([3]), { total: 3 })!.code).toBe('E12');
+  });
+
+  it('reports null where an object is expected as E12', () => {
+    expect(diagnose(missionExpecting({ total: 3 }), null)!.code).toBe('E12');
+  });
+});

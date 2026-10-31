@@ -52,7 +52,9 @@ export interface ClassifyInput {
 
 function sameShape(actual: unknown, expected: unknown): boolean {
   if (Array.isArray(expected)) return Array.isArray(actual);
+  if (Array.isArray(actual)) return false;
   if (expected === null) return actual === null;
+  if (actual === null) return false;
   return typeof actual === typeof expected;
 }
 
