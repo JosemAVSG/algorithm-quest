@@ -42,9 +42,33 @@ export { MAX_HINT_LEVEL };
 
 export type SessionPhase = 'briefing' | 'strategy' | 'lab' | 'debrief' | 'complete';
 
+/** The phases the rail can show and the player can navigate to. */
+export type StepPhase = Exclude<SessionPhase, 'complete'>;
+
+const STEP_ORDER: readonly StepPhase[] = ['briefing', 'strategy', 'lab', 'debrief'];
+
+function stepRank(phase: StepPhase): number {
+  return STEP_ORDER.indexOf(phase);
+}
+
+function isStepPhase(value: unknown): value is StepPhase {
+  return STEP_ORDER.includes(value as StepPhase);
+}
+
+/** The step a finished mission counts as having reached. */
+function toStepPhase(phase: SessionPhase): StepPhase {
+  return phase === 'complete' ? 'debrief' : phase;
+}
+
 export interface MissionSessionState {
   mission: Mission;
   phase: SessionPhase;
+  /**
+   * The furthest step ever reached. Navigation (`go_to_phase`) may go back and
+   * forth up to here, never beyond: the strategy cannot be skipped and the
+   * debrief still needs passing tests.
+   */
+  furthestPhase: StepPhase;
   source: string;
   strategy: string;
   attempts: number;
@@ -67,6 +91,7 @@ export interface MissionSessionState {
 }
 
 export type MissionAction =
+  | { type: 'go_to_phase'; phase: StepPhase }
   | { type: 'open_strategy' }
   | { type: 'submit_strategy'; text: string }
   | { type: 'edit_source'; source: string }
@@ -82,6 +107,7 @@ export function createMissionSession(mission: Mission): MissionSessionState {
   return {
     mission,
     phase: 'briefing',
+    furthestPhase: 'briefing',
     source: mission.starterCode,
     strategy: '',
     attempts: 0,
@@ -128,6 +154,25 @@ export function canRequestHint(state: MissionSessionState): boolean {
   });
 }
 
+/**
+ * Where "continue" lands. Moving forward from a step you already left must not
+ * rewind the session: it returns to the furthest step reached, or to the lab
+ * when that was a debrief whose tests no longer pass.
+ */
+function resumePhase(state: MissionSessionState, next: StepPhase): StepPhase {
+  const furthest =
+    state.furthestPhase === 'debrief' && !allTestsPassed(state) ? 'lab' : state.furthestPhase;
+  return stepRank(furthest) > stepRank(next) ? furthest : next;
+}
+
+function advanceTo(state: MissionSessionState, phase: StepPhase): MissionSessionState {
+  return {
+    ...state,
+    phase,
+    furthestPhase: stepRank(phase) > stepRank(state.furthestPhase) ? phase : state.furthestPhase,
+  };
+}
+
 function withHint(
   state: MissionSessionState,
   hint: SelectedHint | null,
@@ -147,14 +192,28 @@ export function missionSessionReducer(
   action: MissionAction,
 ): MissionSessionState {
   switch (action.type) {
+    case 'go_to_phase': {
+      // Free movement inside what was already reached; nothing is reset.
+      if (state.phase === 'complete' || action.phase === state.phase) return state;
+      if (stepRank(action.phase) > stepRank(state.furthestPhase)) return state;
+      if (action.phase === 'debrief' && !allTestsPassed(state)) return state;
+      return { ...state, phase: action.phase };
+    }
+
     case 'open_strategy':
-      return state.phase === 'briefing' ? { ...state, phase: 'strategy' } : state;
+      // Re-reading the briefing and pressing "Entendido" resumes where the
+      // player was instead of sending them back to the strategy.
+      return state.phase === 'briefing'
+        ? advanceTo(state, resumePhase(state, 'strategy'))
+        : state;
 
     case 'submit_strategy': {
       if (state.phase !== 'strategy') return state;
       const text = action.text.trim();
       if (text.length < STRATEGY_MIN_LENGTH) return state;
-      return { ...state, strategy: text, phase: 'lab' };
+      // Resubmitting an edited strategy updates the text only; lab progress is
+      // kept and the player resumes at the furthest step reached.
+      return { ...advanceTo(state, resumePhase(state, 'lab')), strategy: text };
     }
 
     case 'edit_source':
@@ -204,7 +263,7 @@ export function missionSessionReducer(
     }
 
     case 'open_debrief':
-      return canOpenDebrief(state) ? { ...state, phase: 'debrief' } : state;
+      return canOpenDebrief(state) ? advanceTo(state, 'debrief') : state;
 
     case 'answer_complexity':
       return state.phase === 'debrief'
@@ -262,6 +321,8 @@ export interface SessionSnapshot {
   schemaVersion: 1;
   missionId: string;
   phase: SessionPhase;
+  /** Absent in snapshots saved before step navigation existed. */
+  furthestPhase?: StepPhase;
   strategy: string;
   attempts: number;
   hintsUsed: number;
@@ -281,6 +342,7 @@ export function toSnapshot(state: MissionSessionState): SessionSnapshot {
     schemaVersion: 1,
     missionId: state.mission.id,
     phase: state.phase,
+    furthestPhase: state.furthestPhase,
     strategy: state.strategy,
     attempts: state.attempts,
     hintsUsed: state.hintsUsed,
@@ -308,9 +370,18 @@ export function restoreSession(
   if (snapshot === null || snapshot.missionId !== mission.id) return null;
   if (snapshot.phase === 'complete' && snapshot.completedAt === null) return null;
 
+  // Never behind the current phase, and never an unknown value: older
+  // snapshots simply treat the current phase as the furthest.
+  const current = toStepPhase(snapshot.phase);
+  const furthestPhase =
+    isStepPhase(snapshot.furthestPhase) && stepRank(snapshot.furthestPhase) > stepRank(current)
+      ? snapshot.furthestPhase
+      : current;
+
   return {
     mission,
     phase: snapshot.phase,
+    furthestPhase,
     source: mission.starterCode,
     strategy: snapshot.strategy,
     attempts: snapshot.attempts,
