@@ -21,6 +21,7 @@ import {
 } from './visualModel';
 import { CollectLine } from './visuals/m03';
 import { RunningTotal } from './visuals/m04';
+import { CopyRows } from './visuals/m05';
 
 type VisualId = NonNullable<Mission['briefing']['visual']>;
 
@@ -149,5 +150,6 @@ function Gauge() {
 export function BriefingVisual({ id }: { id: VisualId }) {
   if (id === 'collect-line') return <CollectLine />;
   if (id === 'running-total') return <RunningTotal />;
+  if (id === 'copy-rows') return <CopyRows />;
   return id === 'gauge' ? <Gauge /> : <EarlyExitScan />;
 }

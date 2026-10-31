@@ -23,6 +23,7 @@
     "to": "working"
   },
   "briefing": {
+    "visual": "copy-rows",
     "headline": "El registro de reparaciones",
     "body": "El registro del taller lo escribió alguien a mano durante años. Cada línea tiene el aparato, si se resolvió y cuántas horas costó, pero el panel nuevo no entiende ese formato.\n\nEl panel necesita, para cada reparación:\n\n- `status`: `\"closed\"` si se resolvió, `\"open\"` si no.\n- `priority`: `\"high\"` si costó **más de 8 horas**, `\"normal\"` si no.\n\nY necesita **todas** las reparaciones, en el mismo orden.\n\nEl registro original no se puede tocar: es el archivo histórico y lo audita el contador.",
     "requirements": [
