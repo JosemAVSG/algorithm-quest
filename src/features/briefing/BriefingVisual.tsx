@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react';
 
 import type { Mission } from '../../domain/content/schema';
+import { BestScanVisual } from './visuals/m07';
 import { BadReadingVisual } from './visuals/m06';
 import {
   GAUGE_LIMIT,
@@ -25,6 +26,7 @@ type VisualId = NonNullable<Mission['briefing']['visual']>;
 
 /** Illustrations that live in their own file (visuals/). */
 const REGISTRY: Partial<Record<VisualId, () => JSX.Element>> = {
+  'best-so-far-scan': BestScanVisual,
   'bad-reading-average': BadReadingVisual,
 };
 

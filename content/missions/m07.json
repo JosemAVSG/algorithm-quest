@@ -23,6 +23,7 @@
     "to": "working"
   },
   "briefing": {
+    "visual": "best-so-far-scan",
     "headline": "El tablero de despacho",
     "body": "Hay una cola de órdenes de trabajo y el despachador solo puede atender una primero. La regla del taller es la siguiente:\n\n1. Gana la orden de **mayor prioridad**.\n2. Si hay empate, gana la **más antigua** (la que se creó primero).\n3. Si siguen empatadas, gana la que llegó primero a la cola.\n\nDevuélveme la orden completa, no su posición: el despachador necesita el `id` y los datos para imprimir la hoja de trabajo.\n\nSi la cola está vacía, devuelve `null`: el despachador entiende `null`, no entiende una orden inventada.",
     "requirements": [
