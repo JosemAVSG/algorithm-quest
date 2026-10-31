@@ -59,11 +59,32 @@ function budgetExhausted(budget: ProbeBudget, deadline: number): boolean {
 
 /**
  * `deepEqual` treats `NaN` as unequal to itself. For the probes, two `NaN`s are
- * the same result (the value still fails the test engine separately).
+ * the same result at any depth (the value still fails the test engine
+ * separately). Without this, `{ total: NaN }` re-run twice would look
+ * non-deterministic and surface as E18 instead of E10.
  */
 export function probeEqual(a: unknown, b: unknown): boolean {
   if (typeof a === 'number' && typeof b === 'number' && Number.isNaN(a) && Number.isNaN(b)) {
     return true;
+  }
+  if (Array.isArray(a) && Array.isArray(b)) {
+    return a.length === b.length && a.every((value, index) => probeEqual(value, b[index]));
+  }
+  if (
+    typeof a === 'object' &&
+    typeof b === 'object' &&
+    a !== null &&
+    b !== null &&
+    !Array.isArray(a) &&
+    !Array.isArray(b)
+  ) {
+    const aRecord = a as Record<string, unknown>;
+    const bRecord = b as Record<string, unknown>;
+    const aKeys = Object.keys(aRecord);
+    if (aKeys.length !== Object.keys(bRecord).length) return false;
+    return aKeys.every(
+      (key) => Object.prototype.hasOwnProperty.call(bRecord, key) && probeEqual(aRecord[key], bRecord[key]),
+    );
   }
   return deepEqual(a, b);
 }

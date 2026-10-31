@@ -57,6 +57,20 @@ function sameShape(actual: unknown, expected: unknown): boolean {
 }
 
 /**
+ * True when a returned value is NaN, or holds a NaN / `undefined` field at any
+ * depth. A bare top-level `undefined` is E08 and handled before this check.
+ */
+function hasBrokenNumber(value: unknown, nested = false): boolean {
+  if (typeof value === 'number') return Number.isNaN(value);
+  if (value === undefined) return nested;
+  if (Array.isArray(value)) return value.some((item) => hasBrokenNumber(item, true));
+  if (typeof value === 'object' && value !== null) {
+    return Object.values(value).some((item) => hasBrokenNumber(item, true));
+  }
+  return false;
+}
+
+/**
  * The authored sentence for a code, preferring the unconditional rule. A rule
  * tied to one failing test is evidence about that test, not a general statement
  * about the code.
@@ -326,11 +340,9 @@ export function classify(input: ClassifyInput): Diagnosis {
     };
   }
 
-  // 8c. NaN in the result → E10. `expected` cannot be NaN (schema V7), so an
+  // 8c. NaN (or an undefined field) in the result, at any depth → E10. `expected` cannot be NaN (schema V7), so an
   //     accumulator that was never initialised can only show up here.
-  const notANumber = failing.find(
-    (result) => typeof result.actual === 'number' && Number.isNaN(result.actual),
-  );
+  const notANumber = failing.find((result) => hasBrokenNumber(result.actual));
   if (notANumber !== undefined) {
     return {
       code: 'E10',
