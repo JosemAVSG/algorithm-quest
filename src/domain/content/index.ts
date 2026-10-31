@@ -11,3 +11,6 @@ export * from './validate';
 export * from './lint';
 export * from './coverage';
 export * from './assemble';
+export * from './summary';
+export * from './mission-loader';
+export * from './catalog';

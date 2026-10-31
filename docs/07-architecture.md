@@ -301,9 +301,22 @@ runtime check protects against a stale cache serving an old bundle with new cont
 1. Add `content/missions/m13.json`.
 2. Run `npm run validate:content` — it tells you exactly which fields are missing or invalid.
 3. Add it to the world's mission order array in `content/worlds.json`.
-4. Done. No component changes, no route changes, no type changes.
+4. Run `npm run content:index` to refresh `content/index.json` (a unit test fails while it is stale).
+5. Done. No component changes, no route changes, no type changes.
 
-If step 4 ever becomes false, R2 has been violated and the architecture has regressed.
+If step 5 ever becomes false, R2 has been violated and the architecture has regressed.
+
+### Content loading in the browser
+
+Missions are large (hand-written test inputs reach megabytes), so the browser does not bundle them.
+The main chunk carries only the registries and `content/index.json`, a generated index with the
+fields the map, unlock rules and progress screens read (`MissionSummary`: id, world, order, title,
+subtitle, prerequisite missions, workshop transition, reward narrative). Each `content/missions/*.json`
+is a lazy `import.meta.glob` entry, so Vite emits one async chunk per mission, fetched when the player
+opens it (`MissionGate`: short delay before "Cargando misión…", error state with retry). Failed loads
+are not cached. The index is derived from the full missions by `npm run content:index`; the full
+pipeline (`assembleContent`: lints, references, coverage) still runs on the complete files in CI via
+the filesystem adapter, and `tests/unit/content/mission-index.test.ts` fails if the index is stale.
 
 ---
 

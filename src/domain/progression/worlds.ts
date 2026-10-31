@@ -7,7 +7,8 @@
  * Pure on purpose: the screen renders what this returns and decides nothing.
  */
 
-import type { Mission, World } from '../content/schema';
+import type { World } from '../content/schema';
+import type { MissionSummary } from '../content/summary';
 import { missionStates } from './unlock';
 
 export type WorldState = 'completed' | 'current' | 'locked';
@@ -25,7 +26,7 @@ export type MissionNodeState = 'completed' | 'available' | 'locked' | 'soon';
 export interface MissionNode {
   id: string;
   state: MissionNodeState;
-  mission: Mission | null;
+  mission: MissionSummary | null;
 }
 
 function isCompleted(world: World, completedIds: ReadonlySet<string>): boolean {
@@ -61,7 +62,7 @@ export function worldNodes(
 
 export function missionNodes(
   world: World,
-  missions: readonly Mission[],
+  missions: readonly MissionSummary[],
   completedIds: ReadonlySet<string>,
 ): MissionNode[] {
   const states = missionStates(missions, completedIds);

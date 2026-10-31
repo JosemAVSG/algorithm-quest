@@ -14,7 +14,7 @@
 
 import { useState, type CSSProperties } from 'react';
 
-import type { ContentBundle } from '../../domain/content/assemble';
+import type { ContentCatalog } from '../../domain/content/catalog';
 import type { SystemState } from '../../domain/content/schema';
 import {
   completedMissionIds,
@@ -61,7 +61,7 @@ function pathStyle(index: number): CSSProperties {
 }
 
 interface WorkshopMapProps {
-  bundle: ContentBundle;
+  bundle: ContentCatalog;
   progress: PlayerProgress;
   onOpenMission: (missionId: string) => void;
   onOpenProgress: () => void;
