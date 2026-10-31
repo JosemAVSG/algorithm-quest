@@ -1,0 +1,220 @@
+{
+  "schemaVersion": 1,
+  "id": "M09",
+  "contentVersion": "1.0.0",
+  "locale": "es",
+  "world": "w1",
+  "order": 9,
+  "title": "El costo de la inspección",
+  "subtitle": "Medir antes de ejecutar",
+  "difficulty": 4,
+  "estimatedMinutes": 18,
+
+  "concepts": {
+    "primary": "C12",
+    "secondary": ["C06"]
+  },
+
+  "prerequisites": {
+    "missions": ["M08"],
+    "concepts": []
+  },
+
+  "workshop": {
+    "systemId": "sys.meter",
+    "from": "absent",
+    "to": "installed"
+  },
+
+  "briefing": {
+    "headline": "El medidor de costos",
+    "body": "Instalé un contador en el detector de duplicados que escribiste. Cuenta cuántas veces se compara un par de órdenes.\n\nCon 10 órdenes el contador marca 45. Con 100 marca 4.950. El operador dice que con la cola de mañana el sistema «se queda pensando».\n\nNo quiero que lo arregles todavía. Quiero que me digas **cuánto va a costar antes de ejecutarlo**.\n\nEscríbeme una función que, dado el tamaño de la cola, devuelva cuántas comparaciones hará el detector en el peor caso. Después vamos a comprobar tu predicción contra el contador real.",
+    "requirements": [
+      "Recibe el tamaño de la cola de órdenes",
+      "Devuelve cuántas comparaciones hará el detector en el peor caso",
+      "El peor caso es una cola sin ninguna orden repetida"
+    ],
+    "forbiddenVocabulary": ["cuadrática", "cuadrático", "O(n", "n(n-1)", "notación"]
+  },
+
+  "contract": {
+    "entryPoint": "worstCaseComparisons",
+    "signature": "worstCaseComparisons(n) -> number",
+    "inputShape": "n: number (entero no negativo)",
+    "outputShape": "number",
+    "rules": [
+      "Devuelve el número de comparaciones de pares que hace el detector de duplicados con una lista de longitud n sin duplicados",
+      "Con n = 0 y n = 1 devuelve 0",
+      "n es un entero no negativo"
+    ]
+  },
+
+  "constraints": {
+    "bannedConstructs": [],
+    "allowClosedForm": true,
+    "mustNotMutate": false
+  },
+
+  "starterCode": "function worstCaseComparisons(n) {\n  // your code here\n}\n",
+
+  "tests": {
+    "visible": [
+      {
+        "id": "v1",
+        "input": [0],
+        "expected": 0,
+        "note": "cola vacía"
+      },
+      {
+        "id": "v2",
+        "input": [1],
+        "expected": 0,
+        "note": "una sola orden"
+      },
+      {
+        "id": "v3",
+        "input": [3],
+        "expected": 3,
+        "note": "tres órdenes"
+      }
+    ],
+    "hidden": [
+      {
+        "id": "h1",
+        "input": [2],
+        "expected": 1,
+        "note": "el caso no trivial más pequeño"
+      },
+      {
+        "id": "h2",
+        "input": [4],
+        "expected": 6,
+        "note": "cuatro órdenes"
+      },
+      {
+        "id": "h3",
+        "input": [10],
+        "expected": 45,
+        "note": "el número del briefing"
+      },
+      {
+        "id": "h4",
+        "input": [1000],
+        "expected": 499500,
+        "note": "el número que predijiste"
+      }
+    ],
+    "edge": [
+      {
+        "id": "ed1",
+        "input": [5],
+        "expected": 10,
+        "edge": true,
+        "edgeKind": "boundary-equal",
+        "note": "error de uno en la fórmula"
+      },
+      {
+        "id": "ed2",
+        "input": [100000],
+        "expected": 4999950000,
+        "edge": true,
+        "edgeKind": "extreme",
+        "note": "una cola enorme"
+      },
+      {
+        "id": "ed3",
+        "input": [7919],
+        "expected": 31351321,
+        "edge": true,
+        "edgeKind": "extreme",
+        "note": "un tamaño que no aparece en ningún ejemplo"
+      }
+    ]
+  },
+
+  "diagnostics": [
+    {
+      "code": "E21",
+      "when": { "failingTestIds": ["v2", "v3"] },
+      "message": "Con 3 órdenes el contador marca 3, no 9 ni 6. ¿Se compara cada par una vez o dos? ¿Y la suma llega hasta n o hasta n-1?"
+    },
+    {
+      "code": "E21",
+      "when": { "failingTestIds": ["v3"] },
+      "message": "Ese es el doble del valor real. Estás contando el par (A,B) y el par (B,A) por separado. ¿El detector compara ambos?"
+    },
+    {
+      "code": "E05",
+      "when": { "failingTestIds": ["v1", "v2", "v3"] },
+      "message": "Con 0 órdenes tu fórmula devuelve un valor distinto de 0. No hay ninguna comparación que hacer."
+    },
+    {
+      "code": "E13",
+      "when": { "failingTestIds": ["ed3"] },
+      "message": "Tu función acierta los casos de prueba y falla con 7919. Necesita una relación, no una lista."
+    },
+    {
+      "code": "E21",
+      "message": "Compara tu resultado con el contador: con 10 órdenes marca 45 y con 4 marca 6. ¿Qué relación une el tamaño de la cola con esos números?"
+    },
+    {
+      "code": "E01",
+      "message": "Hay un error de sintaxis antes de que el código pueda ejecutarse. Revisa la línea marcada: el motor no pudo interpretar esa expresión."
+    },
+    {
+      "code": "E02",
+      "message": "El código lanzó una excepción durante la ejecución. Revisa qué valor estabas usando cuando ocurrió."
+    }
+  ],
+
+  "hints": [
+    {
+      "level": 1,
+      "text": "Si la cola tiene 5 órdenes, ¿con cuántas compara la primera? ¿Y la segunda? Escribe los cinco números y míralos."
+    },
+    {
+      "level": 2,
+      "text": "Con 10 el contador marca 45, y con 4 marca 6. Comprueba tu fórmula con 4: ¿estás contando cada par una vez o dos?"
+    },
+    {
+      "level": 3,
+      "text": "para i de 0 a n-2:\n    el elemento i se compara con todos los que vienen después\n    → esa vuelta hace (n - 1 - i) comparaciones\nsuma todas las vueltas\n\nLa suma va de n-1 hacia abajo hasta 1."
+    },
+    {
+      "level": 4,
+      "text": "Un torneo de todos contra todos: cada equipo juega contra cada rival una sola vez. ¿Cuántos partidos hay con 8 equipos?\n\nfunction partidos(n) {\n  return (n * (n - 1)) / 2;\n}\n\nCon 8 equipos: 8·7/2 = 28 partidos. La estructura es idéntica: pares no ordenados.",
+      "unlock": { "attempts": 4, "hintsUsed": 3 }
+    }
+  ],
+
+  "debrief": {
+    "whyItWorks": "La primera orden se compara con n-1, la segunda con n-2, y así hasta la penúltima, que se compara con una. La suma n-1 + n-2 + … + 1 es n(n-1)/2. Esa cantidad depende de n por n, no solo de n: si mañana el taller procesa el doble de órdenes, el detector hace cuatro veces más comparaciones. Ningún ajuste de hardware arregla eso; hay que cambiar la estrategia.",
+    "edgeCaseNote": "Con 0 y 1 órdenes no hay ningún par que comparar, así que el coste es 0. Con 100.000 órdenes el resultado ya supera los 4.999 millones: a un millón de comparaciones por segundo son unos 83 minutos. Y un tamaño que nunca viste, como 7919, solo se acierta con una relación, no con una tabla.",
+    "complexity": {
+      "question": "Si la cola pasa de 1.000 a 2.000 órdenes, ¿cuántas veces más comparaciones hace el detector?",
+      "options": [
+        "El doble",
+        "Aproximadamente cuatro veces",
+        "Aproximadamente ocho veces",
+        "Las mismas"
+      ],
+      "correctIndex": 1,
+      "explanation": "Con 1.000 órdenes son 499.500 comparaciones; con 2.000 son 1.999.000, casi cuatro veces más. Duplicar el tamaño cuadruplica el trabajo, y eso es lo que el operador llama «se queda pensando»."
+    },
+    "realWorld": "Estimación de capacidad, presupuestos de cómputo, decisiones de arquitectura («¿esto aguanta el Black Friday?») y la primera pregunta de cualquier entrevista técnica seria.",
+    "reasoningPrompt": "Explica por qué duplicar el número de órdenes cuadruplica el trabajo, no lo duplica. Usa los números de la tabla.",
+    "objectiveNouns": ["comparaciones", "coste", "cola", "crecimiento"],
+    "reasoningLexicon": ["cuadruplica", "crece", "cuenta", "suma"]
+  },
+
+  "mastery": {
+    "transferMissionId": "M10",
+    "reinforcementVariants": []
+  },
+
+  "reward": {
+    "systemId": "sys.meter",
+    "effect": "absent → installed",
+    "narrative": "El medidor de costos queda instalado: a partir de ahora cada sistema muestra cuánto cuesta."
+  }
+}

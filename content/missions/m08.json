@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 1,
+  "id": "M08",
+  "contentVersion": "1.0.0",
+  "locale": "es",
+  "world": "w1",
+  "order": 8,
+  "title": "Las órdenes repetidas",
+  "subtitle": "Duplicados por parejas",
+  "difficulty": 4,
+  "estimatedMinutes": 22,
+
+  "concepts": {
+    "primary": "C11",
+    "secondary": ["C03"]
+  },
+
+  "prerequisites": {
+    "missions": ["M07"],
+    "concepts": []
+  },
+
+  "workshop": {
+    "systemId": "sys.line",
+    "from": "working",
+    "to": "reliable"
+  },
+
+  "briefing": {
+    "headline": "Órdenes duplicadas",
+    "body": "El sistema de órdenes está metiendo la misma orden dos veces cuando la conexión falla a medias. El operador quiere saber **dónde** está el primer par repetido, no cuántos hay: con la posición puede cancelar la segunda y seguir.\n\nNecesito las **dos posiciones** en la lista original: la de la primera aparición y la de la repetición. La primera es menor que la segunda.\n\nSi no hay ninguna repetida, devuelve `null`.\n\nImportante: `\"12\"` y `12` **no** son la misma orden. Una es un código de texto y la otra es un número interno.",
+    "requirements": [
+      "Recibe la lista de identificadores de las órdenes",
+      "Devuelve las dos posiciones del primer par repetido, la menor primero",
+      "Si no hay ninguna repetida, devuelve null",
+      "\"12\" y 12 no son la misma orden"
+    ],
+    "forbiddenVocabulary": ["parejas", "anidado", "cuadrático", "O(n"]
+  },
+
+  "contract": {
+    "entryPoint": "findFirstDuplicatePair",
+    "signature": "findFirstDuplicatePair(ids) -> [number, number] | null",
+    "inputShape": "ids: (string | number)[]",
+    "outputShape": "[number, number] | null",
+    "rules": [
+      "Devuelve [i, j] con i < j y ids[i] === ids[j]",
+      "«Primer» par: recorriendo i en orden ascendente y, para cada i, j en orden ascendente desde i + 1, el primer par que coincide",
+      "Devuelve null si no hay duplicados, incluidas las listas vacías y de un solo elemento",
+      "Solo igualdad estricta: \"1\" y 1 son órdenes distintas",
+      "No modifica ni ordena ids"
+    ]
+  },
+
+  "constraints": {
+    "bannedConstructs": ["new Set", "new Map", "indexOf", "lastIndexOf", "includes", "findIndex"],
+    "allowClosedForm": false,
+    "mustNotMutate": true
+  },
+
+  "starterCode": "function findFirstDuplicatePair(ids) {\n  // your code here\n}\n",
+
+  "tests": {
+    "visible": [
+      {
+        "id": "v1",
+        "input": [[]],
+        "expected": null,
+        "note": "cola vacía"
+      },
+      {
+        "id": "v2",
+        "input": [[1, 2, 3, 1]],
+        "expected": [0, 3],
+        "note": "la primera y la última coinciden"
+      },
+      {
+        "id": "v3",
+        "input": [[7, 7]],
+        "expected": [0, 1],
+        "note": "dos órdenes seguidas"
+      }
+    ],
+    "hidden": [
+      {
+        "id": "h1",
+        "input": [[1, 2, 3]],
+        "expected": null,
+        "note": "ninguna repetida"
+      },
+      {
+        "id": "h2",
+        "input": [[4, 5, 4, 4]],
+        "expected": [0, 2],
+        "note": "el primer par, no el último"
+      },
+      {
+        "id": "h3",
+        "input": [["a", "b", "a"]],
+        "expected": [0, 2],
+        "note": "códigos de texto"
+      },
+      {
+        "id": "h4",
+        "input": [[1, 2, 3, 4, 5, 1]],
+        "expected": [0, 5],
+        "note": "repetida en la última posición"
+      }
+    ],
+    "edge": [
+      {
+        "id": "ed1",
+        "input": [[1]],
+        "expected": null,
+        "edge": true,
+        "edgeKind": "singleton",
+        "note": "una sola orden"
+      },
+      {
+        "id": "ed2",
+        "input": [["1", 1]],
+        "expected": null,
+        "edge": true,
+        "edgeKind": "none-match",
+        "note": "texto y número no son la misma orden"
+      },
+      {
+        "id": "ed3",
+        "input": [[1, 2, 2]],
+        "expected": [1, 2],
+        "edge": true,
+        "edgeKind": "duplicate",
+        "note": "el par no empieza en la posición 0"
+      }
+    ]
+  },
+
+  "diagnostics": [
+    {
+      "code": "E22",
+      "when": { "failingTestIds": ["ed2"] },
+      "message": "Con ['1', 1] tu función devuelve [0, 1]. El enunciado dice que no son la misma orden. ¿Qué operador distingue tipo y valor?"
+    },
+    {
+      "code": "E12",
+      "when": { "failingTestIds": ["v2", "v3", "h1", "h2", "h3", "h4", "ed1", "ed2", "ed3"] },
+      "message": "Con [7, 7] devuelves [0, 0]. Una orden no puede duplicarse a sí misma: la segunda posición tiene que ser posterior a la primera."
+    },
+    {
+      "code": "E12",
+      "when": { "failingTestIds": ["v2", "v3", "h2", "h3", "h4", "ed3"] },
+      "message": "Devuelves el valor repetido, no sus posiciones. El operador necesita las dos posiciones [i, j] para cancelar la segunda."
+    },
+    {
+      "code": "E06",
+      "when": { "failingTestIds": ["v2", "v3", "h4"] },
+      "message": "Con [1, 2, 3, 4, 5, 1] no encuentras nada, porque el último elemento nunca se compara. ¿Hasta dónde tiene que llegar j?"
+    },
+    {
+      "code": "E21",
+      "when": { "failingTestIds": ["h2"] },
+      "message": "Con [4, 5, 4, 4] devuelves [0, 3]. El operador quiere el primero: [0, 2]. ¿Estás devolviendo en cuanto encuentras?"
+    },
+    {
+      "code": "E19",
+      "message": "Eso es más rápido y es exactamente lo que vamos a hacer en la próxima misión. Aquí necesitamos la versión lenta para poder medirla."
+    },
+    {
+      "code": "E12",
+      "message": "Tu función no devuelve las dos posiciones [i, j]. El operador necesita ambas para cancelar la segunda orden: ¿qué estás devolviendo?"
+    },
+    {
+      "code": "E01",
+      "message": "Hay un error de sintaxis antes de que el código pueda ejecutarse. Revisa la línea marcada: el motor no pudo interpretar esa expresión."
+    },
+    {
+      "code": "E02",
+      "message": "El código lanzó una excepción durante la ejecución. Revisa qué valor estabas usando cuando ocurrió."
+    }
+  ],
+
+  "hints": [
+    {
+      "level": 1,
+      "text": "Para saber si una orden se repite, ¿con qué la comparas? ¿Y cuántas comparaciones necesitas si hay 5 órdenes? ¿Y si hay 10?"
+    },
+    {
+      "level": 2,
+      "text": "Con [1, 2, 3, 1] una función mal planteada puede devolver [0, 0]. Mira el valor inicial de j: ¿qué posición estás comparando contra sí misma?"
+    },
+    {
+      "level": 3,
+      "text": "para i desde 0 hasta n-1:\n    para j desde i+1 hasta n-1:\n        si ids[i] === ids[j]:\n            devolver [i, j]\ndevolver null\n\nFíjate en el i+1: es lo que impide comparar un elemento consigo mismo y lo que garantiza que el par salga ordenado."
+    },
+    {
+      "level": 4,
+      "text": "Un sistema detecta si un mismo invitado escaneó su entrada dos veces. Necesita los dos índices de escaneo, en orden.\n\nfunction primerEscaneoDuplicado(codigos) {\n  for (let i = 0; i < codigos.length; i++) {\n    for (let j = i + 1; j < codigos.length; j++) {\n      if (codigos[i] === codigos[j]) {\n        return [i, j];\n      }\n    }\n  }\n  return null;\n}",
+      "unlock": { "attempts": 4, "hintsUsed": 3 }
+    }
+  ],
+
+  "debrief": {
+    "whyItWorks": "Para encontrar un par hay que comparar cada elemento con los que vienen después. Eso produce un bucle dentro de otro, y el i + 1 es lo que hace que cada par se compare una sola vez y en el orden correcto. A diferencia de recolectar todos los resultados, aquí puedes parar en el primer hallazgo: la pregunta es «¿dónde está el primero?». El return null final solo se alcanza si ningún par coincidió.",
+    "edgeCaseNote": "Un solo elemento: el bucle interno nunca se ejecuta y se devuelve null. «1» frente a 1: igualdad estricta; en JavaScript, == convierte tipos y produce duplicados fantasma, una fuente real de bugs en producción. Un duplicado en la última posición obliga a que j llegue hasta n - 1.",
+    "complexity": {
+      "question": "Si la lista tiene 10 órdenes y ninguna se repite, ¿cuántas comparaciones hace en total el bucle interno?",
+      "options": ["10", "45", "90", "100"],
+      "correctIndex": 1,
+      "explanation": "El bucle interno hace 9, 8, 7, … , 1 comparaciones: en total 45. Con 1.000 órdenes serían 499.500 y con 100.000 casi 5.000 millones. No vamos a arreglarlo todavía: la próxima misión es sobre ese número."
+    },
+    "realWorld": "Detección de duplicados en importaciones, validación de identificadores, búsqueda de colisiones en datos sucios, comparación de inventarios entre sistemas.",
+    "reasoningPrompt": "¿Por qué el bucle interno empieza en i + 1 y no en 0? ¿Qué pasaría con [7, 7] si empezara en 0?",
+    "objectiveNouns": ["par", "posición", "orden", "duplicada"],
+    "reasoningLexicon": ["comparo", "recorro", "devuelvo", "encuentro"]
+  },
+
+  "mastery": {
+    "transferMissionId": "M10",
+    "reinforcementVariants": []
+  },
+
+  "reward": {
+    "systemId": "sys.line",
+    "effect": "working → reliable",
+    "narrative": "La línea gana un detector de duplicados: las unidades repetidas rebotan fuera de la cinta."
+  }
+}
