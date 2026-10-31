@@ -36,7 +36,8 @@
       "frecuencia",
       "contador asociativo",
       "hash"
-    ]
+    ],
+    "visual": "m11-tally"
   },
   "contract": {
     "entryPoint": "mostFrequentCategory",

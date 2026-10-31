@@ -53,7 +53,7 @@ type MissionSchema = {
     body: string;                   // markdown, player-facing
     requirements: string[];         // the 3–4 bullets in the contract box
     forbiddenVocabulary: string[];  // lint L1: must not appear in headline+body
-    visual?: 'gauge' | 'early-exit-scan';  // optional id of a built-in 2D illustration
+    visual?: 'gauge' | 'early-exit-scan' | 'm11-tally';  // optional id of a built-in 2D illustration
   };
 
   contract: {
