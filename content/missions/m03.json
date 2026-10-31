@@ -1,0 +1,245 @@
+{
+  "schemaVersion": 1,
+  "id": "M03",
+  "contentVersion": "1.0.0",
+  "locale": "es",
+  "world": "w1",
+  "order": 3,
+  "title": "El lote defectuoso",
+  "subtitle": "Recolección de resultados",
+  "difficulty": 2,
+  "estimatedMinutes": 12,
+  "concepts": { "primary": "C05", "secondary": ["C08"] },
+  "prerequisites": { "missions": ["M02"], "concepts": ["C03", "C04"] },
+  "workshop": { "systemId": "sys.line", "from": "broken", "to": "working" },
+  "briefing": {
+    "headline": "El lote del proveedor",
+    "body": "El jefe de turno cambió de opinión. Ya no quiere saber *si* hay que parar: quiere la **lista completa** de las unidades defectuosas para devolverlas al proveedor.\n\nNecesita los identificadores y la temperatura de cada una, en el mismo orden en que llegaron, para que coincida con la factura.\n\nOjo: no puedes devolver solo la primera. El proveedor rechaza la devolución si la lista está incompleta.",
+    "requirements": [
+      "Recibe la lista de unidades (id y temperatura) y el límite seguro",
+      "Devuelve todas las unidades que superan el límite, no solo la primera",
+      "Mantiene el orden de llegada, con id y temperatura de cada una",
+      "Si no hay ninguna defectuosa, la lista devuelta está vacía"
+    ],
+    "forbiddenVocabulary": [
+      "acumular",
+      "acumulador",
+      "push",
+      "recolectar",
+      "filtrar",
+      "filter",
+      "array de resultados"
+    ]
+  },
+  "contract": {
+    "entryPoint": "collectFaultyDevices",
+    "signature": "collectFaultyDevices(devices, limit) -> device[]",
+    "inputShape": "devices: { id: string, temperature: number }[], limit: number",
+    "outputShape": "{ id: string, temperature: number }[]",
+    "rules": [
+      "Devuelve cada unidad cuya temperature supera estrictamente limit",
+      "Conserva el orden de entrada",
+      "Devuelve [] cuando ninguna coincide o la entrada está vacía",
+      "Devuelve una lista nueva y no modifica devices ni sus elementos"
+    ]
+  },
+  "constraints": {
+    "bannedConstructs": [".filter", ".map", ".reduce", ".flatMap", ".forEach"],
+    "allowClosedForm": false,
+    "mustNotMutate": true
+  },
+  "starterCode": "function collectFaultyDevices(devices, limit) {\n  // your code here\n}\n",
+  "tests": {
+    "visible": [
+      {
+        "id": "v1",
+        "input": [[], 90],
+        "expected": [],
+        "note": "el lote llegó vacío"
+      },
+      {
+        "id": "v2",
+        "input": [
+          [
+            { "id": "A", "temperature": 95 },
+            { "id": "B", "temperature": 80 },
+            { "id": "C", "temperature": 88 }
+          ],
+          90
+        ],
+        "expected": [{ "id": "A", "temperature": 95 }],
+        "note": "una sola unidad defectuosa"
+      },
+      {
+        "id": "v3",
+        "input": [[{ "id": "A", "temperature": 95 }, { "id": "B", "temperature": 92 }], 90],
+        "expected": [{ "id": "A", "temperature": 95 }, { "id": "B", "temperature": 92 }],
+        "note": "las dos fallan"
+      }
+    ],
+    "hidden": [
+      {
+        "id": "h1",
+        "input": [[{ "id": "A", "temperature": 80 }, { "id": "B", "temperature": 95 }], 90],
+        "expected": [{ "id": "B", "temperature": 95 }],
+        "note": "la defectuosa llega al final"
+      },
+      {
+        "id": "h2",
+        "input": [[{ "id": "A", "temperature": 80 }, { "id": "B", "temperature": 88 }], 90],
+        "expected": [],
+        "note": "ninguna supera el límite"
+      },
+      {
+        "id": "h3",
+        "input": [
+          [
+            { "id": "A", "temperature": 95 },
+            { "id": "B", "temperature": 80 },
+            { "id": "C", "temperature": 97 }
+          ],
+          90
+        ],
+        "expected": [{ "id": "A", "temperature": 95 }, { "id": "C", "temperature": 97 }],
+        "note": "orden conservado, con huecos"
+      },
+      {
+        "id": "h4",
+        "input": [
+          [
+            { "id": "A", "temperature": 95 },
+            { "id": "B", "temperature": 97 },
+            { "id": "C", "temperature": 99 }
+          ],
+          90
+        ],
+        "expected": [
+          { "id": "A", "temperature": 95 },
+          { "id": "B", "temperature": 97 },
+          { "id": "C", "temperature": 99 }
+        ],
+        "note": "todas defectuosas"
+      }
+    ],
+    "edge": [
+      {
+        "id": "ed1",
+        "input": [[{ "id": "A", "temperature": 90 }], 90],
+        "expected": [],
+        "note": "una unidad justo en el límite",
+        "edge": true,
+        "edgeKind": "boundary-equal"
+      },
+      {
+        "id": "ed2",
+        "input": [[{ "id": "A", "temperature": 95 }], 90],
+        "expected": [{ "id": "A", "temperature": 95 }],
+        "note": "una sola unidad, defectuosa",
+        "edge": true,
+        "edgeKind": "singleton"
+      },
+      {
+        "id": "ed3",
+        "input": [[{ "id": "A", "temperature": 90 }, { "id": "B", "temperature": 90 }], 90],
+        "expected": [],
+        "note": "todas justo en el límite",
+        "edge": true,
+        "edgeKind": "duplicate"
+      }
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "E12",
+      "message": "El resultado no coincide con la lista que pide el proveedor. Compara, caso por caso, qué unidades deberían estar en la lista y cuáles devuelve tu función."
+    },
+    {
+      "code": "E07",
+      "when": { "failingTestIds": ["v3", "h3", "h4"] },
+      "message": "Con tres unidades defectuosas devuelves una. ¿En qué momento decides que ya terminaste?"
+    },
+    {
+      "code": "E12",
+      "when": { "failingTestIds": ["v2", "v3", "h1", "h3", "h4", "ed2"] },
+      "message": "Estás guardando posiciones (0, 2), pero el proveedor pide las unidades con su id y su temperatura."
+    },
+    {
+      "code": "E12",
+      "when": { "failingTestIds": ["v2", "h1", "h2", "h3", "ed1", "ed3"] },
+      "message": "Devuelves todas las unidades. ¿Cuáles son las defectuosas?"
+    },
+    {
+      "code": "E05",
+      "when": { "failingTestIds": ["ed1", "ed3"] },
+      "message": "Una unidad justo en el límite no es defectuosa, pero tu código la devuelve. ¿Qué comparación deja fuera el valor igual al límite?"
+    },
+    {
+      "code": "E07",
+      "message": "Con tres unidades defectuosas devuelves una. ¿En qué momento decides que ya terminaste?"
+    },
+    {
+      "code": "E08",
+      "message": "Cuando ninguna unidad falla, tu función devuelve undefined en vez de una lista vacía."
+    },
+    {
+      "code": "E11",
+      "message": "Modificaste la lista original. El resto del taller la sigue usando. Devuelve una lista nueva."
+    },
+    {
+      "code": "E19",
+      "message": "Ese método hace la recolección por ti, y este ejercicio trata sobre cómo se construye la lista. Escríbelo con un bucle."
+    },
+    {
+      "code": "E01",
+      "message": "Hay un error de sintaxis antes de que el código pueda ejecutarse. Revisa la línea marcada: el motor no pudo interpretar esa expresión."
+    },
+    {
+      "code": "E02",
+      "message": "El código lanzó una excepción durante la ejecución. Revisa qué valor estabas usando cuando ocurrió."
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "En M02 podías parar en cuanto encontrabas un fallo. Aquí, ¿puedes parar alguna vez antes de terminar la lista? ¿Por qué?"
+    },
+    {
+      "level": 2,
+      "text": "Con tres unidades defectuosas tu función devuelve una. Mira dónde está tu return y pregúntate: ¿qué queda sin revisar después de esa línea?"
+    },
+    {
+      "level": 3,
+      "text": "crear una lista vacía  resultado\npara cada unidad de la lista:\n    si la unidad supera el límite:\n        agregar la unidad a resultado      ← sin return\nal terminar el bucle:\n    devolver resultado"
+    },
+    {
+      "level": 4,
+      "text": "Un turno de soporte arma la lista de tickets que llevan más de 48 horas abiertos, para escalarlos todos juntos.\n\nfunction ticketsVencidos(tickets) {\n  const vencidos = [];\n  for (let i = 0; i < tickets.length; i++) {\n    if (tickets[i].horasAbierto > 48) {\n      vencidos.push(tickets[i]);\n    }\n  }\n  return vencidos;\n}\n\nLa diferencia con el ejercicio anterior es que no hay return dentro del if.",
+      "unlock": { "attempts": 4, "hintsUsed": 3 }
+    }
+  ],
+  "debrief": {
+    "whyItWorks": "La función no responde una pregunta de sí o no: construye un valor. Eso obliga a mirar la lista completa, porque cada elemento puede añadir algo al resultado. El return vive fuera del bucle porque el resultado no está completo hasta que el bucle termina. Compáralo con M02: allí la pregunta era «¿existe alguno?» y se podía parar al primer acierto; aquí es «¿cuáles son todos?» y no se puede parar nunca. El coste es el mismo, pero la disciplina es opuesta: un return dentro del bucle era lo correcto en M02 y es el error en M03. Reconocer qué forma pide cada problema es la habilidad de esta misión.",
+    "edgeCaseNote": "Lista vacía: la respuesta es [], no undefined. Una función que devuelve «nada» en vez de «una colección vacía» obliga a quien la llama a defenderse, y es uno de los errores que más se repiten en producción. Y una unidad justo en el límite sigue sin ser defectuosa.",
+    "complexity": {
+      "question": "Con cuarenta unidades en el lote, ¿cuántas revisa tu función si la primera ya es defectuosa?",
+      "options": [
+        "Solo la primera, porque ya encontró una",
+        "Las cuarenta: no puede parar antes de terminar la lista",
+        "Depende de cuántas sean defectuosas en total",
+        "Ninguna, porque la lista ya tiene resultado"
+      ],
+      "correctIndex": 1,
+      "explanation": "Para devolver la lista completa hay que mirar todas las unidades, incluso si la primera ya está mal: la siguiente también podría estarlo. El coste es siempre n, sin mejor caso. Mismo orden de coste que M02 en el peor caso, pero sin atajo posible."
+    },
+    "realWorld": "Array.prototype.filter, WHERE en SQL, reportes de incidencias, listas de exclusión y la recolección de errores de validación en un formulario.",
+    "reasoningPrompt": "¿Por qué el return no puede estar dentro del if? Explica qué se pierde si lo mueves ahí, usando un ejemplo con dos unidades defectuosas.",
+    "objectiveNouns": ["lista", "unidades", "proveedor", "devolución"],
+    "reasoningLexicon": ["acumulo", "agrego", "recorro", "completo"]
+  },
+  "mastery": { "transferMissionId": "M12", "reinforcementVariants": [] },
+  "reward": {
+    "systemId": "sys.line",
+    "effect": "broken → working",
+    "narrative": "La línea de inspección arranca y las unidades defectuosas caen en el contenedor rojo."
+  }
+}
