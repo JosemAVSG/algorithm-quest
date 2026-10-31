@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react';
 
 import type { Mission } from '../../domain/content/schema';
+import { PairScanVisual } from './visuals/m08';
 import { BestScanVisual } from './visuals/m07';
 import { BadReadingVisual } from './visuals/m06';
 import {
@@ -26,6 +27,7 @@ type VisualId = NonNullable<Mission['briefing']['visual']>;
 
 /** Illustrations that live in their own file (visuals/). */
 const REGISTRY: Partial<Record<VisualId, () => JSX.Element>> = {
+  'pair-comparison': PairScanVisual,
   'best-so-far-scan': BestScanVisual,
   'bad-reading-average': BadReadingVisual,
 };

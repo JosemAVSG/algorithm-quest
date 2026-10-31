@@ -27,6 +27,7 @@
   },
 
   "briefing": {
+    "visual": "pair-comparison",
     "headline": "Órdenes duplicadas",
     "body": "El sistema de órdenes está metiendo la misma orden dos veces cuando la conexión falla a medias. El operador quiere saber **dónde** está el primer par repetido, no cuántos hay: con la posición puede cancelar la segunda y seguir.\n\nNecesito las **dos posiciones** en la lista original: la de la primera aparición y la de la repetición. La primera es menor que la segunda.\n\nSi no hay ninguna repetida, devuelve `null`.\n\nImportante: `\"12\"` y `12` **no** son la misma orden. Una es un código de texto y la otra es un número interno.",
     "requirements": [
