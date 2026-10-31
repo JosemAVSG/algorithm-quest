@@ -23,6 +23,7 @@
     "to": "working"
   },
   "briefing": {
+    "visual": "bad-reading-average",
     "headline": "El guardia de seguridad no confía en el promedio",
     "body": "El sistema de seguridad calcula la temperatura media del turno. Si el promedio pasa de cierto valor, bloquea la línea.\n\nEl problema: el promedio a veces sale `NaN` y el guardia se queda esperando para siempre. Y cuando hay sensores desconectados, el promedio sale raro pero *no* da error, así que nadie se enteró durante meses.\n\nLa función la escribió un becario. **Funciona en los casos normales.** Tu trabajo no es reescribirla: es encontrar por qué falla en los casos raros y arreglarlo.\n\nReglas del taller:\n\n- Un sensor desconectado llega como `null` y **no debe contar** para el promedio, ni en la suma ni en la cantidad.\n- Si no hay ninguna lectura válida, el promedio es `null` (el guardia entiende `null`, no entiende `NaN`).",
     "requirements": [

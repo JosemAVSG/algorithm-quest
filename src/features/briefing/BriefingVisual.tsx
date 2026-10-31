@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react';
 
 import type { Mission } from '../../domain/content/schema';
+import { BadReadingVisual } from './visuals/m06';
 import {
   GAUGE_LIMIT,
   GAUGE_MAX,
@@ -21,6 +22,11 @@ import {
 } from './visualModel';
 
 type VisualId = NonNullable<Mission['briefing']['visual']>;
+
+/** Illustrations that live in their own file (visuals/). */
+const REGISTRY: Partial<Record<VisualId, () => JSX.Element>> = {
+  'bad-reading-average': BadReadingVisual,
+};
 
 /** Advances one frame every `intervalMs`. */
 function useTick(intervalMs: number): number {
@@ -145,5 +151,7 @@ function Gauge() {
 }
 
 export function BriefingVisual({ id }: { id: VisualId }) {
+  const Registered = REGISTRY[id];
+  if (Registered) return <Registered />;
   return id === 'gauge' ? <Gauge /> : <EarlyExitScan />;
 }
