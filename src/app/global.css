@@ -622,6 +622,17 @@ code {
 
 /* ---------------------------------------------------------------- briefing */
 
+.rail__visual {
+  margin-top: 0.85rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.rail__visual .visual {
+  max-width: 34rem;
+  margin-top: 0.6rem;
+}
+
 .brief__intro--visual {
   margin-top: 1.75rem;
   display: grid;
