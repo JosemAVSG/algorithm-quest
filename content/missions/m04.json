@@ -13,6 +13,7 @@
   "prerequisites": { "missions": ["M03"], "concepts": ["C05"] },
   "workshop": { "systemId": "sys.store", "from": "broken", "to": "working" },
   "briefing": {
+    "visual": "running-total",
     "headline": "Cierre de mes en el almacén",
     "body": "El almacén lleva tres años con la misma hoja de cálculo y ya nadie sabe cuántas piezas hay. Necesito dos números para el cierre:\n\n1. El **total de piezas** en existencia, sumando todas las líneas.\n2. Cuántas **líneas están por debajo del mínimo**, que son las que hay que reponer.\n\nEl mínimo de reposición son 5 unidades por línea. Una línea con exactamente 5 **no** hay que reponerla.\n\nDevuélveme los dos números juntos, no me mandes dos mensajes.",
     "requirements": [
