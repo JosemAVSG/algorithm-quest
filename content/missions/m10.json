@@ -251,7 +251,105 @@
     "realWorld": "Deduplicación de eventos, detección de reenvíos, control de idempotencia en APIs, filtros de \"ya procesado\" y cachés de pertenencia.",
     "reasoningPrompt": "Explica el intercambio que hiciste: qué ganaste, qué pagaste, y en qué situación volverías a la versión de las parejas.",
     "objectiveNouns": ["memoria", "duplicado", "velocidad", "intercambio"],
-    "reasoningLexicon": ["recuerdo", "consulto", "intercambio", "escala"]
+    "reasoningLexicon": ["recuerdo", "consulto", "intercambio", "escala"],
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe tu código, y responde las tres preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Para cada id {b1}; si ya estaba devuelvo {b2}, y si termino sin que ninguno se repita devuelvo {b3}. Así cada id cuesta {b4}, y lo pago con memoria.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": [
+            "lo guardo y después pregunto si ya estaba",
+            "pregunto si ya está en la memoria y, si no, lo guardo",
+            "los guardo todos primero y luego los consulto uno a uno"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "id": "b2",
+          "options": [
+            "el propio id repetido",
+            "la posición de su primera aparición",
+            "true, para avisar de que hay un duplicado"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "id": "b3",
+          "options": [
+            "undefined",
+            "null",
+            "false"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "id": "b4",
+          "options": [
+            "una pasada completa por los ids anteriores",
+            "una consulta, pero guardar obliga a revisar toda la memoria",
+            "una consulta y un guardado, sin volver a mirar la lista"
+          ],
+          "correctIndex": 2
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "Con la lista [3, 1, 2, 1, 3], ¿qué debe devolver tu función y por qué?",
+          "options": [
+            "3, porque es el primer valor de la lista que aparece otra vez más adelante",
+            "null, porque hay más de un valor repetido y no se puede elegir entre ellos",
+            "1, porque su segunda aparición llega antes que la segunda aparición del 3",
+            "3 y 1, porque ambos están repetidos y el lote se bloquea con los dos"
+          ],
+          "correctIndex": 2,
+          "whyWrong": [
+            "El 3 aparece antes, pero su segunda aparición llega al final. Recorre la lista de izquierda a derecha y fíjate cuándo se vuelve a ver cada valor.",
+            "Que haya varios repetidos no impide elegir: se pide el primero que se vuelve a ver.",
+            "",
+            "La función devuelve un solo valor, el primero cuya repetición llega antes."
+          ],
+          "explanation": "Se cuenta el momento en que un valor ya conocido vuelve a aparecer. El 1 reaparece en la posición 3 y el 3 solo en la 4, así que el primer repetido es el 1."
+        },
+        {
+          "id": "q2",
+          "question": "Con los ids [\"1\", 1] tu función devuelve 1 y el panel esperaba null. ¿Qué ha pasado?",
+          "options": [
+            "La memoria ha tratado el texto \"1\" y el número 1 como el mismo valor y ha inventado un repetido",
+            "La memoria ha olvidado guardar el primer id y por eso el segundo parece repetido",
+            "El panel espera null siempre que la lista tiene solo dos elementos",
+            "La memoria guarda como máximo un id de cada tipo y descarta el segundo"
+          ],
+          "correctIndex": 0,
+          "whyWrong": [
+            "",
+            "Si el primer id no se guardara, el segundo no podría parecer repetido: no habría nada con lo que coincidir.",
+            "El número de elementos no decide la respuesta; la decide si algún valor reaparece de verdad.",
+            "No hay ese límite: la memoria guarda valores de cualquier tipo, pero compara con igualdad estricta."
+          ],
+          "explanation": "\"1\" y 1 son valores distintos. Una memoria que los mezcla encuentra un repetido que no existe; Set compara con igualdad estricta y los mantiene separados."
+        },
+        {
+          "id": "q3",
+          "question": "Guardas los ids vistos en un array y preguntas con includes. El resultado es correcto, pero con 20.000 órdenes sigue tardando. ¿Por qué?",
+          "options": [
+            "Porque includes compara con igualdad estricta, que es más lenta que la normal",
+            "Porque includes recorre el array por dentro en cada consulta: sigue siendo un bucle dentro de otro",
+            "Porque guardar en un array ocupa mucha más memoria que guardar en la memoria del taller",
+            "Porque includes solo funciona con listas de menos de 20.000 elementos"
+          ],
+          "correctIndex": 1,
+          "whyWrong": [
+            "La igualdad estricta no es más lenta de forma apreciable; el problema es cuántas veces se compara.",
+            "",
+            "El espacio que ocupa no explica la lentitud: aquí el coste lo pone el número de comparaciones.",
+            "No existe tal límite; con listas grandes simplemente tarda mucho."
+          ],
+          "explanation": "Preguntar con includes mira los ids anteriores uno por uno: es el bucle anidado con otro nombre. La memoria del taller responde sin recorrer nada."
+        }
+      ]
+    }
   },
   "mastery": {
     "transferMissionId": "M12",
