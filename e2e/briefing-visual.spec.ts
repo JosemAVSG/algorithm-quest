@@ -34,7 +34,6 @@ test("el briefing de M02 muestra la inspección y el flujo sigue funcionando", a
   await fillM01Explain(page);
   await page.getByRole("button", { name: "Cerrar la misión" }).click();
   await page.getByRole("button", { name: "Volver al taller →" }).click();
-  await page.getByRole("button", { name: /^World 1/ }).click();
   await page.getByRole("button", { name: /^M02/ }).click();
 
   await expect(

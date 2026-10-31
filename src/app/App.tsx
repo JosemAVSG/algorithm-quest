@@ -7,25 +7,25 @@
  * (docs/07-architecture.md §8).
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { loadBrowserCatalog } from '../adapters/content/browser';
-import { countBySeverity } from '../domain/content/errors';
+import { loadBrowserCatalog } from "../adapters/content/browser";
+import { countBySeverity } from "../domain/content/errors";
 import {
   declineReinforcement,
   emptyProgress,
   recordCompletion,
   type CompletedMissionRecord,
   type PlayerProgress,
-} from '../domain/persistence/port';
-import type { SessionSnapshot } from '../domain/session/mission-session';
-import { MissionFlow } from '../features/mission/MissionFlow';
-import { MissionGate } from '../features/mission/MissionGate';
-import { ProgressDashboard } from '../features/progress/ProgressDashboard';
-import { WorkshopMap } from '../features/workshop-map/WorkshopMap';
-import { createComposition } from './composition';
+} from "../domain/persistence/port";
+import type { SessionSnapshot } from "../domain/session/mission-session";
+import { MissionFlow } from "../features/mission/MissionFlow";
+import { MissionGate } from "../features/mission/MissionGate";
+import { ProgressDashboard } from "../features/progress/ProgressDashboard";
+import { WorkshopMap } from "../features/workshop-map/WorkshopMap";
+import { createComposition } from "./composition";
 
-type View = 'map' | 'progress';
+type View = "map" | "progress";
 
 export function App() {
   const report = useMemo(() => loadBrowserCatalog(), []);
@@ -34,7 +34,8 @@ export function App() {
   const [progress, setProgress] = useState<PlayerProgress | null>(null);
   const [storageWarning, setStorageWarning] = useState<string | null>(null);
   const [activeMissionId, setActiveMissionId] = useState<string | null>(null);
-  const [view, setView] = useState<View>('map');
+  const [view, setView] = useState<View>("map");
+  const [openWorldId, setOpenWorldId] = useState<string | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -102,11 +103,15 @@ export function App() {
         <p className="eyebrow">Algorithm Quest</p>
         <h1>El contenido no carga</h1>
         <p className="lede">
-          El taller se niega a arrancar con contenido inválido. Estas son las reglas que fallan:
+          El taller se niega a arrancar con contenido inválido. Estas son las
+          reglas que fallan:
         </p>
         <ul className="issue-list">
           {issues.slice(0, 20).map((issue, index) => (
-            <li key={`${issue.code}-${index}`} className={`issue issue--${issue.severity}`}>
+            <li
+              key={`${issue.code}-${index}`}
+              className={`issue issue--${issue.severity}`}
+            >
               <code>{issue.code}</code> {issue.message}
               {issue.source === undefined ? null : (
                 <span className="issue__source"> — {issue.source}</span>
@@ -115,7 +120,8 @@ export function App() {
           ))}
         </ul>
         <p className="note">
-          Ejecuta <code>npm run validate:content</code> para ver el detalle completo.
+          Ejecuta <code>npm run validate:content</code> para ver el detalle
+          completo.
         </p>
       </main>
     );
@@ -141,7 +147,7 @@ export function App() {
           {(mission) => {
             const stored = app.sessions.load(mission.id);
             const snapshot: SessionSnapshot | null =
-              stored !== null && stored.phase !== 'complete' ? stored : null;
+              stored !== null && stored.phase !== "complete" ? stored : null;
             return (
               <MissionFlow
                 mission={mission}
@@ -171,11 +177,11 @@ export function App() {
         </p>
       )}
 
-      {view === 'progress' ? (
+      {view === "progress" ? (
         <ProgressDashboard
           bundle={bundle}
           progress={progress}
-          onBack={() => setView('map')}
+          onBack={() => setView("map")}
           onDeclineReinforcement={handleDeclineReinforcement}
           onExport={handleExport}
           onImport={handleImport}
@@ -185,8 +191,17 @@ export function App() {
         <WorkshopMap
           bundle={bundle}
           progress={progress}
-          onOpenMission={(missionId) => setActiveMissionId(missionId)}
-          onOpenProgress={() => setView('progress')}
+          openWorldId={openWorldId}
+          onOpenWorldChange={setOpenWorldId}
+          onOpenMission={(missionId) => {
+            // Leaving the mission lands back in the world it belongs to.
+            const mission = bundle.missions.find(
+              (candidate) => candidate.id === missionId,
+            );
+            if (mission !== undefined) setOpenWorldId(mission.world);
+            setActiveMissionId(missionId);
+          }}
+          onOpenProgress={() => setView("progress")}
         />
       )}
     </div>

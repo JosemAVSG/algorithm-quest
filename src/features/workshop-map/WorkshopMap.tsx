@@ -12,42 +12,42 @@
  * were wrong".
  */
 
-import { useState, type CSSProperties } from 'react';
+import type { CSSProperties } from "react";
 
-import type { ContentCatalog } from '../../domain/content/catalog';
-import type { SystemState } from '../../domain/content/schema';
+import type { ContentCatalog } from "../../domain/content/catalog";
+import type { SystemState } from "../../domain/content/schema";
 import {
   completedMissionIds,
   type PlayerProgress,
-} from '../../domain/persistence/port';
-import { nextMission } from '../../domain/progression/unlock';
+} from "../../domain/persistence/port";
+import { nextMission } from "../../domain/progression/unlock";
 import {
   missionNodes,
   worldNodes,
   type MissionNodeState,
   type WorldState,
-} from '../../domain/progression/worlds';
-import { WorldGem } from './WorldGem';
+} from "../../domain/progression/worlds";
+import { WorldGem } from "./WorldGem";
 
 const STATE_LABEL: Record<SystemState, string> = {
-  broken: 'averiado',
-  working: 'operativo',
-  reliable: 'fiable',
-  absent: 'sin instalar',
-  installed: 'instalado',
+  broken: "averiado",
+  working: "operativo",
+  reliable: "fiable",
+  absent: "sin instalar",
+  installed: "instalado",
 };
 
 const WORLD_LABEL: Record<WorldState, string> = {
-  completed: 'completado',
-  current: 'en curso',
-  locked: 'bloqueado',
+  completed: "completado",
+  current: "en curso",
+  locked: "bloqueado",
 };
 
 const MISSION_LABEL: Record<MissionNodeState, string> = {
-  completed: 'completada',
-  available: 'disponible',
-  locked: 'bloqueada',
-  soon: 'próximamente',
+  completed: "completada",
+  available: "disponible",
+  locked: "bloqueada",
+  soon: "próximamente",
 };
 
 /** Zigzag column per position: centre, right, centre, left. */
@@ -57,12 +57,15 @@ const ZIGZAG = [0, 1, 0, -1];
 function pathStyle(index: number): CSSProperties {
   const col = ZIGZAG[index % ZIGZAG.length];
   const next = ZIGZAG[(index + 1) % ZIGZAG.length];
-  return { '--col': col, '--dcol': next - col } as CSSProperties;
+  return { "--col": col, "--dcol": next - col } as CSSProperties;
 }
 
 interface WorkshopMapProps {
   bundle: ContentCatalog;
   progress: PlayerProgress;
+  /** The open world lives in the parent so it survives leaving a mission. */
+  openWorldId: string | null;
+  onOpenWorldChange: (worldId: string | null) => void;
   onOpenMission: (missionId: string) => void;
   onOpenProgress: () => void;
 }
@@ -70,81 +73,99 @@ interface WorkshopMapProps {
 export function WorkshopMap({
   bundle,
   progress,
+  openWorldId,
+  onOpenWorldChange,
   onOpenMission,
   onOpenProgress,
 }: WorkshopMapProps) {
-  const [openWorldId, setOpenWorldId] = useState<string | null>(null);
   const completed = completedMissionIds(progress);
   const upcoming = nextMission(bundle.missions, completed);
-  const totalMissions = bundle.worlds.flatMap((world) => world.missionIds).length;
+  const totalMissions = bundle.worlds.flatMap(
+    (world) => world.missionIds,
+  ).length;
 
-  const bySystem = new Map(bundle.systems.map((system) => [system.id, system.initialState]));
+  const bySystem = new Map(
+    bundle.systems.map((system) => [system.id, system.initialState]),
+  );
   const ordered = [...bundle.missions].sort((a, b) => a.order - b.order);
   for (const mission of ordered) {
-    if (completed.has(mission.id)) bySystem.set(mission.workshop.systemId, mission.workshop.to);
+    if (completed.has(mission.id))
+      bySystem.set(mission.workshop.systemId, mission.workshop.to);
   }
 
   const replayable = ordered.filter((mission) => completed.has(mission.id));
   const worlds = worldNodes(bundle.worlds, completed);
-  const openWorld = worlds.find((node) => node.world.id === openWorldId) ?? null;
+  const openWorld =
+    worlds.find((node) => node.world.id === openWorldId) ?? null;
 
   return (
     <div className="map">
       <header className="map__header">
         <p className="eyebrow">Taller de los datos</p>
-        <h1>{openWorld === null ? 'La línea está rota' : openWorld.world.name}</h1>
+        <h1>
+          {openWorld === null ? "La línea está rota" : openWorld.world.name}
+        </h1>
         <p className="lede">
           {openWorld === null
-            ? 'Cada sistema averiado es una función que falta. Repara el sensor para empezar.'
-            : 'Las misiones de este mundo, en orden. Sigue el camino.'}
+            ? "Cada sistema averiado es una función que falta. Repara el sensor para empezar."
+            : "Las misiones de este mundo, en orden. Sigue el camino."}
         </p>
-        {openWorld === null ? (
+        <div className="map__actions">
+          {openWorld === null ? null : (
+            <button
+              type="button"
+              className="btn btn--ghost"
+              onClick={() => onOpenWorldChange(null)}
+            >
+              ← Volver a los mundos
+            </button>
+          )}
           <button
             type="button"
-            className="btn btn--ghost map__progress"
+            className="btn btn--ghost"
             onClick={onOpenProgress}
           >
             Ver progreso
           </button>
-        ) : (
-          <button
-            type="button"
-            className="btn btn--ghost map__progress"
-            onClick={() => setOpenWorldId(null)}
-          >
-            ← Volver a los mundos
-          </button>
-        )}
+        </div>
       </header>
 
       {openWorld === null ? (
         <ol className="path path--worlds" aria-label="Mundos">
           {worlds.map(({ world, state, blockedBy }, index) => {
-            const locked = state === 'locked';
-            const nextLocked = worlds[index + 1]?.state === 'locked';
+            const locked = state === "locked";
+            const nextLocked = worlds[index + 1]?.state === "locked";
             const reason =
-              blockedBy === null ? 'próximamente' : `se abre al terminar ${blockedBy}`;
+              blockedBy === null
+                ? "próximamente"
+                : `se abre al terminar ${blockedBy}`;
             return (
               <li
                 key={world.id}
-                className={`path__item${state === 'completed' ? ' path__item--done' : ''}${nextLocked ? ' path__item--next-locked' : ''}`}
+                className={`path__item${state === "completed" ? " path__item--done" : ""}${nextLocked ? " path__item--next-locked" : ""}`}
                 style={pathStyle(index)}
               >
                 <button
                   type="button"
                   className={`stop stop--${state}`}
                   aria-disabled={locked}
-                  aria-label={`${world.name}: ${WORLD_LABEL[state]}${locked ? `, ${reason}` : ''}`}
-                  onClick={locked ? undefined : () => setOpenWorldId(world.id)}
+                  aria-label={`${world.name}: ${WORLD_LABEL[state]}${locked ? `, ${reason}` : ""}`}
+                  onClick={
+                    locked ? undefined : () => onOpenWorldChange(world.id)
+                  }
                 >
                   <WorldGem
                     worldId={world.id}
                     state={state}
-                    glyph={locked ? '▣' : state === 'completed' ? '✓' : index + 1}
+                    glyph={
+                      locked ? "▣" : state === "completed" ? "✓" : index + 1
+                    }
                   />
                   <span className="stop__text">
                     <span className="stop__name">{world.name}</span>
-                    <span className="stop__state">{locked ? reason : WORLD_LABEL[state]}</span>
+                    <span className="stop__state">
+                      {locked ? reason : WORLD_LABEL[state]}
+                    </span>
                   </span>
                 </button>
               </li>
@@ -157,13 +178,14 @@ export function WorkshopMap({
             {missionNodes(openWorld.world, bundle.missions, completed).map(
               ({ id, state, mission }, index, nodes) => {
                 const nextState = nodes[index + 1]?.state;
-                const nextLocked = nextState === 'locked' || nextState === 'soon';
-                const openable = state === 'completed' || state === 'available';
+                const nextLocked =
+                  nextState === "locked" || nextState === "soon";
+                const openable = state === "completed" || state === "available";
                 const title = mission?.title ?? id;
                 return (
                   <li
                     key={id}
-                    className={`path__item${state === 'completed' ? ' path__item--done' : ''}${nextLocked ? ' path__item--next-locked' : ''}`}
+                    className={`path__item${state === "completed" ? " path__item--done" : ""}${nextLocked ? " path__item--next-locked" : ""}`}
                     style={pathStyle(index)}
                   >
                     <button
@@ -174,13 +196,15 @@ export function WorkshopMap({
                       onClick={openable ? () => onOpenMission(id) : undefined}
                     >
                       <span className="stop__dot" aria-hidden="true">
-                        {state === 'completed' ? '✓' : openable ? '●' : '▣'}
+                        {state === "completed" ? "✓" : openable ? "●" : "▣"}
                       </span>
                       <span className="stop__text">
                         <span className="stop__name">
                           {id} · {title}
                         </span>
-                        <span className="stop__state">{MISSION_LABEL[state]}</span>
+                        <span className="stop__state">
+                          {MISSION_LABEL[state]}
+                        </span>
                       </span>
                     </button>
                   </li>
@@ -189,7 +213,7 @@ export function WorkshopMap({
             )}
           </ol>
 
-          {openWorld.world.id === 'w1' ? (
+          {openWorld.world.id === "w1" ? (
             <section className="map__grid" aria-label="Sistemas del taller">
               {bundle.systems.map((system) => {
                 const state = bySystem.get(system.id) ?? system.initialState;
@@ -217,8 +241,8 @@ export function WorkshopMap({
               <p className="next__kicker">Taller reparado</p>
               <h2>No queda nada jugable en este corte</h2>
               <p className="next__note">
-                El resto del taller llega en el siguiente hito. Puedes repetir una misión ya
-                resuelta.
+                El resto del taller llega en el siguiente hito. Puedes repetir
+                una misión ya resuelta.
               </p>
             </div>
             {replayable.length > 0 ? (
@@ -257,7 +281,9 @@ export function WorkshopMap({
                 <button
                   type="button"
                   className="btn btn--ghost"
-                  onClick={() => onOpenMission(replayable[replayable.length - 1].id)}
+                  onClick={() =>
+                    onOpenMission(replayable[replayable.length - 1].id)
+                  }
                 >
                   Repetir {replayable[replayable.length - 1].id}
                 </button>
@@ -269,8 +295,8 @@ export function WorkshopMap({
 
       {openWorld === null ? (
         <p className="map__footer">
-          {completed.size} de {totalMissions} sistemas del recorrido completo · sin puntos, sin
-          rachas
+          {completed.size} de {totalMissions} sistemas del recorrido completo ·
+          sin puntos, sin rachas
         </p>
       ) : null}
     </div>

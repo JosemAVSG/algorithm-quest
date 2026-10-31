@@ -235,8 +235,11 @@ code {
   margin-top: 0.4rem;
 }
 
-.map__progress {
+.map__actions {
   margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 .map__grid {
