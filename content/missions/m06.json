@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "id": "M06",
+  "contentVersion": "1.0.0",
+  "locale": "es",
+  "world": "w1",
+  "order": 6,
+  "title": "La revisión de límites",
+  "subtitle": "Encontrar el defecto en código ajeno",
+  "difficulty": 3,
+  "estimatedMinutes": 17,
+  "concepts": {
+    "primary": "C15",
+    "secondary": ["C02"]
+  },
+  "prerequisites": {
+    "missions": ["M05"],
+    "concepts": []
+  },
+  "workshop": {
+    "systemId": "sys.guard",
+    "from": "broken",
+    "to": "working"
+  },
+  "briefing": {
+    "headline": "El guardia de seguridad no confía en el promedio",
+    "body": "El sistema de seguridad calcula la temperatura media del turno. Si el promedio pasa de cierto valor, bloquea la línea.\n\nEl problema: el promedio a veces sale `NaN` y el guardia se queda esperando para siempre. Y cuando hay sensores desconectados, el promedio sale raro pero *no* da error, así que nadie se enteró durante meses.\n\nLa función la escribió un becario. **Funciona en los casos normales.** Tu trabajo no es reescribirla: es encontrar por qué falla en los casos raros y arreglarlo.\n\nReglas del taller:\n\n- Un sensor desconectado llega como `null` y **no debe contar** para el promedio, ni en la suma ni en la cantidad.\n- Si no hay ninguna lectura válida, el promedio es `null` (el guardia entiende `null`, no entiende `NaN`).",
+    "requirements": [
+      "Las lecturas `null` (sensor desconectado) no cuentan: ni en la suma ni en la cantidad",
+      "Sin ninguna lectura válida, el resultado es `null`, nunca `NaN`",
+      "Un `0` es una lectura válida",
+      "No modificar la lista de lecturas"
+    ],
+    "forbiddenVocabulary": ["denominador","filtrar","división por cero","dividir entre cero"]
+  },
+  "contract": {
+    "entryPoint": "averageTemperature",
+    "signature": "averageTemperature(readings) -> number | null",
+    "inputShape": "readings: (number | null)[]",
+    "outputShape": "number | null",
+    "rules": [
+      "Ignora las entradas null por completo: no suman ni cuentan",
+      "Devuelve la media aritmética de los valores restantes; el 0 es un valor válido",
+      "Devuelve null cuando no hay valores válidos, incluida la lista vacía",
+      "No modifica la lista readings"
+    ]
+  },
+  "constraints": {
+    "bannedConstructs": [".filter",".reduce"],
+    "allowClosedForm": false,
+    "mustNotMutate": true
+  },
+  "starterCode": "function averageTemperature(readings) {\n  let sum = 0;\n  for (let i = 0; i < readings.length; i++) {\n    sum += readings[i];\n  }\n  return sum / readings.length;\n}\n",
+  "tests": {
+    "visible": [
+      {
+        "id": "v1",
+        "input": [[20,30]],
+        "expected": 25,
+        "note": "caso normal"
+      },
+      {
+        "id": "v2",
+        "input": [[10]],
+        "expected": 10,
+        "note": "una sola lectura"
+      },
+      {
+        "id": "v3",
+        "input": [[]],
+        "expected": null,
+        "note": "turno sin lecturas"
+      }
+    ],
+    "hidden": [
+      {
+        "id": "h1",
+        "input": [[20,null,30]],
+        "expected": 25,
+        "note": "un sensor desconectado"
+      },
+      {
+        "id": "h2",
+        "input": [[null]],
+        "expected": null,
+        "note": "sin lecturas válidas, lista no vacía"
+      },
+      {
+        "id": "h3",
+        "input": [[0,0]],
+        "expected": 0,
+        "note": "el cero es una lectura válida"
+      },
+      {
+        "id": "h4",
+        "input": [[-10,10]],
+        "expected": 0,
+        "note": "temperaturas negativas"
+      }
+    ],
+    "edge": [
+      {
+        "id": "ed1",
+        "input": [[null,null,null]],
+        "expected": null,
+        "edge": true,
+        "edgeKind": "none-match",
+        "note": "todos los sensores desconectados"
+      },
+      {
+        "id": "ed2",
+        "input": [[5.5]],
+        "expected": 5.5,
+        "edge": true,
+        "edgeKind": "singleton",
+        "note": "una lectura con decimales"
+      },
+      {
+        "id": "ed3",
+        "input": [[1000000000,1000000000]],
+        "expected": 1000000000,
+        "edge": true,
+        "edgeKind": "extreme",
+        "note": "lecturas enormes"
+      }
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "E04",
+      "when": { "failingTestIds": ["h1"] },
+      "message": "El caso vacío ya no da `NaN`, pero `[20, null, 30]` sigue sin dar 25. ¿Qué representa el divisor en tu división: cuántas entradas hay, o cuántas cuentan?"
+    },
+    {
+      "code": "E05",
+      "when": { "failingTestIds": ["h3"] },
+      "message": "Con `[0, 0]` tu función devuelve `null`. El cero es una lectura válida: está frío, no desconectado. ¿Qué comprobación distingue `0` de `null`?"
+    },
+    {
+      "code": "E10",
+      "message": "El resultado es `NaN`: es la pista, no el problema. Con una lista vacía la división es 0 entre 0. Pregúntate además qué pasa con `[20, null, 30]`: ¿entre cuánto divides?"
+    },
+    {
+      "code": "E04",
+      "message": "Arreglar el síntoma no basta: `[20, null, 30]` debe dar 25 y no 16.67. ¿Qué representa el divisor en tu división?"
+    },
+    {
+      "code": "E05",
+      "message": "Un sensor desconectado no mide 0 °C. Contarlo como 0 hunde el promedio y puede bloquear la línea sin motivo."
+    },
+    {
+      "code": "E11",
+      "message": "Modificaste las lecturas originales para que la división funcionara. El taller reutiliza esa lista: debe quedar intacta."
+    },
+    {
+      "code": "E19",
+      "message": "La solución puede ser correcta, pero el ejercicio pide encontrar y corregir el defecto. Reemplazar el código entero con `filter` o `reduce` evita el diagnóstico."
+    },
+    {
+      "code": "E01",
+      "message": "Hay un error de sintaxis antes de que el código pueda ejecutarse. Revisa la línea marcada: el motor no pudo interpretar esa expresión."
+    },
+    {
+      "code": "E02",
+      "message": "El código lanzó una excepción durante la ejecución. Revisa qué valor estabas usando cuando ocurrió."
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "La función falla de dos maneras distintas. ¿Crees que tienen la misma causa o dos causas separadas? Empieza por explicar qué representa `readings.length` en la última línea."
+    },
+    {
+      "level": 2,
+      "text": "Con `[20, null, 30]`: suma 50, divide entre 3. ¿Cuántas lecturas válidas hay? ¿Por qué el divisor no coincide?"
+    },
+    {
+      "level": 3,
+      "text": "contador de válidas = 0\nsuma = 0\npara cada lectura:\n    si la lectura es null:\n        pasar a la siguiente   ← no suma, no cuenta\n    suma += lectura\n    válidas += 1\nsi válidas === 0:\n    devolver null\ndevolver suma / válidas\n\nDos variables que antes eran una: `length` se convierte en `válidas`."
+    },
+    {
+      "level": 4,
+      "text": "Otro sistema del taller: un restaurante calcula la propina media por mesa, pero algunas mesas no dejaron propina y llegan como `null`. Deben excluirse del promedio, no contarse como cero.\n\nfunction propinaPromedio(propinas) {\n  let suma = 0;\n  let validas = 0;\n  for (let i = 0; i < propinas.length; i++) {\n    if (propinas[i] === null) continue;\n    suma += propinas[i];\n    validas++;\n  }\n  if (validas === 0) return null;\n  return suma / validas;\n}\n\nEl defecto era el mismo: dividir entre el total en vez de entre las válidas.",
+      "unlock": { "attempts": 4, "hintsUsed": 3 }
+    }
+  ],
+  "debrief": {
+    "whyItWorks": "El divisor de un promedio no es «cuántos elementos hay», es «cuántos elementos cuentan». Esa distinción separa un promedio correcto de uno que solo lo parece. Los dos síntomas, el `NaN` y el promedio bajo, salían de una única causa.",
+    "edgeCaseNote": "Sin lecturas válidas el resultado es `null`: no `0` ni `NaN`. El contrato con quien llama importa tanto como el cálculo, porque `null` significa «no hay dato» y `0` significa «el dato es cero». Por eso `[0, 0]` debe dar 0: tratar el cero como ausente es confundir «sin valor» con «valor que evaluamos como falso».",
+    "complexity": {
+      "question": "Después de corregir el defecto, ¿cambia el coste de la función respecto al código original?",
+      "options": [
+        "No: sigue siendo una pasada; cambia el significado, no el coste",
+        "Sí, ahora hace el doble de pasadas",
+        "Sí, ahora depende de cuántos null haya",
+        "Sí, ahora es constante"
+      ],
+      "correctIndex": 0,
+      "explanation": "La corrección añade un contador, no un recorrido: sigue siendo una pasada por la lista. Corregir un defecto de significado casi nunca cambia el coste, y aun así cambia por completo lo que la función promete."
+    },
+    "realWorld": "Promedios con datos faltantes, métricas de producto con eventos sin instrumentar, `AVG` en SQL (que ya ignora `NULL`, precisamente por esto) y limpieza de datasets.",
+    "reasoningPrompt": "Explica por qué `[20, null, 30]` da 16.67 con el código original y 25 con el tuyo. ¿Qué cambió exactamente en la división?",
+    "objectiveNouns": ["promedio","sensor","válida","null"],
+    "reasoningLexicon": ["divido","cuento","ignoro","excluyo"]
+  },
+  "mastery": {
+    "reinforcementVariants": []
+  },
+  "reward": {
+    "systemId": "sys.guard",
+    "effect": "broken → working",
+    "narrative": "El guardia de seguridad deja de colgarse y el medidor vuelve a marcar una lectura estable."
+  }
+}
