@@ -198,7 +198,78 @@
     "realWorld": "Validación de umbrales: temperatura de CPU, saldo mínimo, latencia máxima aceptable, límites de rate. Todos son una decisión entre > y >=, y todos han causado incidentes reales por elegir mal.",
     "reasoningPrompt": "Explica en una frase por qué con 90 °C exactos la alarma NO se dispara, y qué cambiarías si el taller decidiera que el límite también es peligroso.",
     "objectiveNouns": ["alarma", "límite", "sensor", "peligro"],
-    "reasoningLexicon": ["comparo", "supera", "excede", "devuelvo"]
+    "reasoningLexicon": ["comparo", "supera", "excede", "devuelvo"],
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe tu código, y responde las dos preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Comparo {b1} con el límite y devuelvo true solo si {b2}; con 90 °C y límite 90, {b3}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": [
+            "el número de sensores del taller",
+            "la lectura de temperatura",
+            "el resultado de la lectura anterior"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "id": "b2",
+          "options": [
+            "es mayor o igual que el límite",
+            "es distinta del límite",
+            "es estrictamente mayor que el límite"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "id": "b3",
+          "options": [
+            "la alarma se dispara, porque 90 ya es el límite",
+            "la alarma no se dispara, porque 90 no supera el límite",
+            "el resultado depende de qué sensor la mida"
+          ],
+          "correctIndex": 1
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "El taller decide que la temperatura exactamente igual al límite también es peligrosa. ¿Qué cambia en tu función?",
+          "options": [
+            "Hay que devolver false en lugar de true cuando se supera",
+            "Hay que comparar la temperatura dos veces seguidas",
+            "Hay que incluir la igualdad en la comparación: pasar de «mayor que» a «mayor o igual»",
+            "No cambia nada: con el límite exacto ya se dispara la alarma"
+          ],
+          "correctIndex": 2,
+          "whyWrong": [
+            "Devolver false cuando se supera deja la función al revés: ahora callaría justo cuando hay peligro.",
+            "Comparar dos veces el mismo valor da siempre el mismo resultado; el problema no es cuántas veces se compara.",
+            "",
+            "Con tu función actual, 90 y límite 90 devuelve false. Vuelve a leer qué decide la comparación en el límite exacto."
+          ],
+          "explanation": "El límite exacto es una decisión de diseño: si pasa a ser peligroso, la comparación debe incluir la igualdad."
+        },
+        {
+          "id": "q2",
+          "question": "Con 90 °C y límite 90 la alarma no se dispara. ¿Cuál es la razón de diseño?",
+          "options": [
+            "El sensor casi siempre se equivoca justo en el valor del límite",
+            "Solo lo que está por encima del límite es peligroso; el límite en sí es seguro",
+            "Una comparación entre dos números iguales no se puede evaluar",
+            "El valor 90 es un caso especial que hay que tratar aparte"
+          ],
+          "correctIndex": 1,
+          "whyWrong": [
+            "Nada en el enunciado habla de errores de lectura: es una regla sobre qué cuenta como peligro.",
+            "Dos números iguales se comparan sin problema; lo que cambia es qué responde la comparación.",
+            "",
+            "No hay ninguna rama especial para el 90: la misma comparación decide todos los casos."
+          ],
+          "explanation": "La alarma se reserva para lo que supera el límite; en el límite exacto el sistema sigue dentro de lo seguro."
+        }
+      ]
+    }
   },
 
   "mastery": {

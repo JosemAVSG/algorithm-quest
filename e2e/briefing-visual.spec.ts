@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { CORRECT, editor, reachLab } from "./helpers";
+import { CORRECT, editor, fillM01Explain, reachLab } from "./helpers";
 
 /**
  * The briefing illustration is part of the mission text: a reader has to be
@@ -31,12 +31,7 @@ test("el briefing de M02 muestra la inspección y el flujo sigue funcionando", a
   await editor(page).fill(CORRECT);
   await page.getByRole("button", { name: "Ejecutar" }).click();
   await page.getByRole("button", { name: "Abrir el informe →" }).click();
-  await page.getByLabel("Una sola, siempre").check();
-  await page
-    .getByLabel("Tu explicación")
-    .fill(
-      "Comparo la temperatura con el límite y devuelvo true solo cuando la supera; con 90 y límite 90 no se dispara la alarma, y el coste es O(1).",
-    );
+  await fillM01Explain(page);
   await page.getByRole("button", { name: "Cerrar la misión" }).click();
   await page.getByRole("button", { name: "Volver al taller →" }).click();
   await page.getByRole("button", { name: /^World 1/ }).click();

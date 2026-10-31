@@ -214,7 +214,87 @@
     "realWorld": "Array.prototype.some, validación de formularios, cortocircuito en reglas de negocio, anyMatch en los streams de Java, EXISTS en SQL. Todos son esta misma función.",
     "reasoningPrompt": "Explica por qué hay dos return y por qué el segundo no puede estar dentro del bucle. Después di qué devuelve tu función con una lista vacía y por qué eso es correcto.",
     "objectiveNouns": ["línea", "sensor", "fallo", "parar"],
-    "reasoningLexicon": ["recorro", "paro", "encuentro", "devuelvo"]
+    "reasoningLexicon": ["recorro", "paro", "encuentro", "devuelvo"],
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe tu código, y responde las dos preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Recorro {b1} y, en cuanto {b2}, devuelvo {b3} sin seguir mirando; solo si el bucle termina sin encontrar nada devuelvo {b4}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": [
+            "solo la primera lectura",
+            "la lista dos veces",
+            "la lista de lecturas, una por una"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "id": "b2",
+          "options": [
+            "termino de mirar todas las lecturas",
+            "encuentro una lectura por encima del límite",
+            "veo que la lista está vacía"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "id": "b3",
+          "options": [
+            "la propia lectura encontrada",
+            "false",
+            "true"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "id": "b4",
+          "options": [
+            "undefined",
+            "false",
+            "true"
+          ],
+          "correctIndex": 1
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "¿Por qué hay dos return y por qué el segundo no puede estar dentro del bucle?",
+          "options": [
+            "Dos return son redundantes: el segundo está solo por estilo y podría quitarse",
+            "Hay dos salidas posibles: «encontré un fallo» (true) y «no hay ninguno» (false). Esto último solo se sabe tras mirar todas las lecturas, y dentro del bucle se respondería tras la primera",
+            "Dentro del bucle el segundo return haría la función más lenta, aunque el resultado sería el mismo",
+            "JavaScript no permite escribir dos return dentro del mismo bucle"
+          ],
+          "correctIndex": 1,
+          "whyWrong": [
+            "Si quitas el segundo return, una lista sin fallos no devolvería false. Piensa qué devuelve entonces la función.",
+            "Cambiaría el resultado, no solo la velocidad: con [80, 88, 95] y límite 90 respondería false tras mirar solo el 80. Recórrelo a mano.",
+            "",
+            "JavaScript sí lo permite; la restricción viene de lo que la función necesita responder, no del lenguaje."
+          ],
+          "explanation": "El false solo es verdad cuando se han descartado todas las lecturas; por eso va después del bucle."
+        },
+        {
+          "id": "q2",
+          "question": "¿Qué devuelve tu función con una lista vacía y por qué es correcto?",
+          "options": [
+            "Lanza un error, porque no se puede recorrer una lista sin elementos",
+            "true, porque sin lecturas no se puede descartar un fallo",
+            "undefined, porque el bucle no llega a ejecutarse y no se devuelve nada",
+            "false, porque no hay ninguna lectura por encima del límite y «hay algún fallo» es falso"
+          ],
+          "correctIndex": 3,
+          "whyWrong": [
+            "Un bucle sobre una lista vacía simplemente no da ninguna vuelta; no falla.",
+            "Para devolver true hace falta haber encontrado una lectura mala, y aquí no hay ninguna.",
+            "Después del bucle hay otro return. ¿Se ejecuta cuando el bucle no da ninguna vuelta?",
+            ""
+          ],
+          "explanation": "Con una lista vacía no hay nada que encontrar, así que se llega al final del bucle y se devuelve false."
+        }
+      ]
+    }
   },
   "mastery": { "transferMissionId": "M12", "reinforcementVariants": [] },
   "reward": {

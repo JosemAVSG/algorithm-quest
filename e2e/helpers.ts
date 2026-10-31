@@ -45,3 +45,25 @@ export async function runCode(page: Page, code: string) {
   await page.getByRole('button', { name: 'Ejecutar' }).click();
   await expect(page.getByRole('button', { name: 'Ejecutar' })).toBeEnabled();
 }
+
+/** M01's structured debrief (content/missions/m01.json -> debrief.explain). */
+export const M01_COST = 'Una sola, siempre';
+
+export async function fillM01Explain(page: Page, options: { wrongBlank?: boolean } = {}) {
+  await page.getByLabel(M01_COST).check();
+  await page.getByLabel('Hueco 1').selectOption('la lectura de temperatura');
+  await page
+    .getByLabel('Hueco 2')
+    .selectOption(
+      options.wrongBlank ? 'es mayor o igual que el límite' : 'es estrictamente mayor que el límite',
+    );
+  await page
+    .getByLabel('Hueco 3')
+    .selectOption('la alarma no se dispara, porque 90 no supera el límite');
+  await page
+    .getByLabel('Incluir la igualdad en la comparación', { exact: false })
+    .check();
+  await page
+    .getByLabel('Solo lo que está por encima del límite es peligroso; el límite en sí es seguro')
+    .check();
+}

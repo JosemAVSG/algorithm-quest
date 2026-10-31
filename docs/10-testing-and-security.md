@@ -151,6 +151,7 @@ and a passing fixture, so the lint itself is tested.
 | **L6** | No hidden/edge input equals a visible input | Hidden copy of `[95,90]` |
 | **L7** | ≥2 edge cases from the closed set | A mission with only happy paths |
 | **L8** | Debrief has cost + real-world, no placeholders | `realWorld: "TODO"` |
+| **L9** | A structured explanation (`debrief.explain`) is answerable and unambiguous | `correctIndex` outside `options`, a `{zz}` placeholder with no blank |
 
 ### The coverage test (not a lint, a curriculum invariant)
 

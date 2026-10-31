@@ -22,7 +22,11 @@ const GOOD_REASONING =
   'Comparo la temperatura con el límite y devuelvo true solo cuando la supera; con 90 y límite 90 no se dispara la alarma, y el coste es O(1).';
 
 beforeAll(async () => {
-  mission = await loadMission('M01');
+  // The legacy free-text rubric stays for missions without `debrief.explain`.
+  const authored = await loadMission('M01');
+  const debrief = { ...authored.debrief };
+  delete debrief.explain;
+  mission = { ...authored, debrief };
 });
 
 /** One run, evaluated and applied, exactly as the lab does it. */
