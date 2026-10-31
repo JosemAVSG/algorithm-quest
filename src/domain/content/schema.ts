@@ -223,6 +223,8 @@ export const MissionSchema = z
         bannedConstructs: z.array(z.string().min(1)),
         allowClosedForm: z.boolean(),
         mustNotMutate: z.boolean(),
+        /** `false` opts the mission out of the rotation probe (E07). Absent = probed. */
+        rotationInvariant: z.boolean().optional(),
         efficiency: z
           .object({
             budgetMs: z.number().positive(),

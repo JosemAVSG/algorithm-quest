@@ -11,7 +11,7 @@ import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { timeoutFor } from '../../adapters/execution/worker/runner';
 import type { Mission } from '../../domain/content/schema';
 import { evaluateRun } from '../../domain/evaluation/evaluate-run';
-import { executionCases } from '../../domain/evaluation/cases';
+import { executionCases, probeSettings } from '../../domain/evaluation/cases';
 import type { ExecutionPort } from '../../domain/execution/port';
 import type {
   CompletedMissionRecord,
@@ -117,11 +117,7 @@ export function MissionFlow({
               ? {}
               : { operationBudget: efficiency.operationBudget }),
           }),
-      probes: {
-        mutation: mission.constraints.mustNotMutate,
-        determinism: true,
-        rotation: true,
-      },
+      probes: probeSettings(mission),
     });
 
     const evaluation = evaluateRun({

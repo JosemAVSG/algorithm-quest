@@ -17,3 +17,20 @@ export function executionCases(mission: Mission): ExecutionCase[] {
     ...mission.tests.edge,
   ].map((testCase) => ({ testId: testCase.id, input: testCase.input, expected: testCase.expected }));
 }
+
+/**
+ * Behavioural probes for a mission. Rotation is on unless the mission declares
+ * `constraints.rotationInvariant: false` (e.g. a full-tie "earlier index wins"
+ * rule, where rotating the input legitimately changes the answer).
+ */
+export function probeSettings(mission: Mission): {
+  mutation: boolean;
+  determinism: boolean;
+  rotation: boolean;
+} {
+  return {
+    mutation: mission.constraints.mustNotMutate,
+    determinism: true,
+    rotation: mission.constraints.rotationInvariant !== false,
+  };
+}

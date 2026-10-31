@@ -67,6 +67,9 @@ type MissionSchema = {
     bannedConstructs: string[];     // e.g. ['.some', '.filter', 'Set']
     allowClosedForm: boolean;       // disables E13 hardcode detection
     mustNotMutate: boolean;         // enables the mutation invariant check
+    rotationInvariant?: boolean;    // false = skip the rotation probe (E07); default: probed.
+                                    // Use when rotating the input legitimately changes the
+                                    // answer (e.g. full-tie "earlier index wins").
     efficiency?: {
       budgetMs: number;
       calibrated: true;             // budgets are always calibration-relative
