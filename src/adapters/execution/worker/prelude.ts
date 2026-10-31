@@ -67,3 +67,25 @@ export function installPrelude(scope: typeof globalThis): void {
     }
   }
 }
+
+/**
+ * Replace the worker's `console` with the capturing stub.
+ *
+ * Until now the player's `console.*` went to the browser's devtools, invisible
+ * in the lab. The stub is installed like the blocked globals (own property,
+ * not writable), so `console.log` keeps working and cannot be swapped by
+ * accident; assigning to a method of it is the player's own business.
+ */
+export function installConsole(scope: typeof globalThis, stub: unknown): void {
+  const record = scope as unknown as Record<string, unknown>;
+  try {
+    delete record['console'];
+  } catch {
+    // Non-configurable: defineProperty below decides.
+  }
+  try {
+    Object.defineProperty(scope, 'console', { configurable: false, writable: false, value: stub });
+  } catch {
+    // The original console stays visible; output is simply not captured.
+  }
+}

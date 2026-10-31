@@ -13,7 +13,8 @@
  */
 
 import type { ExecutionOutcome, ExecutionPort, ExecutionRequest } from '../../../domain/execution/port';
-import type { WorkerRequest, WorkerResponse } from './protocol';
+import { parseConsoleReport } from '../../../domain/execution/console';
+import type { WorkerConsoleMessage, WorkerRequest, WorkerResponse } from './protocol';
 
 /** A safety valve, not a mission budget: no M1 mission declares an efficiency budget. */
 export const DEFAULT_TIMEOUT_MS = 2_000;
@@ -93,12 +94,27 @@ export function createWorkerExecutionPort(): ExecutionPort {
           worker?.terminate();
         }, request.timeoutMs);
 
-        worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
+        let consoleSeen = false;
+
+        worker.onmessage = (event: MessageEvent<WorkerResponse | WorkerConsoleMessage>) => {
           // One response per run (docs/10 §6, S8). A second message is either a
           // duplicate or a player trying to chatter on the channel; either way
           // it gets no reply and no state.
           if (settled) return;
-          finish(toOutcome(event.data));
+
+          // The console report is a separate, optional message that precedes
+          // the result. It is accepted once, validated, and never touches the
+          // outcome.
+          if (event.data.kind === 'console') {
+            if (!consoleSeen) {
+              consoleSeen = true;
+              const report = parseConsoleReport((event.data as WorkerConsoleMessage).report);
+              if (report !== null) request.onConsole?.(report);
+            }
+            return;
+          }
+
+          finish(toOutcome(event.data as WorkerResponse));
           worker?.terminate();
         };
 

@@ -26,11 +26,17 @@ import {
   selectRotationCases,
   type ProbeBudget,
 } from '../../../domain/execution/probes';
-import { installPrelude } from './prelude';
-import type { WorkerRequest, WorkerResponse } from './protocol';
+import { createConsoleCollector, createConsoleStub } from '../../../domain/execution/console';
+import { installConsole, installPrelude } from './prelude';
+import type { WorkerConsoleMessage, WorkerRequest, WorkerResponse } from './protocol';
 
 const send = globalThis.postMessage.bind(globalThis);
 installPrelude(globalThis);
+
+// Console capture (docs/08 §6). The collector decides what may be kept; this
+// file only brackets the phases of the run.
+const consoleCollector = createConsoleCollector();
+installConsole(globalThis, createConsoleStub(consoleCollector));
 
 /**
  * Time reserved for the probes, taken from what the main run did not use.
@@ -54,7 +60,10 @@ function execute(request: WorkerRequest, startedAt: number): WorkerResponse {
   let fn;
   try {
     fn = compileEntryPoint(request.code, request.entryPoint);
+    // Top-level output is over; probes and the rest are never captured.
+    consoleCollector.leave();
   } catch (error) {
+    consoleCollector.leave();
     if (error instanceof PlayerSyntaxError) {
       return { kind: 'syntax_error', message: error.message };
     }
@@ -69,7 +78,13 @@ function execute(request: WorkerRequest, startedAt: number): WorkerResponse {
 
   let cases: CaseOutcome[];
   try {
-    cases = runCasesWith(fn, request.cases, { detectMutation: request.probes.mutation });
+    cases = runCasesWith(fn, request.cases, {
+      detectMutation: request.probes.mutation,
+      onCase: {
+        before: (testCase) => consoleCollector.enterCase(testCase.testId, testCase.visible === true),
+        after: () => consoleCollector.leave(),
+      },
+    });
   } catch (error) {
     return {
       kind: 'internal_error',
@@ -128,6 +143,25 @@ function execute(request: WorkerRequest, startedAt: number): WorkerResponse {
   };
 }
 
+function executeSafely(request: WorkerRequest): WorkerResponse {
+  try {
+    return execute(request, performance.now());
+  } catch (error) {
+    // Reaching here is a harness bug, never the player's fault (E-codes stay honest).
+    return {
+      kind: 'internal_error',
+      message: error instanceof Error ? `${error.name}: ${error.message}` : String(error),
+    };
+  }
+}
+
 globalThis.onmessage = (event: MessageEvent<WorkerRequest>) => {
-  send(execute(event.data, performance.now()));
+  const response = executeSafely(event.data);
+  try {
+    const message: WorkerConsoleMessage = { kind: 'console', report: consoleCollector.report() };
+    send(message);
+  } catch {
+    // Console output is a courtesy. Losing it must never lose the result.
+  }
+  send(response);
 };

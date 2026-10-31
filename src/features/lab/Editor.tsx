@@ -1,14 +1,14 @@
 /**
- * The editor: a textarea with a synchronized line-number gutter.
+ * The editor shell (docs/07-architecture.md §8).
  *
- * Deliberately not CodeMirror or Monaco (docs/07-architecture.md §8). The
- * decision is revisited at M3 with a trigger: only if playtesting shows editor
- * mechanics causing avoidable errors. `Cmd/Ctrl+Enter` runs.
+ * CodeMirror 6 is loaded on demand so the main bundle does not pay for it. While
+ * it loads, or if the chunk fails to load, a plain textarea with the same
+ * accessible name and the same props contract keeps the lab fully usable.
  */
 
-import { useRef } from 'react';
+import { Component, lazy, Suspense, useState, type ReactNode } from 'react';
 
-interface EditorProps {
+export interface EditorProps {
   value: string;
   onChange: (value: string) => void;
   onRun: () => void;
@@ -17,17 +17,9 @@ interface EditorProps {
 
 const INDENT = '  ';
 
-export function Editor({ value, onChange, onRun, disabled }: EditorProps) {
-  const gutterRef = useRef<HTMLDivElement>(null);
-  const lines = value.split('\n').length;
-
+export function PlainEditor({ value, onChange, onRun, disabled }: EditorProps) {
   return (
-    <div className="editor">
-      <div className="editor__gutter" aria-hidden="true" ref={gutterRef}>
-        {Array.from({ length: lines }, (_, index) => (
-          <span key={index}>{index + 1}</span>
-        ))}
-      </div>
+    <div className="editor editor--plain">
       <textarea
         className="editor__area"
         aria-label="Código"
@@ -35,19 +27,15 @@ export function Editor({ value, onChange, onRun, disabled }: EditorProps) {
         autoCapitalize="off"
         autoCorrect="off"
         value={value}
+        disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
-        onScroll={(event) => {
-          if (gutterRef.current !== null) {
-            gutterRef.current.scrollTop = event.currentTarget.scrollTop;
-          }
-        }}
         onKeyDown={(event) => {
           if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
             event.preventDefault();
             if (!disabled) onRun();
             return;
           }
-          if (event.key === 'Tab') {
+          if (event.key === 'Tab' && !event.shiftKey) {
             event.preventDefault();
             const target = event.currentTarget;
             const start = target.selectionStart;
@@ -61,5 +49,42 @@ export function Editor({ value, onChange, onRun, disabled }: EditorProps) {
         }}
       />
     </div>
+  );
+}
+
+/** A failed chunk import rejects the lazy component, which the boundary catches. */
+const RichEditorLazy = lazy(() => import('./CodeMirrorEditor'));
+
+class RichEditorBoundary extends Component<
+  { children: ReactNode; onError: () => void },
+  { failed: boolean }
+> {
+  override state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  override componentDidCatch() {
+    this.props.onError();
+  }
+
+  override render() {
+    // The parent swaps to the plain editor on error; render nothing meanwhile.
+    return this.state.failed ? null : this.props.children;
+  }
+}
+
+export function Editor(props: EditorProps) {
+  const [failed, setFailed] = useState(false);
+
+  if (failed) return <PlainEditor {...props} />;
+
+  return (
+    <RichEditorBoundary onError={() => setFailed(true)}>
+      <Suspense fallback={<PlainEditor {...props} />}>
+        <RichEditorLazy {...props} />
+      </Suspense>
+    </RichEditorBoundary>
   );
 }

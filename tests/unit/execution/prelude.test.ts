@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { installPrelude } from '../../../src/adapters/execution/worker/prelude';
+import { installConsole, installPrelude } from '../../../src/adapters/execution/worker/prelude';
 
 /**
  * S3–S5 and S10 in their cheapest form (docs/10 §6).
@@ -59,5 +59,19 @@ describe('execution prelude', () => {
     installPrelude(scope as unknown as typeof globalThis);
     expect(scope['Math']).toBe(Math);
     expect(typeof scope['structuredClone']).toBe('function');
+  });
+});
+
+describe('console installation', () => {
+  it('replaces the console with the stub and refuses reassignment', () => {
+    const scope: Record<string, unknown> = { console: { log: () => 'original' } };
+    const stub = { log: () => 'stub' };
+    installConsole(scope as unknown as typeof globalThis, stub);
+
+    expect(scope['console']).toBe(stub);
+    expect(() => {
+      'use strict';
+      scope['console'] = {};
+    }).toThrow();
   });
 });

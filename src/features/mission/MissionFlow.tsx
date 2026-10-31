@@ -6,12 +6,13 @@
  * an adapter. The composition root injected the execution port.
  */
 
-import { useCallback, useEffect, useReducer, useRef } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 
 import { timeoutFor } from "../../adapters/execution/worker/runner";
 import type { Mission } from "../../domain/content/schema";
 import { evaluateRun } from "../../domain/evaluation/evaluate-run";
 import { executionCases, probeSettings } from "../../domain/evaluation/cases";
+import { onlyVisibleOutput, type ConsoleReport } from "../../domain/execution/console";
 import type { ExecutionPort } from "../../domain/execution/port";
 import type {
   CompletedMissionRecord,
@@ -67,6 +68,10 @@ export function MissionFlow({
       restoreSession(mission, initialSnapshot) ?? createMissionSession(mission),
   );
 
+  // Console output of the last run only. Lab-local on purpose: it is never
+  // saved, never reloaded and never read by the evaluation.
+  const [consoleReport, setConsoleReport] = useState<ConsoleReport | null>(null);
+
   const savedRef = useRef<string>("");
   useEffect(() => {
     if (state.phase === "complete") {
@@ -101,6 +106,8 @@ export function MissionFlow({
 
     const source = state.source;
     dispatch({ type: "run_started" });
+    setConsoleReport(null);
+    let captured: ConsoleReport | null = null;
 
     const efficiency = mission.constraints.efficiency;
     const outcome = await execution.execute({
@@ -122,7 +129,15 @@ export function MissionFlow({
               : { operationBudget: efficiency.operationBudget }),
           }),
       probes: probeSettings(mission),
+      onConsole: (report) => {
+        captured = report;
+      },
     });
+    setConsoleReport(
+      captured === null
+        ? null
+        : onlyVisibleOutput(captured, new Set(mission.tests.visible.map((test) => test.id))),
+    );
 
     const evaluation = evaluateRun({
       mission,
@@ -217,6 +232,8 @@ export function MissionFlow({
         {state.phase === "lab" ? (
           <Lab
             state={state}
+            consoleReport={consoleReport}
+            onClearConsole={() => setConsoleReport(null)}
             onEditSource={(source) => dispatch({ type: "edit_source", source })}
             onRun={() => {
               void run();

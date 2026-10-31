@@ -197,6 +197,8 @@ model, that is the honest goal.
 | S8 | `postMessage` flood from worker | Rate-limited; UI not blocked |
 | S9 | Prototype pollution via returned object | `Object.prototype` unchanged on the main thread (structured clone boundary) |
 | S10 | `localStorage.clear()` | No effect (not available in worker) |
+| S11 | `console.log` of a hidden input (`e2e/console.spec.ts` C2) | Not shown; at most a content-free "hubo salida en pruebas ocultas" line |
+| S12 | `console.log` of a circular object, a throwing Proxy, 100 000 lines (C4) | Run completes; output capped with a notice; no `internal_error` |
 
 S6 and S9 are the ones that protect *other users later*. S3–S5 are honest about being
 mitigations rather than guarantees: the test asserts the prelude's behaviour, not the
