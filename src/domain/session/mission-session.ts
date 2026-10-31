@@ -24,6 +24,12 @@ import type { TestReport } from '../evaluation/test-engine';
 import type { RunEvaluation } from '../evaluation/evaluate-run';
 import { buildEvidenceEvents, type EvidenceEvent } from '../mastery/evidence';
 import {
+  assessExplain,
+  explainScore,
+  type ExplainAnswers,
+  type ExplainAssessment,
+} from '../evaluation/explain';
+import {
   assessReasoning,
   REASONING_MIN_SCORE,
   type ReasoningAssessment,
@@ -62,6 +68,14 @@ export interface MissionSessionState {
   debriefComplexityIndex: number | null;
   reasoning: string;
   assessment: ReasoningAssessment | null;
+  /** Structured explanation (missions with `debrief.explain`): item id -> chosen option. */
+  explainAnswers: ExplainAnswers;
+  /** Graded submissions that had at least one wrong answer; drives the 3 -> 2 score. */
+  explainFailures: number;
+  /** Optional, ungraded free-text note. */
+  explainNote: string;
+  /** Result of the last graded submit; null until then and after any edit. */
+  explainFeedback: ExplainAssessment | null;
   evidence: EvidenceEvent[];
   completedAt: number | null;
 }
@@ -76,6 +90,8 @@ export type MissionAction =
   | { type: 'open_debrief' }
   | { type: 'answer_complexity'; index: number }
   | { type: 'edit_reasoning'; text: string }
+  | { type: 'answer_explain'; id: string; index: number }
+  | { type: 'edit_explain_note'; text: string }
   | { type: 'submit_debrief'; now: number };
 
 export function createMissionSession(mission: Mission): MissionSessionState {
@@ -95,6 +111,10 @@ export function createMissionSession(mission: Mission): MissionSessionState {
     debriefComplexityIndex: null,
     reasoning: '',
     assessment: null,
+    explainAnswers: { blanks: {}, questions: {} },
+    explainFailures: 0,
+    explainNote: '',
+    explainFeedback: null,
     evidence: [],
     completedAt: null,
   };
@@ -219,13 +239,58 @@ export function missionSessionReducer(
           { ...state, reasoning: action.text, assessment: null }
         : state;
 
+    case 'answer_explain': {
+      const spec = state.mission.debrief.explain;
+      if (state.phase !== 'debrief' || spec === undefined) return state;
+      const group = spec.blanks.some((b) => b.id === action.id)
+        ? 'blanks'
+        : spec.questions.some((q) => q.id === action.id)
+          ? 'questions'
+          : null;
+      if (group === null) return state;
+      return {
+        ...state,
+        explainAnswers: {
+          ...state.explainAnswers,
+          [group]: { ...state.explainAnswers[group], [action.id]: action.index },
+        },
+        explainFeedback: null,
+      };
+    }
+
+    case 'edit_explain_note':
+      return state.phase === 'debrief' ? { ...state, explainNote: action.text } : state;
+
     case 'submit_debrief': {
       if (state.phase !== 'debrief' || state.lastEvaluation === null) return state;
       if (!state.lastEvaluation.passed) return state;
 
-      const assessment = assessReasoning(state.mission, state.reasoning);
-      if (assessment.score < REASONING_MIN_SCORE) {
-        return { ...state, assessment };
+      const spec = state.mission.debrief.explain;
+      let assessment: ReasoningAssessment;
+      if (spec !== undefined) {
+        // Structured explanation: exact-match items, retries allowed.
+        const result = assessExplain(spec, state.explainAnswers);
+        if (!result.passed) {
+          const failed = Object.keys(result.wrong).length > 0;
+          return {
+            ...state,
+            explainFeedback: result,
+            explainFailures: failed ? state.explainFailures + 1 : state.explainFailures,
+          };
+        }
+        assessment = {
+          score: explainScore(state.explainFailures),
+          matchedMechanism: true,
+          matchedObjective: true,
+          matchedCost: true,
+          tooShort: false,
+          restatesResult: false,
+        };
+      } else {
+        assessment = assessReasoning(state.mission, state.reasoning);
+        if (assessment.score < REASONING_MIN_SCORE) {
+          return { ...state, assessment };
+        }
       }
 
       const completedAt = action.now;
@@ -243,6 +308,7 @@ export function missionSessionReducer(
       return {
         ...state,
         assessment,
+        explainFeedback: null,
         evidence,
         completedAt,
         phase: 'complete',
@@ -272,6 +338,11 @@ export interface SessionSnapshot {
   debriefComplexityIndex: number | null;
   reasoning: string;
   assessment: ReasoningAssessment | null;
+  /** Optional: snapshots written before the structured explanation have none. */
+  explainAnswers?: ExplainAnswers;
+  explainFailures?: number;
+  explainNote?: string;
+  explainFeedback?: ExplainAssessment | null;
   evidence: EvidenceEvent[];
   completedAt: number | null;
 }
@@ -291,6 +362,10 @@ export function toSnapshot(state: MissionSessionState): SessionSnapshot {
     debriefComplexityIndex: state.debriefComplexityIndex,
     reasoning: state.reasoning,
     assessment: state.assessment,
+    explainAnswers: state.explainAnswers,
+    explainFailures: state.explainFailures,
+    explainNote: state.explainNote,
+    explainFeedback: state.explainFeedback,
     evidence: state.evidence,
     completedAt: state.completedAt,
   };
@@ -323,6 +398,10 @@ export function restoreSession(
     debriefComplexityIndex: snapshot.debriefComplexityIndex,
     reasoning: snapshot.reasoning,
     assessment: snapshot.assessment,
+    explainAnswers: snapshot.explainAnswers ?? { blanks: {}, questions: {} },
+    explainFailures: snapshot.explainFailures ?? 0,
+    explainNote: snapshot.explainNote ?? '',
+    explainFeedback: snapshot.explainFeedback ?? null,
     evidence: snapshot.evidence,
     completedAt: snapshot.completedAt,
     // Snapshots written before M3 have no modality. Defaulting to `prose` is

@@ -8,6 +8,7 @@
 
 import { type ContentIssue, error, warning } from './errors';
 import type { Mission, WorkshopSystem } from './schema';
+import { validateExplainSpec } from '../evaluation/explain';
 import { containsIdentifier } from './validate';
 import { deepEqual } from '../../shared/lib/deep-equal';
 
@@ -255,6 +256,13 @@ export function lintMission(
           path,
         }),
       );
+    }
+  }
+
+  // L9 — a structured explanation must be answerable and unambiguous.
+  if (mission.debrief.explain !== undefined) {
+    for (const problem of validateExplainSpec(mission.debrief.explain)) {
+      issues.push(error('L9_EXPLAIN_SHAPE', problem, { ...base, path: 'debrief.explain' }));
     }
   }
 

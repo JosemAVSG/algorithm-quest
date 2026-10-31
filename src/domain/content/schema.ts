@@ -140,6 +140,42 @@ const ComplexitySchema = z
   })
   .strict();
 
+const ExplainBlankSchema = z
+  .object({
+    id: z.string().min(1),
+    options: z.array(z.string().min(1)).min(3).max(5),
+    correctIndex: z.number().int().nonnegative(),
+  })
+  .strict();
+
+const ExplainQuestionSchema = z
+  .object({
+    id: z.string().min(1),
+    question: z.string().min(1),
+    options: z.array(z.string().min(1)).min(3).max(5),
+    correctIndex: z.number().int().nonnegative(),
+    /** Optional, parallel to `options`: why that distractor is a misconception. */
+    whyWrong: z.array(z.string()).optional(),
+    explanation: z.string().min(1),
+  })
+  .strict();
+
+/**
+ * Structured replacement for the free-text reasoning step (docs/04 §6): a
+ * cloze sentence plus comprehension questions. `template` holds `{id}`
+ * placeholders, one per blank.
+ */
+const ExplainSchema = z
+  .object({
+    prompt: z.string().min(1),
+    template: z.string().min(1),
+    blanks: z.array(ExplainBlankSchema).min(2),
+    questions: z.array(ExplainQuestionSchema).min(1),
+  })
+  .strict();
+
+export type ExplainSpec = z.infer<typeof ExplainSchema>;
+
 const DebriefSchema = z
   .object({
     whyItWorks: z.string().min(1),
@@ -149,6 +185,7 @@ const DebriefSchema = z
     reasoningPrompt: z.string().min(1),
     objectiveNouns: z.array(z.string().min(1)).min(2),
     reasoningLexicon: z.array(z.string().min(1)),
+    explain: ExplainSchema.optional(),
   })
   .strict();
 
