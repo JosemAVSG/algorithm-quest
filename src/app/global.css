@@ -622,6 +622,148 @@ code {
 
 /* ---------------------------------------------------------------- briefing */
 
+.brief__intro--visual {
+  margin-top: 1.75rem;
+  display: grid;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.brief__intro--visual .brief__body {
+  margin-top: 0;
+}
+
+.visual {
+  margin: 0;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.visual__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.visual__svg--gauge {
+  max-width: 17rem;
+  margin-inline: auto;
+}
+
+.visual__cell {
+  fill: var(--surface-sunken);
+  stroke: var(--border);
+  stroke-width: 1;
+  transition: fill 120ms linear;
+}
+
+.visual__cell--scanning {
+  fill: var(--structure);
+  stroke: var(--structure);
+}
+
+.visual__cell--ok {
+  fill: var(--working);
+  stroke: var(--working);
+  fill-opacity: 0.55;
+}
+
+.visual__cell--over {
+  fill: var(--broken);
+  stroke: var(--broken);
+}
+
+.visual__stop-mark {
+  fill: var(--broken);
+}
+
+.visual__label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  fill: var(--text-muted);
+}
+
+.visual__label--strong {
+  fill: var(--text);
+  font-family: var(--font-mono);
+}
+
+.visual__label--broken {
+  fill: var(--broken);
+}
+
+.visual__tube {
+  fill: var(--surface-sunken);
+  stroke: var(--border);
+}
+
+.visual__level {
+  fill: var(--working);
+  fill-opacity: 0.7;
+  transition: y 400ms ease, height 400ms ease;
+}
+
+.visual__level--alarm {
+  fill: var(--broken);
+  fill-opacity: 1;
+}
+
+.visual__limit {
+  stroke: var(--attention);
+  stroke-width: 2;
+  stroke-dasharray: 5 3;
+}
+
+.visual__legend {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.visual__key {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 2px;
+  vertical-align: -1px;
+  border: 1px solid var(--border);
+}
+
+.visual__key--ok {
+  background: var(--working);
+}
+
+.visual__key--over {
+  background: var(--broken);
+}
+
+.visual__key--idle {
+  background: var(--surface-sunken);
+}
+
+@media (min-width: 62rem) {
+  .brief:has(.brief__intro--visual) {
+    max-width: 68rem;
+  }
+
+  .brief__intro--visual {
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+    gap: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visual__cell,
+  .visual__level {
+    transition: none;
+  }
+}
+
 .brief,
 .strategy,
 .debrief,

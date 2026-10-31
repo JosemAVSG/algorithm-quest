@@ -30,7 +30,8 @@
       "iteración",
       "salida temprana",
       "early"
-    ]
+    ],
+    "visual": "early-exit-scan"
   },
   "contract": {
     "entryPoint": "anyDeviceFaulty",

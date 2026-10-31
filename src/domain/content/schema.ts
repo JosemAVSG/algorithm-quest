@@ -205,6 +205,7 @@ export const MissionSchema = z
         body: z.string().min(1),
         requirements: z.array(z.string().min(1)).min(1),
         forbiddenVocabulary: z.array(z.string().min(1)),
+        visual: z.enum(['gauge', 'early-exit-scan']).optional(),
       })
       .strict(),
 

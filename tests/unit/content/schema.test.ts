@@ -35,6 +35,23 @@ describe('validateMissionShape — V1..V7', () => {
     expect(codes(validate(draft).issues)).toContain('SCHEMA_UNKNOWN_KEY');
   });
 
+  it('accepts a known briefing.visual id and treats it as optional', () => {
+    const withVisual = broken(validMission(), (mission) => {
+      mission.briefing.visual = 'early-exit-scan';
+    });
+    expect(validate(withVisual).issues).toEqual([]);
+    expect(validate(validMission()).issues).toEqual([]);
+  });
+
+  it('rejects an unknown briefing.visual id', () => {
+    const draft = broken(validMission(), (mission) => {
+      mission.briefing.visual = 'hologram';
+    });
+    const result = validate(draft);
+    expect(result.mission).toBeNull();
+    expect(codes(result.issues)).toContain('SCHEMA_INVALID');
+  });
+
   it('V2 rejects an id that is not M##', () => {
     const draft = broken(validMission(), (mission) => {
       mission.id = 'mission-1';

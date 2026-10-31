@@ -34,7 +34,8 @@
       "Devuelve si hay que disparar la alarma",
       "El panel solo entiende un sí o un no"
     ],
-    "forbiddenVocabulary": []
+    "forbiddenVocabulary": [],
+    "visual": "gauge"
   },
 
   "contract": {

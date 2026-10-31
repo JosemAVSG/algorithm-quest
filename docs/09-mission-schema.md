@@ -53,6 +53,7 @@ type MissionSchema = {
     body: string;                   // markdown, player-facing
     requirements: string[];         // the 3–4 bullets in the contract box
     forbiddenVocabulary: string[];  // lint L1: must not appear in headline+body
+    visual?: 'gauge' | 'early-exit-scan';  // optional id of a built-in 2D illustration
   };
 
   contract: {
@@ -182,6 +183,7 @@ forbids storing it.
 | `tests.edge[].edgeKind` | ✅ | Closed set. Without it L7 is unenforceable. |
 | `workshop.systemId` | ✅ | Must resolve in `content/workshop.json`. Lint L4. |
 | `briefing.forbiddenVocabulary` | ✅ | May be `[]` for missions with no pattern to hide. |
+| `briefing.visual` | optional | An id only, never data. Renders a built-in SVG next to the briefing text; absent means no illustration. Unknown ids fail validation. |
 | `contract.rules` | ✅ | At least two. A mission with one rule is underspecified. |
 | `constraints.bannedConstructs` | ✅ (may be `[]`) | Displayed in the UI, not just enforced in tests. |
 | `constraints.efficiency` | optional | Only M10 (warning) and M12 (enforced) set it. |

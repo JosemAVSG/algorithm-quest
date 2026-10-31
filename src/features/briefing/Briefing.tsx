@@ -9,6 +9,7 @@
  */
 
 import type { Mission } from '../../domain/content/schema';
+import { BriefingVisual } from './BriefingVisual';
 
 interface BriefingProps {
   mission: Mission;
@@ -23,10 +24,13 @@ export function Briefing({ mission, onContinue }: BriefingProps) {
       <p className="eyebrow">{mission.briefing.headline}</p>
       <h1>{mission.title}</h1>
 
-      <div className="brief__body">
-        {paragraphs.map((paragraph, index) => (
-          <p key={index}>{paragraph}</p>
-        ))}
+      <div className={mission.briefing.visual ? 'brief__intro brief__intro--visual' : 'brief__intro'}>
+        <div className="brief__body">
+          {paragraphs.map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))}
+        </div>
+        {mission.briefing.visual ? <BriefingVisual id={mission.briefing.visual} /> : null}
       </div>
 
       <section className="requirements" aria-label="Lo que necesito">
