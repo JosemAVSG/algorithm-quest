@@ -34,7 +34,8 @@
       "Devuelve cuántas comparaciones hará el detector en el peor caso",
       "El peor caso es una cola sin ninguna orden repetida"
     ],
-    "forbiddenVocabulary": ["cuadrática", "cuadrático", "O(n", "n(n-1)", "notación"]
+    "forbiddenVocabulary": ["cuadrática", "cuadrático", "O(n", "n(n-1)", "notación"],
+    "visual": "cost-grid"
   },
 
   "contract": {

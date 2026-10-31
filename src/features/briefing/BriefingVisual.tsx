@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react';
 
 import type { Mission } from '../../domain/content/schema';
+import { CostGrid } from './visuals/m09';
 import {
   GAUGE_LIMIT,
   GAUGE_MAX,
@@ -145,5 +146,6 @@ function Gauge() {
 }
 
 export function BriefingVisual({ id }: { id: VisualId }) {
+  if (id === 'cost-grid') return <CostGrid />;
   return id === 'gauge' ? <Gauge /> : <EarlyExitScan />;
 }
