@@ -334,7 +334,7 @@ the filesystem adapter, and `tests/unit/content/mission-index.test.ts` fails if 
 | --- | --- |
 | Next.js | No SSR need; a static SPA is simpler and cheaper. SSR would add a server for zero benefit. |
 | A component library (MUI/Chakra) | The visual identity is custom and small (~12 components). A library would fight the design and add 200 kB. |
-| A syntax-highlighting editor framework (Monaco/CodeMirror) | **Revisit at Milestone 3.** For 5–20 line functions, a `<textarea>` with a mono font and line numbers is enough. Monaco is ~2 MB and brings its own worker. Decision deferred with a trigger: add CodeMirror (not Monaco) only if playtesting shows players making avoidable syntax errors caused by the editor. |
+| A syntax-highlighting editor framework (Monaco/CodeMirror) | **Adopted: CodeMirror 6, lazy-loaded** (own chunk, ~142 kB gzip) with a plain `<textarea>` fallback while it loads or if the import fails. Monaco stays out: ~2 MB and its own worker. |
 | i18n framework | One language in the MVP. The schema has a `locale` field so it is additive later. |
 | A backend | See `08` and `11`. |
 
