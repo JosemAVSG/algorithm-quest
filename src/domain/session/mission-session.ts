@@ -74,7 +74,7 @@ export interface MissionSessionState {
   explainFailures: number;
   /** Optional, ungraded free-text note. */
   explainNote: string;
-  /** Result of the last graded submit; null until then and after any edit. */
+  /** Result of the last graded submit; null until then. */
   explainFeedback: ExplainAssessment | null;
   evidence: EvidenceEvent[];
   completedAt: number | null;
@@ -254,7 +254,8 @@ export function missionSessionReducer(
           ...state.explainAnswers,
           [group]: { ...state.explainAnswers[group], [action.id]: action.index },
         },
-        explainFeedback: null,
+        // Feedback stays: the UI only marks an item while its answer still
+        // equals the submitted wrong one, so fixing one item keeps the rest.
       };
     }
 

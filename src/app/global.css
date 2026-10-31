@@ -1679,3 +1679,52 @@ code {
     transition: none !important;
   }
 }
+
+/* ------------------------------------------------- structured explanation */
+
+.explain__sentence {
+  margin-top: 1rem;
+  line-height: 2.4;
+  font-size: 0.9375rem;
+}
+
+.explain__blank {
+  font: inherit;
+  font-size: 0.875rem;
+  margin: 0 0.15rem;
+  padding: 0.2rem 0.4rem;
+  color: var(--text);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  max-width: 100%;
+}
+
+.explain__blank--wrong {
+  border-color: var(--attention);
+}
+
+.explain__question {
+  margin-top: 1.5rem;
+}
+
+.explain__why {
+  margin-top: 0.6rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  border-left: 2px solid var(--attention);
+  padding-left: 0.85rem;
+}
+
+.explain__status:empty {
+  display: none;
+}
+
+.complete__recap {
+  margin-top: 1.25rem;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.4rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}

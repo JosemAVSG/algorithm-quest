@@ -8,13 +8,16 @@
  * No confetti. The debrief is a document, and the reward is the workshop.
  */
 
-import type { MissionSessionState } from '../../domain/session/mission-session';
-import { REASONING_MIN_SCORE } from '../../domain/session/mission-session';
+import { ExplainBlock } from "./ExplainBlock";
+import type { MissionSessionState } from "../../domain/session/mission-session";
+import { REASONING_MIN_SCORE } from "../../domain/session/mission-session";
 
 interface DebriefProps {
   state: MissionSessionState;
   onAnswerComplexity: (index: number) => void;
   onEditReasoning: (text: string) => void;
+  onAnswerExplain: (id: string, index: number) => void;
+  onEditExplainNote: (text: string) => void;
   onSubmit: () => void;
   onFinish: () => void;
 }
@@ -23,6 +26,8 @@ export function Debrief({
   state,
   onAnswerComplexity,
   onEditReasoning,
+  onAnswerExplain,
+  onEditExplainNote,
   onSubmit,
   onFinish,
 }: DebriefProps) {
@@ -30,7 +35,7 @@ export function Debrief({
   const debrief = mission.debrief;
   const complexity = mission.debrief.complexity;
 
-  if (state.phase === 'complete') {
+  if (state.phase === "complete") {
     return (
       <div className="complete">
         <p className="eyebrow">Misión completada</p>
@@ -44,6 +49,14 @@ export function Debrief({
           </span>
           <span className="complete__state">{mission.reward.effect}</span>
         </div>
+
+        {debrief.explain !== undefined ? (
+          <ul className="complete__recap">
+            {debrief.explain.questions.map((question) => (
+              <li key={question.id}>{question.explanation}</li>
+            ))}
+          </ul>
+        ) : null}
 
         <dl className="complete__stats">
           <div>
@@ -69,21 +82,26 @@ export function Debrief({
     );
   }
 
-  const rejected = assessment !== null && assessment.score < REASONING_MIN_SCORE;
+  const structured = debrief.explain !== undefined;
+  const rejected =
+    !structured &&
+    assessment !== null &&
+    assessment.score < REASONING_MIN_SCORE;
 
   return (
     <div className="debrief">
       <p className="eyebrow">Informe de la misión</p>
       <h1>{mission.title}</h1>
 
-      {state.strategy !== '' ? (
+      {state.strategy !== "" ? (
         <p className="debrief__echo">
           Empezaste diciendo: <q>{state.strategy}</q>
         </p>
       ) : null}
       <p className="debrief__meta">
-        Lo resolviste en {state.attempts} {state.attempts === 1 ? 'intento' : 'intentos'}, con{' '}
-        {state.hintsUsed} {state.hintsUsed === 1 ? 'pista' : 'pistas'}.
+        Lo resolviste en {state.attempts}{" "}
+        {state.attempts === 1 ? "intento" : "intentos"}, con {state.hintsUsed}{" "}
+        {state.hintsUsed === 1 ? "pista" : "pistas"}.
       </p>
 
       <section className="debrief__block">
@@ -141,42 +159,64 @@ export function Debrief({
           </span>
           Explica con tus palabras
         </h2>
-        <p>{debrief.reasoningPrompt}</p>
-
-        <label className="field">
-          <span className="field__label">Tu explicación</span>
-          <textarea
-            className="field__area"
-            rows={4}
-            value={state.reasoning}
-            onChange={(event) => onEditReasoning(event.target.value)}
-            aria-describedby={rejected ? 'reasoning-feedback' : undefined}
+        {structured ? (
+          <ExplainBlock
+            state={state}
+            onAnswer={onAnswerExplain}
+            onEditNote={onEditExplainNote}
           />
-        </label>
+        ) : (
+          <>
+            <p>{debrief.reasoningPrompt}</p>
 
-        {rejected ? (
-          <div className="feedback" id="reasoning-feedback" role="status">
-            <p className="feedback__title">
-              La explicación todavía no llega a {REASONING_MIN_SCORE}. No es un castigo: así se
-              aprende.
-            </p>
-            <ul>
-              {assessment.tooShort ? <li>Necesita una frase completa, no una palabra.</li> : null}
-              {assessment.restatesResult ? (
-                <li>«Porque funciona» describe el resultado, no el mecanismo.</li>
-              ) : null}
-              {!assessment.matchedMechanism ? (
-                <li>Nombra qué hace tu código: comparar, devolver, recorrer…</li>
-              ) : null}
-              {!assessment.matchedObjective ? (
-                <li>Conéctalo con el objetivo: la alarma, el límite, el sensor.</li>
-              ) : null}
-              {assessment.score === 1 ? (
-                <li>Añade por qué esa decisión es la correcta, no solo cómo la tomas.</li>
-              ) : null}
-            </ul>
-          </div>
-        ) : null}
+            <label className="field">
+              <span className="field__label">Tu explicación</span>
+              <textarea
+                className="field__area"
+                rows={4}
+                value={state.reasoning}
+                onChange={(event) => onEditReasoning(event.target.value)}
+                aria-describedby={rejected ? "reasoning-feedback" : undefined}
+              />
+            </label>
+
+            {rejected ? (
+              <div className="feedback" id="reasoning-feedback" role="status">
+                <p className="feedback__title">
+                  La explicación todavía no llega a {REASONING_MIN_SCORE}. No es
+                  un castigo: así se aprende.
+                </p>
+                <ul>
+                  {assessment.tooShort ? (
+                    <li>Necesita una frase completa, no una palabra.</li>
+                  ) : null}
+                  {assessment.restatesResult ? (
+                    <li>
+                      «Porque funciona» describe el resultado, no el mecanismo.
+                    </li>
+                  ) : null}
+                  {!assessment.matchedMechanism ? (
+                    <li>
+                      Nombra qué hace tu código: comparar, devolver, recorrer…
+                    </li>
+                  ) : null}
+                  {!assessment.matchedObjective ? (
+                    <li>
+                      Conéctalo con el objetivo: la alarma, el límite, el
+                      sensor.
+                    </li>
+                  ) : null}
+                  {assessment.score === 1 ? (
+                    <li>
+                      Añade por qué esa decisión es la correcta, no solo cómo la
+                      tomas.
+                    </li>
+                  ) : null}
+                </ul>
+              </div>
+            ) : null}
+          </>
+        )}
 
         <div className="actions">
           <button type="button" className="btn btn--primary" onClick={onSubmit}>
