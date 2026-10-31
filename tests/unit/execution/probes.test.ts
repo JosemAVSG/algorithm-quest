@@ -5,6 +5,7 @@ import {
   probeDeterminism,
   probeRotation,
   rotateOnce,
+  selectRotationCases,
   type ProbeBudget,
 } from '../../../src/domain/execution/probes';
 
@@ -95,5 +96,30 @@ describe('rotation probe', () => {
 
   it('abstains when there is nothing eligible', () => {
     expect(probeRotation(() => 1, [], budget())).toBe(false);
+  });
+});
+
+describe('rotation case selection', () => {
+  const testCases = [
+    { testId: 'a', input: [[1, 2, 3]], expected: 6 },
+    { testId: 'b', input: [[4, 5]], expected: 9 },
+    { testId: 'c', input: [[3, 1, 2]], expected: [1, 2, 3] },
+  ];
+
+  it('keeps only eligible cases whose unrotated run returned the expected value', () => {
+    const selected = selectRotationCases(testCases, [
+      { testId: 'a', status: 'returned', value: 6 },
+      { testId: 'b', status: 'returned', value: 8 },
+      { testId: 'c', status: 'returned', value: [1, 2, 3] },
+    ]);
+    expect(selected.map((entry) => entry.testId)).toEqual(['a']);
+  });
+
+  it('drops cases that threw in the unrotated run', () => {
+    const selected = selectRotationCases(testCases, [
+      { testId: 'a', status: 'threw', message: 'boom' },
+      { testId: 'b', status: 'returned', value: 9 },
+    ]);
+    expect(selected.map((entry) => entry.testId)).toEqual(['b']);
   });
 });

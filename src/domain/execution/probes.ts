@@ -19,6 +19,7 @@
  */
 
 import { deepEqual } from '../../shared/lib/deep-equal';
+import type { CaseOutcome } from './port';
 
 export type ProbeClock = () => number;
 
@@ -85,6 +86,30 @@ export function rotateOnce(value: unknown): unknown {
 export function isRotationEligible(firstArgument: unknown, expected: unknown): boolean {
   if (!Array.isArray(firstArgument) || firstArgument.length < 2) return false;
   return probeEqual(rotateOnce(expected), expected);
+}
+
+/**
+ * The cases the rotation probe may judge.
+ *
+ * Rotation instability means "this solution was right, and rotating the input
+ * made it wrong". A case whose unrotated run already failed (wrong value, threw)
+ * says nothing about rotation: probing it would report E07 for any wrong
+ * solution and hide the authored diagnosis. So only eligible cases whose
+ * unrotated run returned `expected` are probed.
+ */
+export function selectRotationCases(
+  testCases: readonly RotationCase[],
+  outcomes: readonly CaseOutcome[],
+): RotationCase[] {
+  return testCases.filter((testCase) => {
+    if (!isRotationEligible(testCase.input[0], testCase.expected)) return false;
+    const outcome = outcomes.find((entry) => entry.testId === testCase.testId);
+    return (
+      outcome !== undefined &&
+      outcome.status === 'returned' &&
+      probeEqual(outcome.value, testCase.expected)
+    );
+  });
 }
 
 /**

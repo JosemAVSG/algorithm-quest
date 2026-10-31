@@ -21,9 +21,9 @@ import {
 import { MAX_CASE_OUTPUT_BYTES, estimateSerializedBytes } from '../../../domain/execution/output-cap';
 import type { CaseOutcome } from '../../../domain/execution/port';
 import {
-  isRotationEligible,
   probeDeterminism,
   probeRotation,
+  selectRotationCases,
   type ProbeBudget,
 } from '../../../domain/execution/probes';
 import { installPrelude } from './prelude';
@@ -104,13 +104,14 @@ function execute(request: WorkerRequest, startedAt: number): WorkerResponse {
   const rotationUnstable = request.probes.rotation
     ? probeRotation(
         fn,
-        request.cases
-          .filter((testCase) => isRotationEligible(testCase.input[0], testCase.expected))
-          .map((testCase) => ({
+        selectRotationCases(
+          request.cases.map((testCase) => ({
             testId: testCase.testId,
             input: testCase.input,
             expected: testCase.expected,
           })),
+          cases,
+        ),
         budget,
       )
     : undefined;
