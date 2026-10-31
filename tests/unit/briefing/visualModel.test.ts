@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 
 import {
   CYCLE_TICKS,
-  FINAL_SCAN_FRAME,
   GAUGE_LIMIT,
   SENSOR_COUNT,
   STOP_INDEX,
@@ -45,10 +44,6 @@ describe('early-exit scan model', () => {
     expect(scanFrame(CYCLE_TICKS - 1)).toEqual(scanFrame(STOP_INDEX));
     expect(scanFrame(CYCLE_TICKS)).toEqual(scanFrame(0));
     expect(scanFrame(CYCLE_TICKS * 3 + 2)).toEqual(scanFrame(2));
-  });
-
-  it('exposes the stopped frame as the static reduced-motion frame', () => {
-    expect(FINAL_SCAN_FRAME).toEqual(scanFrame(STOP_INDEX));
   });
 });
 

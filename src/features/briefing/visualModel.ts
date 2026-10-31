@@ -25,9 +25,6 @@ export function scanFrame(tick: number): ScanFrame {
   return { scannerIndex, stopped: position >= STOP_INDEX };
 }
 
-/** Static frame used under prefers-reduced-motion. */
-export const FINAL_SCAN_FRAME: ScanFrame = scanFrame(STOP_INDEX);
-
 export function cellState(index: number, frame: ScanFrame): CellState {
   if (index < frame.scannerIndex) return 'ok';
   if (index === frame.scannerIndex) return frame.stopped ? 'over' : 'scanning';
@@ -49,6 +46,3 @@ export function gaugeFrame(tick: number): GaugeFrame {
   const reading = GAUGE_READINGS[((tick % 3) + 3) % 3];
   return { reading, alarm: reading > GAUGE_LIMIT };
 }
-
-/** Static frame used under prefers-reduced-motion: above the limit. */
-export const FINAL_GAUGE_FRAME: GaugeFrame = gaugeFrame(2);

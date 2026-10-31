@@ -1,7 +1,6 @@
 /**
  * Small 2D illustration shown beside the briefing text. Pure SVG, driven by a
- * pure frame model (visualModel.ts). Under prefers-reduced-motion it renders
- * the final static frame and never starts a timer.
+ * pure frame model (visualModel.ts).
  *
  * Copy here must stay clear of each mission's forbiddenVocabulary.
  */
@@ -10,8 +9,6 @@ import { useEffect, useState } from 'react';
 
 import type { Mission } from '../../domain/content/schema';
 import {
-  FINAL_GAUGE_FRAME,
-  FINAL_SCAN_FRAME,
   GAUGE_LIMIT,
   GAUGE_MAX,
   GAUGE_MIN,
@@ -25,35 +22,13 @@ import {
 
 type VisualId = NonNullable<Mission['briefing']['visual']>;
 
-const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
-
-function prefersReducedMotion(): boolean {
-  return typeof window !== 'undefined' && window.matchMedia(REDUCED_MOTION_QUERY).matches;
-}
-
-/** Ticks while motion is allowed; returns null when it is not. */
-function useTick(intervalMs: number): number | null {
-  const [tick, setTick] = useState<number | null>(() => (prefersReducedMotion() ? null : 0));
+/** Advances one frame every `intervalMs`. */
+function useTick(intervalMs: number): number {
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return undefined;
-    const query = window.matchMedia(REDUCED_MOTION_QUERY);
-    let timer: number | undefined;
-    const sync = () => {
-      window.clearInterval(timer);
-      if (query.matches) {
-        setTick(null);
-        return;
-      }
-      setTick(0);
-      timer = window.setInterval(() => setTick((value) => (value ?? 0) + 1), intervalMs);
-    };
-    sync();
-    query.addEventListener('change', sync);
-    return () => {
-      window.clearInterval(timer);
-      query.removeEventListener('change', sync);
-    };
+    const timer = window.setInterval(() => setTick((value) => value + 1), intervalMs);
+    return () => window.clearInterval(timer);
   }, [intervalMs]);
 
   return tick;
@@ -65,7 +40,7 @@ const ROW_WIDTH = SENSOR_COUNT * CELL_PITCH;
 
 function EarlyExitScan() {
   const tick = useTick(SCAN_TICK_MS);
-  const frame = tick === null ? FINAL_SCAN_FRAME : scanFrame(tick);
+  const frame = scanFrame(tick);
   const markX = frame.scannerIndex * CELL_PITCH + CELL_W / 2;
 
   return (
@@ -127,7 +102,7 @@ function yFor(value: number): number {
 
 function Gauge() {
   const tick = useTick(GAUGE_TICK_MS);
-  const frame = tick === null ? FINAL_GAUGE_FRAME : gaugeFrame(tick);
+  const frame = gaugeFrame(tick);
   const levelY = yFor(frame.reading);
   const limitY = yFor(GAUGE_LIMIT);
   const verdict = frame.alarm
