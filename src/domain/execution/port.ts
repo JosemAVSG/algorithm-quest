@@ -7,6 +7,8 @@
  * tests and, later, against a remote sandbox.
  */
 
+import type { ConsoleReport } from './console';
+
 export interface ExecutionCase {
   testId: string;
   input: unknown[];
@@ -16,6 +18,12 @@ export interface ExecutionCase {
    * (M2). It is never returned to the page or shown to the player.
    */
   expected?: unknown;
+  /**
+   * True only for the mission's visible group. Console output is recorded for
+   * these cases alone; absent means hidden (fail closed). The flag reveals
+   * nothing the worker could not already infer.
+   */
+  visible?: boolean;
 }
 
 export interface ExecutionRequest {
@@ -45,6 +53,13 @@ export interface ExecutionRequest {
     determinism?: boolean;
     rotation?: boolean;
   };
+  /**
+   * Called at most once per run, with the already-validated console report,
+   * before `execute` resolves. Side channel on purpose: console output never
+   * becomes part of the outcome the evaluation reads. Not called when the run
+   * is killed by the timeout.
+   */
+  onConsole?: (report: ConsoleReport) => void;
 }
 
 export type CaseOutcome =

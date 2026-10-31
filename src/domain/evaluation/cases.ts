@@ -11,11 +11,17 @@ import type { Mission } from '../content/schema';
 import type { ExecutionCase } from '../execution/port';
 
 export function executionCases(mission: Mission): ExecutionCase[] {
+  const visible = new Set(mission.tests.visible.map((testCase) => testCase.id));
   return [
     ...mission.tests.visible,
     ...mission.tests.hidden,
     ...mission.tests.edge,
-  ].map((testCase) => ({ testId: testCase.id, input: testCase.input, expected: testCase.expected }));
+  ].map((testCase) => ({
+    testId: testCase.id,
+    input: testCase.input,
+    expected: testCase.expected,
+    visible: visible.has(testCase.id),
+  }));
 }
 
 /**

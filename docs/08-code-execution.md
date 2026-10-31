@@ -225,6 +225,30 @@ partially. The threat that would demand a backend does not exist yet.*
 | CSP | `script-src 'self' 'unsafe-eval'` — documented as a known cost |
 | App origin | Separate from any authenticated API origin |
 
+### Console output (`console.log`)
+
+The prelude replaces the worker's `console` with a capturing stub
+(`src/domain/execution/console.ts`, installed by `installConsole`). `log`, `info`, `warn`,
+`error` and `debug` are recorded; every other method exists and does nothing, so
+`console.table(x)` is never a TypeError the player would blame on themselves.
+
+- **Visible tests only.** Each case carries `visible: true|false` (absent means hidden). Lines
+  printed during a visible case are kept and labelled with its test id (`v2`); lines printed
+  during hidden or edge cases, and during the determinism/rotation/mutation probes, are dropped.
+  The only trace of hidden output is a boolean (`hiddenOutput`), shown as the content-free line
+  "También hubo salida en pruebas ocultas (no se muestra)". Top-level output at load time is
+  kept, unlabelled (`inicio`).
+- **Caps.** 200 entries, 500 characters per entry, 20 000 in total; past that a truncation
+  notice is shown and further calls are not even formatted. Formatting is depth 3 / 10 items,
+  circular-safe, and never throws (a hostile Proxy or getter yields `[Unreadable]`).
+- **Transport.** The worker posts one `{ kind: 'console', report }` message before the result.
+  The runner accepts it once, validates the shape and re-applies the caps
+  (`parseConsoleReport`), and hands it to a side-channel callback (`ExecutionRequest.onConsole`).
+  It is not part of `ExecutionOutcome`, so it cannot change `passed`, a probe, or a diagnosis.
+  The page filters again to known visible test ids. Text is rendered as text.
+- **Known limit.** A run killed by the timeout (`E03`) shows no console: the worker never got to
+  send its report.
+
 ### Time budgets without flakiness
 
 Wall-clock budgets are machine-dependent and will fail a correct solution on a slow laptop. Two

@@ -197,6 +197,15 @@ The map is two levels: a zigzag path of **worlds**, and inside a world a zigzag 
   diagnostician, and diagnosticians need evidence.
 - **Run is debounced** and shows a spinner with the elapsed ms. Latency honesty matters: if a
   run takes 900 ms, the player should know why.
+- **The editor is CodeMirror 6**, loaded on demand (a plain textarea shows while it loads or if
+  it fails): JavaScript highlighting, line numbers, auto-indent, bracket matching and
+  auto-closing, Tab/Shift+Tab indent. Keyboard users are never trapped: Esc, then Tab, moves
+  focus out. Cmd/Ctrl + Enter runs; the editor is read-only while a run is in progress.
+- **The console panel ("Consola")** sits between the tests and the mentor. It shows what
+  `console.log/info/warn/error/debug` printed in the last run, in call order, each line labelled
+  with the visible test that produced it. Output from hidden and edge cases is never shown (only a
+  dim "También hubo salida en pruebas ocultas" line). Empty state: "Aquí aparece lo que imprimas
+  con console.log". "Limpiar" empties it; each run replaces it. See `08` §6.
 - **The mentor panel is empty until the first run.** Pre-emptive advice is noise.
 - **Keyboard**: `Cmd/Ctrl+Enter` runs. No other shortcuts in the MVP.
 

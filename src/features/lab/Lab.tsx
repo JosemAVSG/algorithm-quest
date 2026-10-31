@@ -6,12 +6,17 @@
  */
 
 import type { MissionSessionState } from '../../domain/session/mission-session';
+import type { ConsoleReport } from '../../domain/execution/console';
+import { ConsolePanel } from './ConsolePanel';
 import { Editor } from './Editor';
 import { MentorPanel } from './MentorPanel';
 import { TestPanel } from './TestPanel';
 
 interface LabProps {
   state: MissionSessionState;
+  /** Console output of the last run, already limited to visible tests. */
+  consoleReport: ConsoleReport | null;
+  onClearConsole: () => void;
   onEditSource: (source: string) => void;
   onRun: () => void;
   onRequestHint: () => void;
@@ -20,12 +25,17 @@ interface LabProps {
 
 export function Lab({
   state,
+  consoleReport,
+  onClearConsole,
   onEditSource,
   onRun,
   onRequestHint,
   onOpenDebrief,
 }: LabProps) {
   const { mission, lastEvaluation } = state;
+  const consoleLabels = Object.fromEntries(
+    mission.tests.visible.map((testCase) => [testCase.id, testCase.note ?? testCase.id]),
+  );
 
   return (
     <div className="lab">
@@ -70,6 +80,7 @@ export function Lab({
 
         <aside className="lab__panel" aria-live="polite">
           <TestPanel report={lastEvaluation?.report ?? null} running={state.running} />
+          <ConsolePanel report={consoleReport} labels={consoleLabels} onClear={onClearConsole} />
           <MentorPanel
             state={state}
             onRequestHint={onRequestHint}

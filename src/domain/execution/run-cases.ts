@@ -165,36 +165,49 @@ export function runCases(
 export function runCasesWith(
   fn: PlayerFunction,
   cases: readonly ExecutionCase[],
-  options: { detectMutation?: boolean } = {},
+  options: {
+    detectMutation?: boolean;
+    /** Bracket each case, so the caller can attribute side effects (console output) to it. */
+    onCase?: { before(testCase: ExecutionCase): void; after(testCase: ExecutionCase): void };
+  } = {},
 ): CaseOutcome[] {
   return cases.map((testCase) => {
-    const before = options.detectMutation === true ? tryClone(testCase.input) : null;
+    options.onCase?.before(testCase);
     try {
-      const value = fn(...testCase.input);
-      const mutatedInput =
-        before === null ? undefined : !deepEqual(before, testCase.input);
-      return {
-        testId: testCase.testId,
-        status: 'returned',
-        value: sanitizeForTransfer(value),
-        ...(mutatedInput === undefined ? {} : { mutatedInput }),
-      };
-    } catch (error) {
-      const frame = frameOf((error as Error | undefined)?.stack);
-      const message =
-        error instanceof Error
-          ? `${error.name}: ${error.message}`
-          : `se lanzó un valor no-Error: ${String(error)}`;
-      const mutatedInput = before === null ? undefined : !deepEqual(before, testCase.input);
-      return {
-        testId: testCase.testId,
-        status: 'threw',
-        message,
-        ...(frame ?? {}),
-        ...(mutatedInput === undefined ? {} : { mutatedInput }),
-      };
+      return runOne(fn, testCase, options.detectMutation === true);
+    } finally {
+      options.onCase?.after(testCase);
     }
   });
+}
+
+function runOne(fn: PlayerFunction, testCase: ExecutionCase, detectMutation: boolean): CaseOutcome {
+  const before = detectMutation ? tryClone(testCase.input) : null;
+  try {
+    const value = fn(...testCase.input);
+    const mutatedInput =
+      before === null ? undefined : !deepEqual(before, testCase.input);
+    return {
+      testId: testCase.testId,
+      status: 'returned',
+      value: sanitizeForTransfer(value),
+      ...(mutatedInput === undefined ? {} : { mutatedInput }),
+    };
+  } catch (error) {
+    const frame = frameOf((error as Error | undefined)?.stack);
+    const message =
+      error instanceof Error
+        ? `${error.name}: ${error.message}`
+        : `se lanzó un valor no-Error: ${String(error)}`;
+    const mutatedInput = before === null ? undefined : !deepEqual(before, testCase.input);
+    return {
+      testId: testCase.testId,
+      status: 'threw',
+      message,
+      ...(frame ?? {}),
+      ...(mutatedInput === undefined ? {} : { mutatedInput }),
+    };
+  }
 }
 
 function tryClone(value: unknown): unknown[] | null {

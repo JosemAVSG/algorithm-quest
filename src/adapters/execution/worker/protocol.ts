@@ -10,6 +10,7 @@
  * that ran out of time is absent, not `false` (docs/04 §2).
  */
 
+import type { ConsoleReport } from '../../../domain/execution/console';
 import type { CaseOutcome, ExecutionCase, ExecutionOutcome } from '../../../domain/execution/port';
 
 export interface WorkerRequest {
@@ -38,3 +39,13 @@ export type WorkerResponse =
   | Extract<ExecutionOutcome, { kind: 'syntax_error' }>
   | Extract<ExecutionOutcome, { kind: 'missing_entry_point' }>
   | Extract<ExecutionOutcome, { kind: 'internal_error' }>;
+
+/**
+ * Sent once, before the final response. A dedicated kind keeps it apart from
+ * the outcome: the runner validates it with `parseConsoleReport` and hands it to
+ * a side-channel callback, so console output can never alter a verdict.
+ */
+export interface WorkerConsoleMessage {
+  kind: 'console';
+  report: ConsoleReport;
+}
