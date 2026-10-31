@@ -200,6 +200,106 @@
   ],
 
   "debrief": {
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe el caso, y responde las preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Para cada posición i comparo con las posiciones {b1}; en cuanto {b2}, devuelvo {b3}. Si ningún par coincide, devuelvo {b4}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": [
+            "anteriores a i, desde 0",
+            "posteriores a i, desde i + 1",
+            "todas, incluida la propia i"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "id": "b2",
+          "options": [
+            "encuentro dos identificadores iguales tras convertir tipos (==)",
+            "termino de comparar todos los pares",
+            "encuentro dos identificadores estrictamente iguales (===)"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "id": "b3",
+          "options": [
+            "las dos posiciones [i, j]",
+            "el valor repetido",
+            "cuántos pares repetidos hay",
+            "solo la posición j"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "id": "b4",
+          "options": [
+            "[]",
+            "false",
+            "undefined",
+            "null"
+          ],
+          "correctIndex": 3
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "Si el bucle interno empezara en 0 en lugar de i + 1, ¿qué devolvería la función con `[7, 7]`?",
+          "options": [
+            "[0, 1], que es correcto pero repite trabajo",
+            "`null`, porque 7 aparece una sola vez en cada posición",
+            "[0, 0], porque compara la posición 0 consigo misma y la da por repetida",
+            "Lanza un error al comparar un elemento consigo mismo"
+          ],
+          "correctIndex": 2,
+          "whyWrong": [
+            "Con j = 0 la primera comparación es la posición 0 contra sí misma, y ahí ya devuelve.",
+            "Cada posición se compara también con ella misma, y ahí el valor coincide.",
+            "",
+            "Comparar un valor consigo mismo no lanza nada: da igual, y eso es el problema."
+          ],
+          "explanation": "Empezar en i + 1 evita comparar una posición consigo misma y cada par se mira una sola vez."
+        },
+        {
+          "id": "q2",
+          "question": "Con `[4, 5, 4, 4]` el operador espera `[0, 2]`, pero una función devuelve `[0, 3]`. ¿Qué hace esa función?",
+          "options": [
+            "Guarda el par al encontrarlo, pero sigue avanzando j y se queda con la última coincidencia",
+            "Recorre la lista de derecha a izquierda y encuentra antes el último 4",
+            "Compara con `==` en lugar de `===`, y por eso se salta el primer 4",
+            "Empieza j en 0 y cuenta la posición 0 dos veces"
+          ],
+          "correctIndex": 0,
+          "whyWrong": [
+            "",
+            "Si fuera de derecha a izquierda el par sería otro. Fíjate en que empieza por i = 0.",
+            "`==` no cambia nada con números iguales; ese no es el motivo.",
+            "Eso daría [0, 0], no [0, 3]."
+          ],
+          "explanation": "El primer par es el primero que se encuentra: en cuanto hay coincidencia hay que devolver, sin seguir buscando."
+        },
+        {
+          "id": "q3",
+          "question": "Con `[1, 2, 3, 4, 5, 1]` una función devuelve `null`. ¿Qué límite del bucle explica ese resultado?",
+          "options": [
+            "El bucle externo debería terminar en length, no antes",
+            "j empieza en i + 1 y debería empezar en 0",
+            "`===` considera distintos el 1 de la primera posición y el de la última",
+            "El bucle interno termina antes de la última posición, así que nunca la compara"
+          ],
+          "correctIndex": 3,
+          "whyWrong": [
+            "Para la última posición no hay ninguna posterior con la que compararla: el fallo está en hasta dónde llega j.",
+            "Eso añadiría comparaciones de más y daría falsos duplicados; no explica este `null`.",
+            "Dos números 1 son estrictamente iguales; el operador no es el problema.",
+            ""
+          ],
+          "explanation": "El duplicado está en la última posición: j tiene que llegar hasta length - 1 inclusive."
+        }
+      ]
+    },
     "whyItWorks": "Para encontrar un par hay que comparar cada elemento con los que vienen después. Eso produce un bucle dentro de otro, y el i + 1 es lo que hace que cada par se compare una sola vez y en el orden correcto. A diferencia de recolectar todos los resultados, aquí puedes parar en el primer hallazgo: la pregunta es «¿dónde está el primero?». El return null final solo se alcanza si ningún par coincidió.",
     "edgeCaseNote": "Un solo elemento: el bucle interno nunca se ejecuta y se devuelve null. «1» frente a 1: igualdad estricta; en JavaScript, == convierte tipos y produce duplicados fantasma, una fuente real de bugs en producción. Un duplicado en la última posición obliga a que j llegue hasta n - 1.",
     "complexity": {
