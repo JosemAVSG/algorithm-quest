@@ -6,8 +6,8 @@
  * Feedback marks *what to rethink* and never reveals the answer.
  */
 
-import { parseTemplate } from "../../domain/evaluation/explain";
-import type { MissionSessionState } from "../../domain/session/mission-session";
+import { parseTemplate } from '../../domain/evaluation/explain';
+import type { MissionSessionState } from '../../domain/session/mission-session';
 
 interface ExplainBlockProps {
   state: MissionSessionState;
@@ -30,7 +30,7 @@ export function ExplainBlock({
   const blankNumber = new Map<string, number>();
   const parts = parseTemplate(spec.template);
   for (const part of parts) {
-    if (part.kind === "blank") blankNumber.set(part.id, blankNumber.size + 1);
+    if (part.kind === 'blank') blankNumber.set(part.id, blankNumber.size + 1);
   }
 
   const label = (id: string): string => {
@@ -53,7 +53,7 @@ export function ExplainBlock({
 
       <p className="explain__sentence">
         {parts.map((part, position) => {
-          if (part.kind === "text")
+          if (part.kind === 'text')
             return <span key={position}>{part.text}</span>;
           const blank = spec.blanks.find((b) => b.id === part.id);
           if (blank === undefined) return null;
@@ -62,10 +62,10 @@ export function ExplainBlock({
           return (
             <select
               key={position}
-              className={`explain__blank${wrong ? " explain__blank--wrong" : ""}`}
+              className={`explain__blank${wrong ? ' explain__blank--wrong' : ''}`}
               aria-label={`Hueco ${blankNumber.get(blank.id)}`}
               aria-invalid={wrong}
-              value={given ?? ""}
+              value={given ?? ''}
               onChange={(event) =>
                 onAnswer(blank.id, Number(event.target.value))
               }
@@ -107,9 +107,9 @@ export function ExplainBlock({
             ))}
             {wrong ? (
               <p className="explain__why">
-                {reason !== undefined && reason !== ""
+                {reason !== undefined && reason !== ''
                   ? reason
-                  : "Esta opción no encaja con el código: vuelve a mirar qué ocurre paso a paso."}
+                  : 'Esta opción no encaja con el código: vuelve a mirar qué ocurre paso a paso.'}
               </p>
             ) : null}
           </fieldset>
@@ -121,12 +121,12 @@ export function ExplainBlock({
           <div className="feedback">
             {rethink.length > 0 ? (
               <p className="feedback__title">
-                Aún hay algo que repensar: {rethink.map(label).join(", ")}. No
+                Aún hay algo que repensar: {rethink.map(label).join(', ')}. No
                 es un castigo: así se aprende.
               </p>
             ) : null}
             {missing.length > 0 ? (
-              <p>Falta responder: {missing.map(label).join(", ")}.</p>
+              <p>Falta responder: {missing.map(label).join(', ')}.</p>
             ) : null}
           </div>
         ) : null}

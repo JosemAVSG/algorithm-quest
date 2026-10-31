@@ -8,9 +8,9 @@
  * No confetti. The debrief is a document, and the reward is the workshop.
  */
 
-import { ExplainBlock } from "./ExplainBlock";
-import type { MissionSessionState } from "../../domain/session/mission-session";
-import { REASONING_MIN_SCORE } from "../../domain/session/mission-session";
+import { ExplainBlock } from './ExplainBlock';
+import type { MissionSessionState } from '../../domain/session/mission-session';
+import { REASONING_MIN_SCORE } from '../../domain/session/mission-session';
 
 interface DebriefProps {
   state: MissionSessionState;
@@ -35,7 +35,7 @@ export function Debrief({
   const debrief = mission.debrief;
   const complexity = mission.debrief.complexity;
 
-  if (state.phase === "complete") {
+  if (state.phase === 'complete') {
     return (
       <div className="complete">
         <p className="eyebrow">Misión completada</p>
@@ -93,15 +93,15 @@ export function Debrief({
       <p className="eyebrow">Informe de la misión</p>
       <h1>{mission.title}</h1>
 
-      {state.strategy !== "" ? (
+      {state.strategy !== '' ? (
         <p className="debrief__echo">
           Empezaste diciendo: <q>{state.strategy}</q>
         </p>
       ) : null}
       <p className="debrief__meta">
-        Lo resolviste en {state.attempts}{" "}
-        {state.attempts === 1 ? "intento" : "intentos"}, con {state.hintsUsed}{" "}
-        {state.hintsUsed === 1 ? "pista" : "pistas"}.
+        Lo resolviste en {state.attempts}{' '}
+        {state.attempts === 1 ? 'intento' : 'intentos'}, con {state.hintsUsed}{' '}
+        {state.hintsUsed === 1 ? 'pista' : 'pistas'}.
       </p>
 
       <section className="debrief__block">
@@ -176,7 +176,7 @@ export function Debrief({
                 rows={4}
                 value={state.reasoning}
                 onChange={(event) => onEditReasoning(event.target.value)}
-                aria-describedby={rejected ? "reasoning-feedback" : undefined}
+                aria-describedby={rejected ? 'reasoning-feedback' : undefined}
               />
             </label>
 

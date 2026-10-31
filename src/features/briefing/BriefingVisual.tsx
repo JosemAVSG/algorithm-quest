@@ -5,7 +5,7 @@
  * Copy here must stay clear of each mission's forbiddenVocabulary.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 import type { Mission } from '../../domain/content/schema';
 import { PairScanVisual } from './visuals/m08';
@@ -23,14 +23,14 @@ import {
   cellState,
   gaugeFrame,
   scanFrame,
-} from "./visualModel";
-import { CollectLine } from "./visuals/m03";
-import { RunningTotal } from "./visuals/m04";
-import { CopyRows } from "./visuals/m05";
-import { M11Visual } from "./visuals/M11Visual";
-import { M12Visual } from "./visuals/M12Visual";
+} from './visualModel';
+import { CollectLine } from './visuals/m03';
+import { RunningTotal } from './visuals/m04';
+import { CopyRows } from './visuals/m05';
+import { M11Visual } from './visuals/M11Visual';
+import { M12Visual } from './visuals/M12Visual';
 
-type VisualId = NonNullable<Mission["briefing"]["visual"]>;
+type VisualId = NonNullable<Mission['briefing']['visual']>;
 
 /** Illustrations that live in their own file (visuals/). */
 const REGISTRY: Partial<Record<VisualId, () => JSX.Element>> = {
@@ -111,8 +111,8 @@ function EarlyExitScan() {
           ) : null}
           <text x="0" y="108" className="visual__label">
             {frame.stopped
-              ? "Se para aquí: los demás ya no hacen falta."
-              : "Revisando de uno en uno…"}
+              ? 'Se para aquí: los demás ya no hacen falta.'
+              : 'Revisando de uno en uno…'}
           </text>
         </g>
       </svg>
@@ -145,10 +145,10 @@ function Gauge() {
   const levelY = yFor(frame.reading);
   const limitY = yFor(GAUGE_LIMIT);
   const verdict = frame.alarm
-    ? "Arriba del límite: alarma"
+    ? 'Arriba del límite: alarma'
     : frame.reading === GAUGE_LIMIT
-      ? "Igual al límite: sin alarma"
-      : "Debajo del límite: sin alarma";
+      ? 'Igual al límite: sin alarma'
+      : 'Debajo del límite: sin alarma';
 
   return (
     <figure className="visual">
@@ -177,7 +177,7 @@ function Gauge() {
             width="28"
             height={GAUGE_BOTTOM - levelY}
             rx="6"
-            className={`visual__level${frame.alarm ? " visual__level--alarm" : ""}`}
+            className={`visual__level${frame.alarm ? ' visual__level--alarm' : ''}`}
           />
           <line
             x1="30"
@@ -199,7 +199,7 @@ function Gauge() {
           <text
             x="80"
             y="172"
-            className={`visual__label${frame.alarm ? " visual__label--broken" : ""}`}
+            className={`visual__label${frame.alarm ? ' visual__label--broken' : ''}`}
           >
             {verdict}
           </text>

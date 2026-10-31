@@ -7,25 +7,25 @@
  * (docs/07-architecture.md §8).
  */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { loadBrowserCatalog } from "../adapters/content/browser";
-import { countBySeverity } from "../domain/content/errors";
+import { loadBrowserCatalog } from '../adapters/content/browser';
+import { countBySeverity } from '../domain/content/errors';
 import {
   declineReinforcement,
   emptyProgress,
   recordCompletion,
   type CompletedMissionRecord,
   type PlayerProgress,
-} from "../domain/persistence/port";
-import type { SessionSnapshot } from "../domain/session/mission-session";
-import { MissionFlow } from "../features/mission/MissionFlow";
-import { MissionGate } from "../features/mission/MissionGate";
-import { ProgressDashboard } from "../features/progress/ProgressDashboard";
-import { WorkshopMap } from "../features/workshop-map/WorkshopMap";
-import { createComposition } from "./composition";
+} from '../domain/persistence/port';
+import type { SessionSnapshot } from '../domain/session/mission-session';
+import { MissionFlow } from '../features/mission/MissionFlow';
+import { MissionGate } from '../features/mission/MissionGate';
+import { ProgressDashboard } from '../features/progress/ProgressDashboard';
+import { WorkshopMap } from '../features/workshop-map/WorkshopMap';
+import { createComposition } from './composition';
 
-type View = "map" | "progress";
+type View = 'map' | 'progress';
 
 export function App() {
   const report = useMemo(() => loadBrowserCatalog(), []);
@@ -34,7 +34,7 @@ export function App() {
   const [progress, setProgress] = useState<PlayerProgress | null>(null);
   const [storageWarning, setStorageWarning] = useState<string | null>(null);
   const [activeMissionId, setActiveMissionId] = useState<string | null>(null);
-  const [view, setView] = useState<View>("map");
+  const [view, setView] = useState<View>('map');
   const [openWorldId, setOpenWorldId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -147,7 +147,7 @@ export function App() {
           {(mission) => {
             const stored = app.sessions.load(mission.id);
             const snapshot: SessionSnapshot | null =
-              stored !== null && stored.phase !== "complete" ? stored : null;
+              stored !== null && stored.phase !== 'complete' ? stored : null;
             return (
               <MissionFlow
                 mission={mission}
@@ -177,11 +177,11 @@ export function App() {
         </p>
       )}
 
-      {view === "progress" ? (
+      {view === 'progress' ? (
         <ProgressDashboard
           bundle={bundle}
           progress={progress}
-          onBack={() => setView("map")}
+          onBack={() => setView('map')}
           onDeclineReinforcement={handleDeclineReinforcement}
           onExport={handleExport}
           onImport={handleImport}
@@ -201,7 +201,7 @@ export function App() {
             if (mission !== undefined) setOpenWorldId(mission.world);
             setActiveMissionId(missionId);
           }}
-          onOpenProgress={() => setView("progress")}
+          onOpenProgress={() => setView('progress')}
         />
       )}
     </div>

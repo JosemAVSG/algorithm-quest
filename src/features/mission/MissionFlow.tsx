@@ -13,18 +13,21 @@ import {
   useRef,
   useState,
   type ReactNode,
-} from "react";
+} from 'react';
 
-import { timeoutFor } from "../../adapters/execution/worker/runner";
-import type { Mission } from "../../domain/content/schema";
-import { evaluateRun } from "../../domain/evaluation/evaluate-run";
-import { executionCases, probeSettings } from "../../domain/evaluation/cases";
-import { onlyVisibleOutput, type ConsoleReport } from "../../domain/execution/console";
-import type { ExecutionPort } from "../../domain/execution/port";
+import { timeoutFor } from '../../adapters/execution/worker/runner';
+import type { Mission } from '../../domain/content/schema';
+import { evaluateRun } from '../../domain/evaluation/evaluate-run';
+import { executionCases, probeSettings } from '../../domain/evaluation/cases';
+import {
+  onlyVisibleOutput,
+  type ConsoleReport,
+} from '../../domain/execution/console';
+import type { ExecutionPort } from '../../domain/execution/port';
 import type {
   CompletedMissionRecord,
   SessionStore,
-} from "../../domain/persistence/port";
+} from '../../domain/persistence/port';
 import {
   allTestsPassed,
   createMissionSession,
@@ -34,22 +37,22 @@ import {
   type SessionPhase,
   type SessionSnapshot,
   type StepPhase,
-} from "../../domain/session/mission-session";
-import { Briefing } from "../briefing/Briefing";
-import { BriefingVisual } from "../briefing/BriefingVisual";
-import { Debrief } from "../debrief/Debrief";
-import { Lab } from "../lab/Lab";
-import { Strategy } from "../strategy/Strategy";
+} from '../../domain/session/mission-session';
+import { Briefing } from '../briefing/Briefing';
+import { BriefingVisual } from '../briefing/BriefingVisual';
+import { Debrief } from '../debrief/Debrief';
+import { Lab } from '../lab/Lab';
+import { Strategy } from '../strategy/Strategy';
 
 const STEPS: Array<{ phase: StepPhase; label: string }> = [
-  { phase: "briefing", label: "Briefing" },
-  { phase: "strategy", label: "Estrategia" },
-  { phase: "lab", label: "Laboratorio" },
-  { phase: "debrief", label: "Informe" },
+  { phase: 'briefing', label: 'Briefing' },
+  { phase: 'strategy', label: 'Estrategia' },
+  { phase: 'lab', label: 'Laboratorio' },
+  { phase: 'debrief', label: 'Informe' },
 ];
 
 function stepIndex(phase: SessionPhase): number {
-  if (phase === "complete") return STEPS.length;
+  if (phase === 'complete') return STEPS.length;
   return STEPS.findIndex((step) => step.phase === phase);
 }
 
@@ -101,11 +104,13 @@ export function MissionFlow({
 
   // Console output of the last run only. Lab-local on purpose: it is never
   // saved, never reloaded and never read by the evaluation.
-  const [consoleReport, setConsoleReport] = useState<ConsoleReport | null>(null);
+  const [consoleReport, setConsoleReport] = useState<ConsoleReport | null>(
+    null,
+  );
 
-  const savedRef = useRef<string>("");
+  const savedRef = useRef<string>('');
   useEffect(() => {
-    if (state.phase === "complete") {
+    if (state.phase === 'complete') {
       sessions.clear(mission.id);
       return;
     }
@@ -118,7 +123,7 @@ export function MissionFlow({
 
   const completedRef = useRef<string | null>(null);
   useEffect(() => {
-    if (state.phase !== "complete" || state.completedAt === null) return;
+    if (state.phase !== 'complete' || state.completedAt === null) return;
     const key = `${mission.id}:${state.completedAt}`;
     if (completedRef.current === key) return;
     completedRef.current = key;
@@ -133,10 +138,10 @@ export function MissionFlow({
   }, [state, mission.id, onCompleted]);
 
   const run = useCallback(async () => {
-    if (state.phase !== "lab" || state.running) return;
+    if (state.phase !== 'lab' || state.running) return;
 
     const source = state.source;
-    dispatch({ type: "run_started" });
+    dispatch({ type: 'run_started' });
     setConsoleReport(null);
     let captured: ConsoleReport | null = null;
 
@@ -167,7 +172,10 @@ export function MissionFlow({
     setConsoleReport(
       captured === null
         ? null
-        : onlyVisibleOutput(captured, new Set(mission.tests.visible.map((test) => test.id))),
+        : onlyVisibleOutput(
+            captured,
+            new Set(mission.tests.visible.map((test) => test.id)),
+          ),
     );
 
     const evaluation = evaluateRun({
@@ -186,10 +194,10 @@ export function MissionFlow({
     if (evaluation.internalError !== null) {
       // Loud on purpose (docs/04 §8): a harness fault must page a developer,
       // not be rewritten as something the player did.
-      console.error("[execution] harness failure", evaluation.internalError);
+      console.error('[execution] harness failure', evaluation.internalError);
     }
 
-    dispatch({ type: "run_finished", source, evaluation });
+    dispatch({ type: 'run_finished', source, evaluation });
   }, [execution, mission, state]);
 
   const currentStep = stepIndex(state.phase);
@@ -213,32 +221,37 @@ export function MissionFlow({
           {STEPS.map((step, index) => {
             const status =
               index < currentStep
-                ? "done"
+                ? 'done'
                 : index === currentStep
-                  ? "current"
-                  : "todo";
+                  ? 'current'
+                  : 'todo';
             const reached =
-              state.phase !== "complete" &&
+              state.phase !== 'complete' &&
               index <= stepIndex(state.furthestPhase) &&
               // The debrief stays locked while the tests do not pass.
-              (step.phase !== "debrief" || allTestsPassed(state));
-            const isCurrent = status === "current";
+              (step.phase !== 'debrief' || allTestsPassed(state));
+            const isCurrent = status === 'current';
             return (
-              <li key={step.phase} className={`rail__step rail__step--${status}`}>
+              <li
+                key={step.phase}
+                className={`rail__step rail__step--${status}`}
+              >
                 <button
                   type="button"
                   className="rail__button"
-                  aria-current={isCurrent ? "step" : undefined}
+                  aria-current={isCurrent ? 'step' : undefined}
                   aria-label={isCurrent ? undefined : `Ir a ${step.label}`}
                   disabled={!reached || isCurrent}
                   title={
                     reached || isCurrent
                       ? undefined
-                      : state.phase === "complete"
-                        ? "La misión ya está cerrada"
-                        : "Aún no llegas aquí"
+                      : state.phase === 'complete'
+                        ? 'La misión ya está cerrada'
+                        : 'Aún no llegas aquí'
                   }
-                  onClick={() => dispatch({ type: "go_to_phase", phase: step.phase })}
+                  onClick={() =>
+                    dispatch({ type: 'go_to_phase', phase: step.phase })
+                  }
                 >
                   <span className="rail__dot" aria-hidden="true" />
                   <span className="rail__label">{step.label}</span>
@@ -250,58 +263,58 @@ export function MissionFlow({
       </nav>
 
       <main className="mission__screen">
-        {state.phase === "briefing" ? (
+        {state.phase === 'briefing' ? (
           <Briefing
             mission={mission}
-            onContinue={() => dispatch({ type: "open_strategy" })}
+            onContinue={() => dispatch({ type: 'open_strategy' })}
           />
         ) : null}
 
-        {state.phase === "strategy" ? (
+        {state.phase === 'strategy' ? (
           <SideBySide visual={visual}>
             <Strategy
               initialValue={state.strategy}
-              onSubmit={(text) => dispatch({ type: "submit_strategy", text })}
+              onSubmit={(text) => dispatch({ type: 'submit_strategy', text })}
             />
           </SideBySide>
         ) : null}
 
-        {state.phase === "lab" ? (
+        {state.phase === 'lab' ? (
           <Lab
             state={state}
             illustration={visual}
             consoleReport={consoleReport}
             onClearConsole={() => setConsoleReport(null)}
-            onEditSource={(source) => dispatch({ type: "edit_source", source })}
+            onEditSource={(source) => dispatch({ type: 'edit_source', source })}
             onRun={() => {
               void run();
             }}
-            onRequestHint={() => dispatch({ type: "request_hint" })}
-            onOpenDebrief={() => dispatch({ type: "open_debrief" })}
+            onRequestHint={() => dispatch({ type: 'request_hint' })}
+            onOpenDebrief={() => dispatch({ type: 'open_debrief' })}
           />
         ) : null}
 
-        {state.phase === "debrief" || state.phase === "complete" ? (
+        {state.phase === 'debrief' || state.phase === 'complete' ? (
           <SideBySide visual={visual}>
-          <Debrief
-            state={state}
-            onAnswerComplexity={(index) =>
-              dispatch({ type: "answer_complexity", index })
-            }
-            onEditReasoning={(text) =>
-              dispatch({ type: "edit_reasoning", text })
-            }
-            onAnswerExplain={(id, index) =>
-              dispatch({ type: "answer_explain", id, index })
-            }
-            onEditExplainNote={(text) =>
-              dispatch({ type: "edit_explain_note", text })
-            }
-            onSubmit={() =>
-              dispatch({ type: "submit_debrief", now: Date.now() })
-            }
-            onFinish={onExit}
-          />
+            <Debrief
+              state={state}
+              onAnswerComplexity={(index) =>
+                dispatch({ type: 'answer_complexity', index })
+              }
+              onEditReasoning={(text) =>
+                dispatch({ type: 'edit_reasoning', text })
+              }
+              onAnswerExplain={(id, index) =>
+                dispatch({ type: 'answer_explain', id, index })
+              }
+              onEditExplainNote={(text) =>
+                dispatch({ type: 'edit_explain_note', text })
+              }
+              onSubmit={() =>
+                dispatch({ type: 'submit_debrief', now: Date.now() })
+              }
+              onFinish={onExit}
+            />
           </SideBySide>
         ) : null}
       </main>
