@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "id": "M01",
+  "contentVersion": "1.0.0",
+  "locale": "es",
+  "world": "w1",
+  "order": 1,
+  "title": "El primer diagnóstico",
+  "subtitle": "Condiciones y comparación",
+  "difficulty": 1,
+  "estimatedMinutes": 5,
+
+  "concepts": {
+    "primary": "C01",
+    "secondary": ["C02"]
+  },
+
+  "prerequisites": {
+    "missions": [],
+    "concepts": []
+  },
+
+  "workshop": {
+    "systemId": "sys.sensor",
+    "from": "broken",
+    "to": "working"
+  },
+
+  "briefing": {
+    "headline": "Sensor array — turno de noche",
+    "body": "El sensor del horno marca 95 °C. El límite seguro de la línea son 90 °C.\n\nEl panel de alarma solo tiene una entrada y espera un sí o un no. Si le mandamos cualquier otra cosa, se queda en blanco y nadie se entera del incendio.\n\nNecesito una función que reciba la lectura y el límite, y devuelva si hay que disparar la alarma.",
+    "requirements": [
+      "Recibe la lectura del sensor y el límite seguro",
+      "Devuelve si hay que disparar la alarma",
+      "El panel solo entiende un sí o un no"
+    ],
+    "forbiddenVocabulary": []
+  },
+
+  "contract": {
+    "entryPoint": "isOverLimit",
+    "signature": "isOverLimit(temperature, limit) -> boolean",
+    "inputShape": "temperature: number, limit: number",
+    "outputShape": "boolean",
+    "rules": [
+      "Devuelve true cuando temperature supera estrictamente limit",
+      "Devuelve false en cualquier otro caso, incluido temperature === limit",
+      "Siempre devuelve un boolean, nunca texto ni undefined"
+    ]
+  },
+
+  "constraints": {
+    "bannedConstructs": [],
+    "allowClosedForm": true,
+    "mustNotMutate": false
+  },
+
+  "starterCode": "function isOverLimit(temperature, limit) {\n  // your code here\n}\n",
+
+  "tests": {
+    "visible": [
+      {
+        "id": "v1",
+        "input": [95, 90],
+        "expected": true,
+        "note": "la lectura del turno"
+      },
+      {
+        "id": "v2",
+        "input": [85, 90],
+        "expected": false,
+        "note": "por debajo del límite"
+      },
+      {
+        "id": "v3",
+        "input": [120, 90],
+        "expected": true,
+        "note": "muy por encima del límite"
+      }
+    ],
+    "hidden": [
+      {
+        "id": "h1",
+        "input": [91, 90],
+        "expected": true,
+        "note": "apenas por encima"
+      },
+      {
+        "id": "h2",
+        "input": [89, 90],
+        "expected": false,
+        "note": "apenas por debajo"
+      },
+      {
+        "id": "h3",
+        "input": [0, 90],
+        "expected": false,
+        "note": "lectura de cero grados"
+      },
+      {
+        "id": "h4",
+        "input": [200, 90],
+        "expected": true,
+        "note": "lectura extrema"
+      }
+    ],
+    "edge": [
+      {
+        "id": "ed1",
+        "input": [90, 90],
+        "expected": false,
+        "edge": true,
+        "edgeKind": "boundary-equal",
+        "note": "justo en el límite"
+      },
+      {
+        "id": "ed2",
+        "input": [-5, -10],
+        "expected": true,
+        "edge": true,
+        "edgeKind": "negative",
+        "note": "sensor de cámara frigorífica"
+      },
+      {
+        "id": "ed3",
+        "input": [0, 0],
+        "expected": false,
+        "edge": true,
+        "edgeKind": "zero",
+        "note": "cero contra cero"
+      }
+    ]
+  },
+
+  "diagnostics": [
+    {
+      "code": "E05",
+      "when": { "failingTestIds": ["ed1"] },
+      "message": "Con 90 y límite 90, el panel recibe true. ¿Está el horno por encima del límite, o justo en el límite?"
+    },
+    {
+      "code": "E05",
+      "message": "Con 85 °C y límite 90 el panel se dispara. ¿Qué está comprobando realmente tu condición?"
+    },
+    {
+      "code": "E08",
+      "message": "¿Qué devuelve tu función cuando la condición no se cumple? Compruébalo con 85 y límite 90."
+    },
+    {
+      "code": "E12",
+      "message": "El panel no recibe un valor de verdad. ¿Qué tipo espera y qué tipo estás devolviendo?"
+    },
+    {
+      "code": "E01",
+      "message": "Hay un error de sintaxis antes de que el código pueda ejecutarse. Revisa la línea marcada: el motor no pudo interpretar esa expresión."
+    },
+    {
+      "code": "E02",
+      "message": "El código lanzó una excepción durante la ejecución. Revisa qué valor estabas usando cuando ocurrió."
+    }
+  ],
+
+  "hints": [
+    {
+      "level": 1,
+      "text": "¿Qué dos cosas tiene que mirar la función para decidir? ¿Y qué pasa cuando las dos son iguales?"
+    },
+    {
+      "level": 2,
+      "text": "Ejecuta mentalmente tu código con temperature = 90 y limit = 90. ¿Qué devuelve? ¿Debería?"
+    },
+    {
+      "level": 3,
+      "text": "si temperature es ESTRICTAMENTE mayor que limit → devolver true; si no → devolver false. La palabra que importa es «estrictamente»."
+    },
+    {
+      "level": 4,
+      "text": "Otro sistema del taller: una puerta de seguridad se bloquea si la presión supera 3.5 bar, pero con 3.5 bar exactos queda abierta.\n\nfunction debeBloquearse(presion, limite) {\n  if (presion > limite) {\n    return true;\n  }\n  return false;\n}\n\nCon 3.5 y límite 3.5 devuelve false: no lo supera. Tu sensor funciona igual, con otros nombres.",
+      "unlock": { "attempts": 4, "hintsUsed": 3 }
+    }
+  ],
+
+  "debrief": {
+    "whyItWorks": "Una condición traduce una pregunta del mundo real («¿está por encima del límite?») a un valor que el sistema puede usar. La elección entre > y >= no es sintaxis: es una decisión sobre el significado de «superar».",
+    "edgeCaseNote": "En el límite exacto la alarma no se dispara. Es una decisión de diseño, no un accidente: el límite es seguro, y solo lo que está por encima es peligroso. En un sistema real esa decisión se documenta, porque alguien la va a cuestionar.",
+    "complexity": {
+      "question": "¿Cuántas comparaciones hace tu función, sin importar cuántos sensores tenga el taller?",
+      "options": [
+        "Una sola, siempre",
+        "Una por cada sensor",
+        "Depende del valor de la temperatura",
+        "Ninguna"
+      ],
+      "correctIndex": 0,
+      "explanation": "La función mira un único valor y lo compara una vez. El coste es constante: no depende del tamaño de nada. Si mañana hay 500 sensores, el problema no es esta función, sino quién la llama 500 veces."
+    },
+    "realWorld": "Validación de umbrales: temperatura de CPU, saldo mínimo, latencia máxima aceptable, límites de rate. Todos son una decisión entre > y >=, y todos han causado incidentes reales por elegir mal.",
+    "reasoningPrompt": "Explica en una frase por qué con 90 °C exactos la alarma NO se dispara, y qué cambiarías si el taller decidiera que el límite también es peligroso.",
+    "objectiveNouns": ["alarma", "límite", "sensor", "peligro"],
+    "reasoningLexicon": ["comparo", "supera", "excede", "devuelvo"]
+  },
+
+  "mastery": {
+    "transferMissionId": "M12",
+    "reinforcementVariants": []
+  },
+
+  "reward": {
+    "systemId": "sys.sensor",
+    "effect": "broken → working",
+    "narrative": "El sensor del taller vuelve a emitir lecturas."
+  }
+}

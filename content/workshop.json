@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "systems": [
+    {
+      "id": "sys.sensor",
+      "name": "Sensor array",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.line",
+      "name": "Conveyor line",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.store",
+      "name": "Inventory store",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.log",
+      "name": "Maintenance log",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.guard",
+      "name": "Safety guard",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.dispatch",
+      "name": "Dispatch board",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.meter",
+      "name": "Cost meter",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.memory",
+      "name": "Memory cell",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.index",
+      "name": "Index drawer",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.audit",
+      "name": "Audit terminal",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
+    }
+  ]
+}
