@@ -185,6 +185,107 @@
     }
   ],
   "debrief": {
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe el caso, y responde las preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "El código original divide la suma entre {b1}; por eso con una lista vacía devuelve {b2} y con `[20, null, 30]` devuelve 16,67. La corrección divide entre {b3} y, si no queda ninguna lectura válida, devuelve {b4}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": [
+            "cuántas lecturas son válidas",
+            "la suma de todas las lecturas",
+            "cuántas lecturas hay en la lista"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "id": "b2",
+          "options": [
+            "NaN",
+            "0",
+            "null",
+            "un error de ejecución"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "id": "b3",
+          "options": [
+            "la suma de las lecturas",
+            "cuántas lecturas son distintas de null",
+            "cuántas lecturas hay en la lista",
+            "el mayor valor de la lista"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "id": "b4",
+          "options": [
+            "0",
+            "NaN",
+            "undefined",
+            "null"
+          ],
+          "correctIndex": 3
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "Con `[20, null, 30]` el código original devuelve 16,67 en lugar de 25. ¿Qué ocurre dentro de la función?",
+          "options": [
+            "El `null` convierte la suma en `NaN` y el resultado queda redondeado a 16,67",
+            "El bucle se detiene al llegar al `null` y solo suma el 20",
+            "El `null` aporta 0 a la suma, pero cuenta como una lectura más en la división",
+            "El `null` se ignora en la suma y en la cuenta, y el fallo está en el redondeo"
+          ],
+          "correctIndex": 2,
+          "whyWrong": [
+            "Si la suma fuera `NaN`, el resultado completo sería `NaN`, no 16,67. Haz la cuenta a mano: 20 + null + 30.",
+            "Entonces el resultado sería 20 / 3, no 16,67. Comprueba cuántas vueltas da el bucle.",
+            "",
+            "Si se ignorara en las dos, el resultado sería 25. Mira qué número divide la suma."
+          ],
+          "explanation": "En una suma, `null` se comporta como 0, así que no rompe la suma; pero `readings.length` lo cuenta igual. La suma es correcta y el divisor no."
+        },
+        {
+          "id": "q2",
+          "question": "Un compañero arregla solo el caso vacío con `if (readings.length === 0) return null`. ¿Qué devuelve ahora `[null, null]`?",
+          "options": [
+            "`NaN`, porque `null` no es un número",
+            "`null`, porque todas las lecturas son nulas",
+            "Lanza un error al sumar valores `null`",
+            "0, porque la lista no está vacía aunque ninguna lectura sea válida"
+          ],
+          "correctIndex": 3,
+          "whyWrong": [
+            "La suma de `null` da 0, no `NaN`. ¿Qué número divide a ese 0?",
+            "La guarda mira cuántos elementos hay en la lista, no cuántos son válidos. ¿Cuánto vale `length` aquí?",
+            "Sumar `null` no lanza ningún error en JavaScript.",
+            ""
+          ],
+          "explanation": "La guarda mide la lista y no las lecturas válidas. Hay que contar las válidas y comprobar ese contador antes de dividir."
+        },
+        {
+          "id": "q3",
+          "question": "Para no sumar los desconectados, alguien escribe `if (readings[i])` antes de sumar. ¿Qué problema tiene esa comprobación?",
+          "options": [
+            "Descarta las lecturas de 0 °C, que son válidas, porque 0 se evalúa como falso",
+            "Deja pasar los `null`, porque `null` se evalúa como verdadero",
+            "Descarta las lecturas negativas, porque son menores que cero",
+            "No cambia nada, porque la suma ya ignoraba los `null`"
+          ],
+          "correctIndex": 0,
+          "whyWrong": [
+            "",
+            "`null` se evalúa como falso; esa parte sí funciona. Fíjate en qué otro valor se evalúa como falso.",
+            "Un número negativo se evalúa como verdadero. ¿Qué número no?",
+            "Cambia la cuenta: ahora hay dos formas de contar. Prueba con `[0, 0]`."
+          ],
+          "explanation": "Que `0` y `null` se evalúen como falsos no significa que sean lo mismo: 0 es una lectura y `null` es ausencia de lectura."
+        }
+      ]
+    },
     "whyItWorks": "El divisor de un promedio no es «cuántos elementos hay», es «cuántos elementos cuentan». Esa distinción separa un promedio correcto de uno que solo lo parece. Los dos síntomas, el `NaN` y el promedio bajo, salían de una única causa.",
     "edgeCaseNote": "Sin lecturas válidas el resultado es `null`: no `0` ni `NaN`. El contrato con quien llama importa tanto como el cálculo, porque `null` significa «no hay dato» y `0` significa «el dato es cero». Por eso `[0, 0]` debe dar 0: tratar el cero como ausente es confundir «sin valor» con «valor que evaluamos como falso».",
     "complexity": {
