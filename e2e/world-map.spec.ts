@@ -8,7 +8,7 @@ test('el mapa muestra mundos y abre World 1 con sus misiones', async ({ page }) 
   await page.getByRole('button', { name: /^World 1/ }).click();
   await expect(page.getByRole('list', { name: 'Misiones' })).toBeVisible();
   await expect(page.getByRole('button', { name: /^M01 .*disponible/ })).toBeVisible();
-  await expect(page.getByRole('button', { name: /^M02 .*próximamente/ })).toHaveAttribute(
+  await expect(page.getByRole('button', { name: /^M02 .*bloqueada/ })).toHaveAttribute(
     'aria-disabled',
     'true',
   );

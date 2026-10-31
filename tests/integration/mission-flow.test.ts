@@ -129,7 +129,7 @@ describe('full M01 flow', () => {
 
     const ids = completedMissionIds(progress);
     expect(missionStates(bundle.missions, ids).get('M01')).toBe('completed');
-    expect(nextMission(bundle.missions, ids)).toBeNull();
+    expect(nextMission(bundle.missions, ids)?.id).toBe('M02');
   });
 
   it('keeps a replay as one completion record, not two', () => {

@@ -81,7 +81,7 @@ test('X1 · recorre la misión de principio a fin y repara el sensor', async ({ 
   await page.getByRole('button', { name: 'Volver al taller →' }).click();
   await openWorld1(page);
   await expect(page.getByLabel('Sensor array: operativo')).toBeVisible();
-  await expect(page.getByText('No queda nada jugable en este corte')).toBeVisible();
+  await expect(page.getByText('M02 · Salida temprana')).toBeVisible();
 });
 
 test('X2 · el fallo en el límite se diagnostica, escala la pista y se repara', async ({ page }) => {

@@ -49,6 +49,7 @@
   "constraints": {
     "bannedConstructs": [".sort","Math.max",".reduce"],
     "allowClosedForm": false,
+    "rotationInvariant": false,
     "mustNotMutate": true
   },
   "starterCode": "function findMostUrgent(orders) {\n  // your code here\n}\n",
