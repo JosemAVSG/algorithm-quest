@@ -201,7 +201,105 @@
     "realWorld": "Mapeo de DTOs, adaptar la respuesta de una API a lo que espera la interfaz, transformaciones de ETL, proyecciones `SELECT ... AS ...` y modelos de vista en cualquier frontend.",
     "reasoningPrompt": "¿Por qué la salida tiene el mismo número de elementos que la entrada? ¿Qué tendría que cambiar en el enunciado para que ya no fuera así?",
     "objectiveNouns": ["registro","panel","reparación","histórico"],
-    "reasoningLexicon": ["transformo","copio","creo","conservo"]
+    "reasoningLexicon": ["transformo","copio","creo","conservo"],
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe tu código, y responde las preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Recorro {b1} y, por cada reparación, {b2}. La prioridad sale de {b3}. Devuelvo {b4}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": [
+            "solo las reparaciones resueltas",
+            "las reparaciones hasta la primera abierta",
+            "todas las reparaciones, sin saltarme ninguna"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "id": "b2",
+          "options": [
+            "creo un objeto nuevo con los campos copiados y los dos añadidos",
+            "añado status y priority al mismo objeto que recibí",
+            "guardo solo status y priority, sin los demás campos"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "id": "b3",
+          "options": [
+            "una comparación de horas con >= 8",
+            "una comparación de horas con < 8",
+            "una comparación de horas con > 8"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "id": "b4",
+          "options": [
+            "el registro original, ya con los campos añadidos",
+            "una lista nueva con tantos objetos como reparaciones",
+            "una lista nueva sin las reparaciones abiertas"
+          ],
+          "correctIndex": 1
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "Tu salida es correcta, pero la auditoría detecta que el registro original ahora tiene status y priority. ¿Qué ocurrió?",
+          "options": [
+            "La salida tiene más elementos que el registro y se reutilizó el sobrante",
+            "El bucle recorrió el registro en orden inverso y lo reescribió",
+            "Se asignaron los campos a los mismos objetos recibidos, en vez de crear objetos nuevos",
+            "El límite de horas se comparó con el operador equivocado"
+          ],
+          "correctIndex": 2,
+          "whyWrong": [
+            "El número de elementos no modifica el registro de entrada. La causa está en qué objeto recibe los campos nuevos.",
+            "El orden del recorrido cambia la salida, no escribe nada en el registro.",
+            "",
+            "El operador del límite afecta a priority, no a si el registro original cambia."
+          ],
+          "explanation": "Si añades campos al objeto que recibiste, lo estás modificando. Hay que construir un objeto nuevo por cada reparación."
+        },
+        {
+          "id": "q2",
+          "question": "El registro tiene 5 reparaciones y 2 están abiertas. ¿Cuántos elementos tiene la salida?",
+          "options": [
+            "3, porque solo se procesan las reparaciones resueltas",
+            "5, porque cada reparación produce un objeto, esté abierta o no",
+            "2, porque el panel solo necesita las que siguen abiertas",
+            "Depende de cuántas pasen de 8 horas"
+          ],
+          "correctIndex": 1,
+          "whyWrong": [
+            "Las abiertas también necesitan status y priority; el panel pide todas.",
+            "",
+            "El panel pide todas las reparaciones, no solo las abiertas.",
+            "Las horas deciden el valor de priority, no si la reparación sale o no."
+          ],
+          "explanation": "Transformar no es seleccionar: todas entran, todas salen y cada una cambia de forma. La salida mide lo mismo que la entrada."
+        },
+        {
+          "id": "q3",
+          "question": "Una reparación dura exactamente 8 horas. ¿Qué priority lleva?",
+          "options": [
+            "high, porque 8 horas ya alcanza el límite del panel",
+            "high, porque la reparación está resuelta",
+            "normal, porque el 8 se redondea a la baja",
+            "normal, porque el panel pide «más de» 8 horas"
+          ],
+          "correctIndex": 3,
+          "whyWrong": [
+            "Alcanzar el límite no es superarlo: el panel dice «más de» 8.",
+            "Que esté resuelta decide status, no priority.",
+            "Aquí no se redondea nada: se compara el número de horas tal cual.",
+            ""
+          ],
+          "explanation": "high exige estrictamente más de 8 horas, así que con 8 exactas es normal."
+        }
+      ]
+    }
   },
   "mastery": {
     "transferMissionId": "M11",
