@@ -5,9 +5,9 @@
  * Copy here must stay clear of each mission's forbiddenVocabulary.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
-import type { Mission } from '../../domain/content/schema';
+import type { Mission } from "../../domain/content/schema";
 import {
   GAUGE_LIMIT,
   GAUGE_MAX,
@@ -18,19 +18,24 @@ import {
   cellState,
   gaugeFrame,
   scanFrame,
-} from './visualModel';
-import { CollectLine } from './visuals/m03';
-import { RunningTotal } from './visuals/m04';
-import { CopyRows } from './visuals/m05';
+} from "./visualModel";
+import { CollectLine } from "./visuals/m03";
+import { RunningTotal } from "./visuals/m04";
+import { CopyRows } from "./visuals/m05";
+import { M11Visual } from "./visuals/M11Visual";
+import { M12Visual } from "./visuals/M12Visual";
 
-type VisualId = NonNullable<Mission['briefing']['visual']>;
+type VisualId = NonNullable<Mission["briefing"]["visual"]>;
 
 /** Advances one frame every `intervalMs`. */
 function useTick(intervalMs: number): number {
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    const timer = window.setInterval(() => setTick((value) => value + 1), intervalMs);
+    const timer = window.setInterval(
+      () => setTick((value) => value + 1),
+      intervalMs,
+    );
     return () => window.clearInterval(timer);
   }, [intervalMs]);
 
@@ -55,8 +60,8 @@ function EarlyExitScan() {
         aria-labelledby="visual-scan-title"
       >
         <title id="visual-scan-title">
-          Cuarenta sensores en fila. Se revisan de izquierda a derecha y se para en el séptimo,
-          que supera el límite; los demás no se revisan.
+          Cuarenta sensores en fila. Se revisan de izquierda a derecha y se para
+          en el séptimo, que supera el límite; los demás no se revisan.
         </title>
         <g aria-hidden="true">
           {Array.from({ length: SENSOR_COUNT }, (_, index) => (
@@ -76,20 +81,32 @@ function EarlyExitScan() {
                 points={`${markX},52 ${markX + 6},62 ${markX - 6},62`}
                 className="visual__stop-mark"
               />
-              <text x={markX - 6} y="80" className="visual__label visual__label--broken">
+              <text
+                x={markX - 6}
+                y="80"
+                className="visual__label visual__label--broken"
+              >
                 supera el límite
               </text>
             </>
           ) : null}
           <text x="0" y="108" className="visual__label">
-            {frame.stopped ? 'Se para aquí: los demás ya no hacen falta.' : 'Revisando de uno en uno…'}
+            {frame.stopped
+              ? "Se para aquí: los demás ya no hacen falta."
+              : "Revisando de uno en uno…"}
           </text>
         </g>
       </svg>
       <figcaption className="visual__legend" aria-hidden="true">
-        <span><i className="visual__key visual__key--ok" /> revisado, bien</span>
-        <span><i className="visual__key visual__key--over" /> supera el límite</span>
-        <span><i className="visual__key visual__key--idle" /> sin revisar</span>
+        <span>
+          <i className="visual__key visual__key--ok" /> revisado, bien
+        </span>
+        <span>
+          <i className="visual__key visual__key--over" /> supera el límite
+        </span>
+        <span>
+          <i className="visual__key visual__key--idle" /> sin revisar
+        </span>
       </figcaption>
     </figure>
   );
@@ -109,32 +126,62 @@ function Gauge() {
   const levelY = yFor(frame.reading);
   const limitY = yFor(GAUGE_LIMIT);
   const verdict = frame.alarm
-    ? 'Arriba del límite: alarma'
+    ? "Arriba del límite: alarma"
     : frame.reading === GAUGE_LIMIT
-      ? 'Igual al límite: sin alarma'
-      : 'Debajo del límite: sin alarma';
+      ? "Igual al límite: sin alarma"
+      : "Debajo del límite: sin alarma";
 
   return (
     <figure className="visual">
-      <svg className="visual__svg visual__svg--gauge" viewBox="0 0 240 176" role="img" aria-labelledby="visual-gauge-title">
+      <svg
+        className="visual__svg visual__svg--gauge"
+        viewBox="0 0 240 176"
+        role="img"
+        aria-labelledby="visual-gauge-title"
+      >
         <title id="visual-gauge-title">
-          Termómetro con una línea de límite. Una lectura por encima del límite dispara la alarma;
-          una lectura igual al límite no.
+          Termómetro con una línea de límite. Una lectura por encima del límite
+          dispara la alarma; una lectura igual al límite no.
         </title>
         <g aria-hidden="true">
-          <rect x="40" y={GAUGE_TOP} width="28" height={GAUGE_BOTTOM - GAUGE_TOP} rx="6" className="visual__tube" />
+          <rect
+            x="40"
+            y={GAUGE_TOP}
+            width="28"
+            height={GAUGE_BOTTOM - GAUGE_TOP}
+            rx="6"
+            className="visual__tube"
+          />
           <rect
             x="40"
             y={levelY}
             width="28"
             height={GAUGE_BOTTOM - levelY}
             rx="6"
-            className={`visual__level${frame.alarm ? ' visual__level--alarm' : ''}`}
+            className={`visual__level${frame.alarm ? " visual__level--alarm" : ""}`}
           />
-          <line x1="30" x2="150" y1={limitY} y2={limitY} className="visual__limit" />
-          <text x="156" y={limitY + 14} className="visual__label">límite ({GAUGE_LIMIT})</text>
-          <text x="156" y={levelY - 6} className="visual__label visual__label--strong">lectura {frame.reading}</text>
-          <text x="80" y="172" className={`visual__label${frame.alarm ? ' visual__label--broken' : ''}`}>
+          <line
+            x1="30"
+            x2="150"
+            y1={limitY}
+            y2={limitY}
+            className="visual__limit"
+          />
+          <text x="156" y={limitY + 14} className="visual__label">
+            límite ({GAUGE_LIMIT})
+          </text>
+          <text
+            x="156"
+            y={levelY - 6}
+            className="visual__label visual__label--strong"
+          >
+            lectura {frame.reading}
+          </text>
+          <text
+            x="80"
+            y="172"
+            className={`visual__label${frame.alarm ? " visual__label--broken" : ""}`}
+          >
             {verdict}
           </text>
         </g>
@@ -148,8 +195,10 @@ function Gauge() {
 }
 
 export function BriefingVisual({ id }: { id: VisualId }) {
-  if (id === 'collect-line') return <CollectLine />;
-  if (id === 'running-total') return <RunningTotal />;
-  if (id === 'copy-rows') return <CopyRows />;
-  return id === 'gauge' ? <Gauge /> : <EarlyExitScan />;
+  if (id === "collect-line") return <CollectLine />;
+  if (id === "running-total") return <RunningTotal />;
+  if (id === "copy-rows") return <CopyRows />;
+  if (id === "m11-tally") return <M11Visual />;
+  if (id === "m12-strategy") return <M12Visual />;
+  return id === "gauge" ? <Gauge /> : <EarlyExitScan />;
 }

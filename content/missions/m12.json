@@ -37,7 +37,8 @@
       "dos fases",
       "hash",
       "estructura"
-    ]
+    ],
+    "visual": "m12-strategy"
   },
   "contract": {
     "entryPoint": "buildAuditReport",
@@ -246,7 +247,127 @@
     "realWorld": "Informes de auditoría, reconciliación de datos, detección de fraude, control de idempotencia y cualquier entrevista técnica donde el enunciado no dice qué estructura usar.",
     "reasoningPrompt": "Elige una de las tres sub-tareas y explica por qué otra estructura no habría servido. Después di cuál de las tres fue la más difícil de reconocer y por qué.",
     "objectiveNouns": ["informe", "duplicado", "categoría", "prioridad"],
-    "reasoningLexicon": ["recuerdo", "elijo", "estructura", "intercambio"]
+    "reasoningLexicon": ["recuerdo", "elijo", "estructura", "intercambio"],
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe tu código, y responde las cuatro preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Resuelvo las tres preguntas con tres memorias distintas: para saber si un id ya apareció, guardo {b1}; para contar por categoría, uso {b2}; y para la prioridad solo conservo {b3}. Si una orden empata con la favorita, {b4}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": [
+            "una lista de todas las órdenes para volver a mirarla con cada id",
+            "cuántas veces ha aparecido cada id, ordenado de mayor a menor",
+            "los id que ya han aparecido, para consultarlos al instante",
+            "solo el id de la orden anterior, para compararlo con la siguiente"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "id": "b2",
+          "options": [
+            "una lista de pares que reviso entera con cada orden nueva",
+            "un objeto normal con la categoría como clave, sin más cuidado",
+            "un conjunto con las categorías que ya han aparecido en la cola",
+            "un diccionario que asocia cada categoría con su cantidad"
+          ],
+          "correctIndex": 3
+        },
+        {
+          "id": "b3",
+          "options": [
+            "la mejor orden vista hasta el momento",
+            "todas las órdenes, ordenadas por prioridad",
+            "solo la posición de la mejor, sin su id",
+            "una cuenta de órdenes por cada prioridad"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "id": "b4",
+          "options": [
+            "gana la nueva, porque es la más reciente",
+            "gana la que apareció primero en la lista",
+            "gana la de id alfabéticamente menor",
+            "no gana ninguna y devuelvo null"
+          ],
+          "correctIndex": 1
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "En la cola de id A, B, B, A, A, ¿qué lista de duplicados debe salir?",
+          "options": [
+            "B, A: en el orden en que se detectó cada repetición",
+            "B, A, A: una entrada por cada repetición detectada",
+            "A, B: cada id una sola vez, en el orden de su primera aparición",
+            "A: solo el id que más veces se repite en toda la cola"
+          ],
+          "correctIndex": 2,
+          "whyWrong": [
+            "La repetición de B se detecta antes que la de A, pero el contador pide el orden de la primera aparición: A apareció antes que B.",
+            "Un id repetido va una sola vez en la lista, aunque aparezca cinco veces. Tu lista tendría entradas de más.",
+            "",
+            "Son duplicados todos los id que aparecen más de una vez, no solo el más repetido: B también cuenta."
+          ],
+          "explanation": "Los duplicados salen sin repetirse y en el orden de su primera aparición: A, B."
+        },
+        {
+          "id": "q2",
+          "question": "Si «__proto__» puede ser una categoría, ¿qué memoria sirve para contar órdenes por categoría?",
+          "options": [
+            "Un Map, que guarda cualquier texto como clave sin heredar nada",
+            "Un objeto normal, empezando cada cuenta en 0 antes de sumar uno",
+            "Un conjunto de categorías, y su tamaño final da la cantidad de cada una",
+            "Una lista que se reordena por categoría cada vez que llega otra orden"
+          ],
+          "correctIndex": 0,
+          "whyWrong": [
+            "",
+            "Aunque empieces en 0, «__proto__» no es una clave libre en un objeto normal y su cuenta se pierde sin avisar.",
+            "Un conjunto solo recuerda qué ha aparecido, no cuántas veces: no puede asociar un número a cada categoría.",
+            "Reordenar con cada orden nueva es lento con 50.000 órdenes y además modifica o duplica la lista original."
+          ],
+          "explanation": "Contar necesita asociar un número a cada categoría, y una clave como «__proto__» exige una estructura sin herencia."
+        },
+        {
+          "id": "q3",
+          "question": "Tres órdenes X, Y y Z llegan con prioridades 5, 5 y 3. ¿Qué devuelve highestPriorityOrderId y qué comparación lo decide?",
+          "options": [
+            "Y, porque con prioridad igual se prefiere la orden más reciente (>=)",
+            "X, porque la favorita solo cambia con una prioridad estrictamente mayor",
+            "0, porque se devuelve la posición de la orden mejor situada en la lista",
+            "null, porque con prioridades empatadas no hay una orden más prioritaria"
+          ],
+          "correctIndex": 1,
+          "whyWrong": [
+            "Con >= la favorita se sustituye en cada empate y gana la última. El enunciado pide la primera que aparece.",
+            "",
+            "Se pide el id de la orden, no su posición en la lista.",
+            "Un empate sí tiene ganadora: la regla es que gana la primera. null es solo para la cola vacía."
+          ],
+          "explanation": "Con una comparación estricta (>) la favorita no cambia en un empate, así que gana la primera."
+        },
+        {
+          "id": "q4",
+          "question": "¿Qué devuelve la función con la cola vacía?",
+          "options": [
+            "null: sin órdenes no hay nada que informar, ni siquiera un informe",
+            "undefined: ningún return dentro de los bucles llega a ejecutarse",
+            "Un informe con las listas vacías pero sin la clave de la prioritaria",
+            "Un informe vacío pero completo, con highestPriorityOrderId a null"
+          ],
+          "correctIndex": 3,
+          "whyWrong": [
+            "El contrato pide siempre un informe con las tres partes; null solo corresponde a highestPriorityOrderId.",
+            "El return final va fuera de los bucles, así que se ejecuta aunque no haya órdenes.",
+            "El informe tiene siempre las tres partes con sus nombres exactos; falta highestPriorityOrderId.",
+            ""
+          ],
+          "explanation": "Un informe vacío pero bien formado: dos listas vacías y null en la prioritaria."
+        }
+      ]
+    }
   },
   "mastery": {
     "reinforcementVariants": []

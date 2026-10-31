@@ -9,7 +9,7 @@
  * forward compatibility. V1 in docs/09 §4.
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // ---------------------------------------------------------------------------
 // Identifiers and closed vocabularies
@@ -21,10 +21,18 @@ export const SYSTEM_ID_PATTERN = /^sys\.[a-z][a-z0-9]*$/;
 export const ERROR_CODE_PATTERN = /^E\d{2}$/;
 export const SEMVER_PATTERN = /^\d+\.\d+\.\d+$/;
 
-export const WORLD_IDS = ['w1', 'transition', 'w2', 'w3', 'w4', 'w5', 'w6'] as const;
+export const WORLD_IDS = [
+  "w1",
+  "transition",
+  "w2",
+  "w3",
+  "w4",
+  "w5",
+  "w6",
+] as const;
 export type WorldId = (typeof WORLD_IDS)[number];
 
-export const WORLD_STATUSES = ['planned', 'in-progress', 'complete'] as const;
+export const WORLD_STATUSES = ["planned", "in-progress", "complete"] as const;
 export type WorldStatus = (typeof WORLD_STATUSES)[number];
 
 /**
@@ -32,27 +40,39 @@ export type WorldStatus = (typeof WORLD_STATUSES)[number];
  * open vocabulary would let an author label anything "edge" and pass L7.
  */
 export const EDGE_KINDS = [
-  'empty',
-  'singleton',
-  'all-match',
-  'none-match',
-  'boundary-equal',
-  'duplicate',
-  'negative',
-  'zero',
-  'extreme',
+  "empty",
+  "singleton",
+  "all-match",
+  "none-match",
+  "boundary-equal",
+  "duplicate",
+  "negative",
+  "zero",
+  "extreme",
 ] as const;
 export type EdgeKind = (typeof EDGE_KINDS)[number];
 
-export const SYSTEM_STATES = ['broken', 'working', 'reliable', 'absent', 'installed'] as const;
+export const SYSTEM_STATES = [
+  "broken",
+  "working",
+  "reliable",
+  "absent",
+  "installed",
+] as const;
 export type SystemState = (typeof SYSTEM_STATES)[number];
 
-export const WORKSHOP_FROM_STATES = ['broken', 'working', 'absent'] as const;
-export const WORKSHOP_TO_STATES = ['working', 'reliable', 'installed'] as const;
+export const WORKSHOP_FROM_STATES = ["broken", "working", "absent"] as const;
+export const WORKSHOP_TO_STATES = ["working", "reliable", "installed"] as const;
 
-const MissionIdSchema = z.string().regex(MISSION_ID_PATTERN, 'must match /^M\\d{2}$/');
-const ConceptIdSchema = z.string().regex(CONCEPT_ID_PATTERN, 'must match /^C\\d{2}$/');
-const SystemIdSchema = z.string().regex(SYSTEM_ID_PATTERN, 'must match /^sys\\.[a-z][a-z0-9]*$/');
+const MissionIdSchema = z
+  .string()
+  .regex(MISSION_ID_PATTERN, "must match /^M\\d{2}$/");
+const ConceptIdSchema = z
+  .string()
+  .regex(CONCEPT_ID_PATTERN, "must match /^C\\d{2}$/");
+const SystemIdSchema = z
+  .string()
+  .regex(SYSTEM_ID_PATTERN, "must match /^sys\\.[a-z][a-z0-9]*$/");
 
 /**
  * A JSON value. Deliberately not `z.unknown()`: `unknown` is treated as
@@ -89,7 +109,7 @@ export type TestCase = z.infer<typeof TestCaseSchema>;
 
 const DiagnosticRuleSchema = z
   .object({
-    code: z.string().regex(ERROR_CODE_PATTERN, 'must match /^E\\d{2}$/'),
+    code: z.string().regex(ERROR_CODE_PATTERN, "must match /^E\\d{2}$/"),
     when: z
       .object({
         failingTestIds: z.array(z.string().min(1)).optional(),
@@ -203,13 +223,19 @@ export const MissionSchema = z
   .object({
     schemaVersion: z.literal(1),
     id: MissionIdSchema,
-    contentVersion: z.string().regex(SEMVER_PATTERN, 'must be semver'),
-    locale: z.literal('es'),
+    contentVersion: z.string().regex(SEMVER_PATTERN, "must be semver"),
+    locale: z.literal("es"),
     world: z.enum(WORLD_IDS),
     order: z.number().int().positive(),
     title: z.string().min(1),
     subtitle: z.string().min(1),
-    difficulty: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)]),
+    difficulty: z.union([
+      z.literal(1),
+      z.literal(2),
+      z.literal(3),
+      z.literal(4),
+      z.literal(5),
+    ]),
     estimatedMinutes: z.number().int().positive(),
 
     concepts: z
@@ -242,7 +268,17 @@ export const MissionSchema = z
         body: z.string().min(1),
         requirements: z.array(z.string().min(1)).min(1),
         forbiddenVocabulary: z.array(z.string().min(1)),
-        visual: z.enum(['gauge', 'early-exit-scan', 'collect-line', 'running-total', 'copy-rows']).optional(),
+        visual: z
+          .enum([
+            "gauge",
+            "early-exit-scan",
+            "collect-line",
+            "running-total",
+            "copy-rows",
+            "m11-tally",
+            "m12-strategy",
+          ])
+          .optional(),
       })
       .strict(),
 
@@ -334,7 +370,7 @@ export const ConceptRegistrySchema = z
   .strict();
 
 export type ConceptRegistry = z.infer<typeof ConceptRegistrySchema>;
-export type Concept = ConceptRegistry['concepts'][number];
+export type Concept = ConceptRegistry["concepts"][number];
 
 export const WorkshopSystemSchema = z
   .object({
@@ -379,7 +415,7 @@ export const WorldsRegistrySchema = z
   .strict();
 
 export type WorldsRegistry = z.infer<typeof WorldsRegistrySchema>;
-export type World = WorldsRegistry['worlds'][number];
+export type World = WorldsRegistry["worlds"][number];
 
 export const ReinforcementRegistrySchema = z
   .object({

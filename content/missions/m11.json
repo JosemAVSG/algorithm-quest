@@ -36,7 +36,8 @@
       "frecuencia",
       "contador asociativo",
       "hash"
-    ]
+    ],
+    "visual": "m11-tally"
   },
   "contract": {
     "entryPoint": "mostFrequentCategory",
@@ -239,7 +240,127 @@
     "realWorld": "GROUP BY en SQL, conteo de eventos por tipo, análisis de logs, etiquetas más usadas y value_counts() en pandas.",
     "reasoningPrompt": "¿Por qué no puedes elegir la categoría más frecuente en el mismo recorrido en que cuentas? Explica con un ejemplo de tres órdenes.",
     "objectiveNouns": ["categoría", "frecuencia", "empate", "índice"],
-    "reasoningLexicon": ["cuento", "comparo", "elijo", "recorro"]
+    "reasoningLexicon": ["cuento", "comparo", "elijo", "recorro"],
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe tu código, y responde las cuatro preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Recorro las órdenes una sola vez y, por cada categoría, guardo {b1}. Uso una estructura que {b2}, porque con la clave «__proto__» un objeto normal {b3}. Al terminar de contar, elijo la categoría de mayor cantidad y, si hay empate, devuelvo {b4}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": [
+            "el id de la última orden que llegó",
+            "si ya la había visto o no",
+            "cuántas órdenes han llegado de ella",
+            "la posición de su primera aparición"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "id": "b2",
+          "options": [
+            "acepte cualquier texto como clave, sin heredar nada",
+            "ordene solas las claves según su cantidad al guardar",
+            "guarde únicamente las categorías con más de una orden",
+            "pase a minúsculas cada clave antes de guardarla"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "id": "b3",
+          "options": [
+            "lanza un error en cuanto se guarda esa clave",
+            "la guarda bien pero la cuenta dos veces",
+            "la trata como la cadena vacía y la mezcla con ella",
+            "puede descartar el valor guardado sin avisar de nada"
+          ],
+          "correctIndex": 3
+        },
+        {
+          "id": "b4",
+          "options": [
+            "la primera que llegó entre las empatadas",
+            "la que va primero alfabéticamente",
+            "la última que llegó entre las empatadas",
+            "la que tiene el id de orden más bajo"
+          ],
+          "correctIndex": 1
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "Con las categorías [b, b, a, a], ¿qué debe devolver la función y por qué?",
+          "options": [
+            "b, porque llegó primero y las dos categorías tienen las mismas órdenes",
+            "a, porque en un empate gana la que va antes alfabéticamente",
+            "a, porque es la última categoría que apareció en la lista de órdenes",
+            "null, porque con un empate no existe una categoría más frecuente"
+          ],
+          "correctIndex": 1,
+          "whyWrong": [
+            "Ese era el comportamiento que el jefe descartó: la regla fija es el orden alfabético, no el de llegada. Con [a, a, b, b] acertarías por casualidad, pero [b, b, a, a] te delata.",
+            "",
+            "Que sea la última en aparecer no importa; lo que decide un empate es la regla alfabética. Con [a, b] devolverías b y la regla pide a.",
+            "Un empate tiene respuesta: la regla fija existe precisamente para que siempre haya una categoría ganadora. null es solo para la lista vacía."
+          ],
+          "explanation": "Contar y desempatar son dos cosas distintas: primero se cuentan todas y, entre las que comparten el máximo, gana la menor alfabéticamente."
+        },
+        {
+          "id": "q2",
+          "question": "Una categoría se llama «__proto__» y aparece tres veces. Si cuentas con un objeto normal sumando uno a su valor, ¿qué suele pasar?",
+          "options": [
+            "Lanza una excepción en cuanto intenta guardar el primer conteo de «__proto__»",
+            "Guarda bien el conteo de «__proto__» pero lo lista dos veces en el resultado",
+            "Guarda «__proto__» como cualquier otra clave, solo que aparece la primera",
+            "Descarta el valor asignado sin avisar y la respuesta sale mal sin ningún error"
+          ],
+          "correctIndex": 3,
+          "whyWrong": [
+            "No hay excepción: el motor ignora la asignación en silencio, por eso el fallo parece un error de lógica y no de estructura.",
+            "El problema no es que se duplique: el conteo ni siquiera llega a guardarse. Compruébalo leyendo de vuelta la cuenta de «__proto__».",
+            "«__proto__» no es una clave libre en un objeto normal: apunta al prototipo, y por eso no se comporta como «x» o «motor».",
+            ""
+          ],
+          "explanation": "En un objeto normal «__proto__» es el prototipo, no una clave más; un diccionario sin herencia (Map u Object.create(null)) sí la guarda."
+        },
+        {
+          "id": "q3",
+          "question": "¿Qué debe devolver la función cuando la lista de órdenes está vacía?",
+          "options": [
+            "null, porque no existe ninguna categoría que pueda devolverse",
+            "La cadena vacía, porque es la categoría neutra cuando no hay datos",
+            "undefined, porque ninguna vuelta de los bucles llega a ejecutarse",
+            "El número 0, porque hay cero órdenes y la mayor cantidad es cero"
+          ],
+          "correctIndex": 0,
+          "whyWrong": [
+            "",
+            "La cadena vacía es una categoría válida: devolverla haría creer que existe una orden de categoría vacía.",
+            "Falta un return explícito para ese caso: no devolver nada deja undefined, y el contrato pide null.",
+            "Se pide una categoría, no una cantidad. Con la lista vacía no hay categoría que devolver."
+          ],
+          "explanation": "Sin órdenes no hay categoría ganadora, y el contrato lo expresa con null."
+        },
+        {
+          "id": "q4",
+          "question": "Una cuenta se actualiza con «cuenta[c] = cuenta[c] + 1» sin comprobar nada antes. ¿Qué ocurre la primera vez que llega la categoría c?",
+          "options": [
+            "Vale 0 + 1, porque JavaScript inicializa en cero lo que no existe",
+            "Vale 1, porque undefined se trata como cero al sumarle un número",
+            "Lanza un error de referencia que detiene toda la ejecución",
+            "Obtiene NaN, porque undefined + 1 no da un número válido"
+          ],
+          "correctIndex": 3,
+          "whyWrong": [
+            "JavaScript no inicializa nada en cero: una clave que no existe devuelve undefined, no 0.",
+            "undefined no se convierte en cero al sumar: el resultado es NaN. Hay que empezar cada contador en 0 de forma explícita.",
+            "Leer una clave inexistente no lanza ningún error; simplemente devuelve undefined.",
+            ""
+          ],
+          "explanation": "Cada contador nuevo debe empezar en 0 (o usar un valor por defecto al leerlo); si no, la cuenta se convierte en NaN y la comparación falla."
+        }
+      ]
+    }
   },
   "mastery": {
     "transferMissionId": "M12",
