@@ -35,7 +35,8 @@
       "tabla hash",
       "hash",
       "O(n)"
-    ]
+    ],
+    "visual": "seen-drawer"
   },
   "contract": {
     "entryPoint": "findFirstDuplicateValue",

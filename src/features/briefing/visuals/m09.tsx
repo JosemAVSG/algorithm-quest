@@ -107,7 +107,7 @@ export function CostGrid() {
     <figure className="visual">
       <svg
         className="visual__svg"
-        viewBox="0 0 270 150"
+        viewBox="0 0 270 158"
         role="img"
         aria-labelledby="visual-cost-title"
       >
@@ -146,11 +146,14 @@ export function CostGrid() {
           </text>
           {frame.finished && frame.doubled ? (
             <>
-              <text x="150" y="124" className="visual__label visual__label--broken">
+              <text x="150" y="120" className="visual__label visual__label--broken">
                 el doble de órdenes:
               </text>
-              <text x="150" y="138" className="visual__label visual__label--broken">
-                más de 4 veces el trabajo
+              <text x="150" y="134" className="visual__label visual__label--broken">
+                más de 4 veces
+              </text>
+              <text x="150" y="148" className="visual__label visual__label--broken">
+                el trabajo
               </text>
             </>
           ) : null}
