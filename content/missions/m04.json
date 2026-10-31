@@ -221,7 +221,105 @@
     "realWorld": "Cierres de inventario, reportes financieros, SUM y COUNT en SQL (que es exactamente esta misión, en un lenguaje donde el bucle es implícito) y métricas de producto.",
     "reasoningPrompt": "¿Por qué total tiene que declararse antes del bucle y no dentro? Explica qué pasa con el valor en cada vuelta si lo mueves dentro.",
     "objectiveNouns": ["total", "mínimo", "línea", "cierre"],
-    "reasoningLexicon": ["acumulo", "sumo", "cuento", "sobrevive"]
+    "reasoningLexicon": ["acumulo", "sumo", "cuento", "sobrevive"],
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe tu código, y responde las preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Antes del bucle {b1}. En cada línea {b2}. Si la línea queda por debajo del mínimo, {b3}. Al terminar devuelvo {b4}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": [
+            "no declaro nada: cada vuelta crea sus propios valores",
+            "declaro total y lowStock empezando en cero",
+            "declaro total y lowStock sin darles valor inicial"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "id": "b2",
+          "options": [
+            "sustituyo el total por la cantidad de esa línea",
+            "sumo 1 al total, sea cual sea su cantidad",
+            "sumo su cantidad al total que ya llevo"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "id": "b3",
+          "options": [
+            "sube lowStock en uno, sin cambiar lo que aporta al total",
+            "se suma al total dos veces, para dejarla marcada",
+            "deja de sumarse al total porque ya hay que reponerla"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "id": "b4",
+          "options": [
+            "total y lowStock juntos, en un objeto con nombre",
+            "solo total, y lowStock en un mensaje aparte",
+            "una lista con los dos números, sin nombre"
+          ],
+          "correctIndex": 0
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "Con las líneas [10, 2] el total debería ser 12, pero una versión del código da 2. ¿Cuál es la causa más probable?",
+          "options": [
+            "Las líneas se sumaron en orden inverso y por eso cambió el resultado",
+            "El mínimo de reposición está escrito mal y descarta la primera línea",
+            "El bucle se detiene tras la segunda línea sin llegar a la primera",
+            "total vuelve a su valor inicial en cada vuelta y solo conserva la última"
+          ],
+          "correctIndex": 3,
+          "whyWrong": [
+            "La suma no depende del orden: 2 + 10 también da 12.",
+            "El mínimo solo decide qué líneas cuentan como bajas; no cambia lo que se suma al total.",
+            "Si el bucle se detuviera, faltaría la segunda línea, no la primera. Recórrelo a mano con [10, 2].",
+            ""
+          ],
+          "explanation": "Una variable declarada dentro del bucle se vuelve a crear en cada vuelta. Para que sobreviva, se declara antes y se actualiza dentro."
+        },
+        {
+          "id": "q2",
+          "question": "Una línea tiene cantidad 0. ¿Cómo afecta a los dos números?",
+          "options": [
+            "No cambia el total, pero sube lowStock en uno",
+            "No cambia ninguno de los dos, porque una línea vacía no cuenta",
+            "Cambia el total en cero y lowStock se queda igual",
+            "Rompe la función, porque no se puede sumar un cero"
+          ],
+          "correctIndex": 0,
+          "whyWrong": [
+            "",
+            "Una línea sin piezas es la que más urge reponer: está por debajo del mínimo.",
+            "Sumar cero deja el total igual, sí, pero 0 es menor que 5. ¿Qué pasa entonces con lowStock?",
+            "Sumar cero es una operación válida y no produce ningún error."
+          ],
+          "explanation": "Total y lowStock son independientes: la línea de cantidad 0 no aporta piezas, pero sí es una línea por debajo del mínimo."
+        },
+        {
+          "id": "q3",
+          "question": "El inventario tiene una sola línea con exactamente 5 unidades y el mínimo es 5. ¿Qué devuelve la función?",
+          "options": [
+            "total: 5 y lowStock: 1, porque ya está en el mínimo",
+            "total: 0 y lowStock: 1, porque hay que reponerla",
+            "total: 5 y lowStock: 2, porque cuenta en las dos cosas",
+            "total: 5 y lowStock: 0, porque el mínimo es estricto"
+          ],
+          "correctIndex": 3,
+          "whyWrong": [
+            "Estar en el mínimo no es estar por debajo: la línea no hay que reponerla.",
+            "El total suma las piezas que hay, sean muchas o pocas; esta línea aporta 5.",
+            "Cada línea sube lowStock como mucho una vez.",
+            ""
+          ],
+          "explanation": "Hay que reponer las líneas por debajo del mínimo (<). Con exactamente 5 unidades la línea no se repone."
+        }
+      ]
+    }
   },
   "mastery": { "transferMissionId": "M12", "reinforcementVariants": [] },
   "reward": {
