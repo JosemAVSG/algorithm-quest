@@ -23,6 +23,7 @@
     "to": "working"
   },
   "briefing": {
+    "visual": "best-so-far-scan",
     "headline": "El tablero de despacho",
     "body": "Hay una cola de órdenes de trabajo y el despachador solo puede atender una primero. La regla del taller es la siguiente:\n\n1. Gana la orden de **mayor prioridad**.\n2. Si hay empate, gana la **más antigua** (la que se creó primero).\n3. Si siguen empatadas, gana la que llegó primero a la cola.\n\nDevuélveme la orden completa, no su posición: el despachador necesita el `id` y los datos para imprimir la hoja de trabajo.\n\nSi la cola está vacía, devuelve `null`: el despachador entiende `null`, no entiende una orden inventada.",
     "requirements": [
@@ -187,6 +188,107 @@
     }
   ],
   "debrief": {
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe el caso, y responde las preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Guardo la mejor orden hasta el momento y la reemplazo solo cuando otra es {b1}; si empatan en prioridad gana {b2}, y si empatan en todo gana {b3}. Con la cola vacía devuelvo {b4}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": [
+            "al menos igual de buena que la actual",
+            "estrictamente mejor que la actual",
+            "distinta de la actual en algún campo"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "id": "b2",
+          "options": [
+            "la más antigua, la de menor `createdAt`",
+            "la más reciente, la de mayor `createdAt`",
+            "la que aparece primero en la cola",
+            "la de `id` alfabéticamente menor"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "id": "b3",
+          "options": [
+            "la última en llegar a la cola",
+            "cualquiera de las dos, da igual",
+            "la primera en llegar a la cola",
+            "las dos, en una lista"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "id": "b4",
+          "options": [
+            "undefined",
+            "una orden vacía",
+            "0",
+            "null"
+          ],
+          "correctIndex": 3
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "A y B empatan en prioridad y antigüedad, y A llegó antes a la cola. Si el candidato se reemplaza cuando la nueva orden es mayor o igual, ¿cuál devuelve la función?",
+          "options": [
+            "A, porque llegó antes a la cola",
+            "B, porque el empate también provoca el reemplazo",
+            "`null`, porque no se puede decidir entre dos iguales",
+            "Las dos, ordenadas por posición"
+          ],
+          "correctIndex": 1,
+          "whyWrong": [
+            "Solo sería A si el empate no reemplazara al candidato. Sigue la comparación con >= paso a paso.",
+            "",
+            "La función siempre devuelve alguna orden si la cola tiene elementos.",
+            "La función devuelve una sola orden, no una lista."
+          ],
+          "explanation": "Un comparador incompleto no falla: devuelve una respuesta plausible. Para que gane la que llegó antes, el empate total no debe reemplazar al candidato."
+        },
+        {
+          "id": "q2",
+          "question": "Aparece una orden de prioridad 9 en la tercera posición de una cola de diez. ¿Por qué todavía no se puede devolver?",
+          "options": [
+            "Porque un `return` dentro del bucle no está permitido en JavaScript",
+            "Porque la primera orden de la cola siempre es la de mayor prioridad",
+            "Porque hace falta ordenar antes la cola",
+            "Porque una orden posterior podría tener mayor prioridad, o igual prioridad y ser más antigua"
+          ],
+          "correctIndex": 3,
+          "whyWrong": [
+            "JavaScript sí permite el `return` en un bucle; la razón está en lo que la función necesita saber.",
+            "Nada en el enunciado garantiza ese orden. Mira el caso de prueba donde la mejor está al final.",
+            "Ordenar costaría más y además modificaría la cola; no es necesario para decidir.",
+            ""
+          ],
+          "explanation": "La mejor puede estar en cualquier posición, incluida la última: no hay respuesta posible antes de terminar la pasada."
+        },
+        {
+          "id": "q3",
+          "question": "En la primera vuelta el candidato todavía es `null`. ¿Qué pasa si se compara `order.priority > best.priority` sin más?",
+          "options": [
+            "Lanza un error al leer `priority` de `null`; el primer elemento debe tratarse como candidato inicial",
+            "Compara contra `undefined`, reemplaza siempre y funciona igual",
+            "Devuelve `null`, porque `null` gana a cualquier orden",
+            "Devuelve la última orden, porque el reemplazo se invierte"
+          ],
+          "correctIndex": 0,
+          "whyWrong": [
+            "",
+            "Leer una propiedad de `null` no da `undefined`: lanza un error.",
+            "Antes de devolver nada, la comparación ya habría fallado.",
+            "La comparación no se invierte; el problema aparece antes, en la primera vuelta."
+          ],
+          "explanation": "El primer elemento no tiene nada contra lo que compararse: o es el candidato inicial, o hay que comprobar `best === null` antes de comparar."
+        }
+      ]
+    },
     "whyItWorks": "«El mejor hasta ahora» es un candidato provisional que se reemplaza solo cuando aparece algo estrictamente mejor. La clave es que la comparación sea total: cubre todos los criterios del enunciado, incluido el último desempate. Y como la mejor puede estar al final, no hay respuesta posible antes de terminar la pasada.",
     "edgeCaseNote": "En el empate total no se reemplaza el candidato: gana la orden que llegó antes a la cola. Un comparador incompleto no falla, devuelve alguna respuesta plausible, y ese es el peor tipo de bug porque pasa la revisión y falla en producción con un caso raro. «Empate» es un caso del enunciado, no un accidente.",
     "complexity": {

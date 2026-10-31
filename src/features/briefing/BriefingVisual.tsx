@@ -7,7 +7,10 @@
 
 import { useEffect, useState } from "react";
 
-import type { Mission } from "../../domain/content/schema";
+import type { Mission } from '../../domain/content/schema';
+import { PairScanVisual } from './visuals/m08';
+import { BestScanVisual } from './visuals/m07';
+import { BadReadingVisual } from './visuals/m06';
 import { SeenDrawer } from './visuals/m10';
 import { CostGrid } from './visuals/m09';
 import {
@@ -28,6 +31,20 @@ import { M11Visual } from "./visuals/M11Visual";
 import { M12Visual } from "./visuals/M12Visual";
 
 type VisualId = NonNullable<Mission["briefing"]["visual"]>;
+
+/** Illustrations that live in their own file (visuals/). */
+const REGISTRY: Partial<Record<VisualId, () => JSX.Element>> = {
+  'collect-line': CollectLine,
+  'running-total': RunningTotal,
+  'copy-rows': CopyRows,
+  'm11-tally': M11Visual,
+  'm12-strategy': M12Visual,
+  'seen-drawer': SeenDrawer,
+  'cost-grid': CostGrid,
+  'pair-comparison': PairScanVisual,
+  'best-so-far-scan': BestScanVisual,
+  'bad-reading-average': BadReadingVisual,
+};
 
 /** Advances one frame every `intervalMs`. */
 function useTick(intervalMs: number): number {
@@ -197,12 +214,7 @@ function Gauge() {
 }
 
 export function BriefingVisual({ id }: { id: VisualId }) {
-  if (id === "collect-line") return <CollectLine />;
-  if (id === "running-total") return <RunningTotal />;
-  if (id === "copy-rows") return <CopyRows />;
-  if (id === "m11-tally") return <M11Visual />;
-  if (id === "m12-strategy") return <M12Visual />;
-  if (id === "seen-drawer") return <SeenDrawer />;
-  if (id === "cost-grid") return <CostGrid />;
-  return id === "gauge" ? <Gauge /> : <EarlyExitScan />;
+  const Registered = REGISTRY[id];
+  if (Registered) return <Registered />;
+  return id === 'gauge' ? <Gauge /> : <EarlyExitScan />;
 }

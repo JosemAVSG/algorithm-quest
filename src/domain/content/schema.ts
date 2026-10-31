@@ -279,6 +279,9 @@ export const MissionSchema = z
             "m12-strategy",
             "cost-grid",
             "seen-drawer",
+            "bad-reading-average",
+            "best-so-far-scan",
+            "pair-comparison",
           ])
           .optional(),
       })
