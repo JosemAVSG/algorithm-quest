@@ -180,3 +180,42 @@ describe('lint L8 — the debrief must teach', () => {
     expect(codes(assemble([mission]).issues)).toContain('L8_DEBRIEF_SUBSTANCE');
   });
 });
+
+describe('lint L9 — a structured explanation must be coherent', () => {
+  const explain = () => ({
+    prompt: 'Completa la explicación.',
+    template: 'Comparo {a} y {b}.',
+    blanks: [
+      { id: 'a', options: ['uno', 'dos', 'tres'], correctIndex: 0 },
+      { id: 'b', options: ['uno', 'dos', 'tres'], correctIndex: 1 },
+    ],
+    questions: [
+      { id: 'q', question: '¿Por qué?', options: ['x', 'y', 'z'], correctIndex: 2, explanation: 'Porque z.' },
+    ],
+  });
+
+  it('accepts a coherent explain block', () => {
+    const mission = broken(validMission(), (draft) => {
+      draft.debrief.explain = explain();
+    });
+    expect(codes(assemble([mission]).issues)).not.toContain('L9_EXPLAIN_SHAPE');
+  });
+
+  it('rejects a correctIndex outside the options', () => {
+    const mission = broken(validMission(), (draft) => {
+      const block = explain();
+      block.questions[0]!.correctIndex = 7;
+      draft.debrief.explain = block;
+    });
+    expect(codes(assemble([mission]).issues)).toContain('L9_EXPLAIN_SHAPE');
+  });
+
+  it('rejects a placeholder with no blank', () => {
+    const mission = broken(validMission(), (draft) => {
+      const block = explain();
+      block.template = 'Comparo {a} y {zz}.';
+      draft.debrief.explain = block;
+    });
+    expect(codes(assemble([mission]).issues)).toContain('L9_EXPLAIN_SHAPE');
+  });
+});

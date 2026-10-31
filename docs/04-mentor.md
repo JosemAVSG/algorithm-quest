@@ -216,7 +216,26 @@ Step 8 of the cycle. Tests passing is necessary, never sufficient.
 | 2 | Justifies the mechanism against the objective, including one boundary case |
 | 3 | Justifies mechanism **and** states the cost, or explains why an alternative fails |
 
-### Deterministic first
+### Structured explanation (authored missions)
+
+Missions that author `debrief.explain` (pilot: M01, M02) do not use the keyword rubric. The
+player completes a **sentence builder** (a template with blanks, each filled from 3–5
+options) and answers **comprehension questions** (exactly one correct option; distractors
+are real misconceptions). Grading is exact match, so it is deterministic and needs no
+lexicon.
+
+- Completion requires every blank and every question correct. Wrong answers can be retried
+  without limit; feedback names *which* blank or question to rethink (and the `whyWrong`
+  text of the chosen distractor, if authored) and never reveals the answer.
+- Unanswered items are reported as missing and do not count as a failed attempt.
+- The 0–3 contract is preserved: **3** = all correct on the first graded submit, **2** =
+  correct after retries. Both clear `REASONING_MIN_SCORE` (2). An optional ungraded note can
+  be stored with the session.
+- Option order is authored (already shuffled in content); there is no runtime shuffle.
+
+Missions without `debrief.explain` keep the rubric below until their content is migrated.
+
+### Deterministic first (free-text missions)
 
 A keyword-and-structure heuristic covers most of the space and is the MVP default:
 

@@ -30,8 +30,6 @@ let bundle: ContentBundle;
 
 const BUGGY = 'function isOverLimit(temperature, limit) {\n  return temperature >= limit;\n}';
 const FIXED = 'function isOverLimit(temperature, limit) {\n  return temperature > limit;\n}';
-const REASONING =
-  'Comparo la temperatura con el límite y devuelvo true solo cuando la supera; con 90 y límite 90 no se dispara la alarma, y el coste es O(1).';
 
 beforeAll(async () => {
   bundle = await loadBundle();
@@ -102,16 +100,26 @@ describe('full M01 flow', () => {
     state = missionSessionReducer(state, { type: 'open_debrief' });
     expect(state.phase).toBe('debrief');
 
+    // M01 authors a structured explanation: a wrong blank is feedback, not a lock.
+    const explain = mission.debrief.explain!;
+    const wrongBlank = explain.blanks[1]!;
     state = missionSessionReducer(state, {
-      type: 'edit_reasoning',
-      text: 'porque funciona',
+      type: 'answer_explain',
+      id: wrongBlank.id,
+      index: (wrongBlank.correctIndex + 1) % wrongBlank.options.length,
     });
     state = missionSessionReducer(state, { type: 'submit_debrief', now: 1000 });
     expect(state.phase).toBe('debrief');
-    expect(state.assessment?.score).toBe(0);
+    expect(state.explainFailures).toBe(1);
 
     state = missionSessionReducer(state, { type: 'answer_complexity', index: 0 });
-    state = missionSessionReducer(state, { type: 'edit_reasoning', text: REASONING });
+    for (const item of [...explain.blanks, ...explain.questions]) {
+      state = missionSessionReducer(state, {
+        type: 'answer_explain',
+        id: item.id,
+        index: item.correctIndex,
+      });
+    }
     state = missionSessionReducer(state, { type: 'submit_debrief', now: 2000 });
 
     expect(state.phase).toBe('complete');

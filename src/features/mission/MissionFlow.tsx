@@ -291,6 +291,12 @@ export function MissionFlow({
             onEditReasoning={(text) =>
               dispatch({ type: "edit_reasoning", text })
             }
+            onAnswerExplain={(id, index) =>
+              dispatch({ type: "answer_explain", id, index })
+            }
+            onEditExplainNote={(text) =>
+              dispatch({ type: "edit_explain_note", text })
+            }
             onSubmit={() =>
               dispatch({ type: "submit_debrief", now: Date.now() })
             }

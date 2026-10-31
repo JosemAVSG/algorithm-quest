@@ -104,6 +104,19 @@ type MissionSchema = {
     reasoningPrompt: string;
     objectiveNouns: string[];       // used by the deterministic reasoning heuristic
     reasoningLexicon: string[];
+    explain?: {                     // optional: replaces the free-text reasoning step
+      prompt: string;
+      template: string;             // cloze sentence with {id} placeholders, one per blank
+      blanks: { id: string; options: string[]; correctIndex: number }[];   // >=2, 3-5 options
+      questions: {                  // >=1 comprehension question, exactly one correct option
+        id: string;
+        question: string;
+        options: string[];          // 3-5, distractors are real misconceptions
+        correctIndex: number;
+        whyWrong?: string[];        // parallel to options; shown when that option is chosen
+        explanation: string;        // shown on the completion screen
+      }[];
+    };
   };
 
   mastery: {
@@ -194,7 +207,8 @@ forbids storing it.
 | `diagnostics` | ✅ | At least one rule per `E` code the mission can plausibly produce. |
 | `hints` | ✅ | Exactly 4 (lint L5). |
 | `debrief.complexity` | ✅ | Even M01. The cost question scales with the mission. |
-| `debrief.objectiveNouns` | ✅ | ≥2. Drives the deterministic reasoning heuristic. |
+| `debrief.objectiveNouns` | ✅ | ≥2. Drives the deterministic reasoning heuristic (free-text path). |
+| `debrief.explain` | optional | Structured cloze + questions. When present it replaces the free-text rubric for that mission; when absent the keyword rubric still applies. |
 | `mastery.transferMissionId` | optional | Set when the transfer target already exists. |
 | `strategyAssessment` | optional | M12 only in the MVP. |
 | `reward.narrative` | ✅ | One sentence. Rendered on the map, not in a modal. |
@@ -240,6 +254,7 @@ Run in CI (`npm run validate:content`) and again at load time.
 | L6 | No hidden or edge test input deep-equals any visible test input |
 | L7 | Every mission declares ≥2 edge cases drawn from the closed set `{empty, singleton, all-match, none-match, boundary-equal, duplicate, negative, zero, extreme}` |
 | L8 | `debrief.complexity` and `debrief.realWorld` are non-empty and contain no placeholder text |
+| L9 | `debrief.explain` is answerable: unique ids, every `{id}` has a blank and vice versa, `correctIndex` in range, no duplicate options, `whyWrong` parallel to `options` |
 
 ---
 

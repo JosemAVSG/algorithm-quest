@@ -1,5 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
+import { fillM01Explain } from './helpers';
+
 /**
  * The M1 exit criteria as browser behaviour (docs/10-testing-and-security.md §5).
  *
@@ -21,10 +23,6 @@ const BOUNDARY_BUG = `function isOverLimit(temperature, limit) {
 const INFINITE = `function isOverLimit(temperature, limit) {
   while (true) {}
 }`;
-
-const REASONING =
-  'Comparo la temperatura con el límite y devuelvo true solo cuando la supera; ' +
-  'con 90 y límite 90 no se dispara la alarma, y el coste es O(1).';
 
 const EDITOR = 'Código';
 
@@ -66,8 +64,7 @@ async function runWith(page: Page, code: string) {
 }
 
 async function finishDebrief(page: Page) {
-  await page.getByLabel('Una sola, siempre').check();
-  await page.getByLabel('Tu explicación').fill(REASONING);
+  await fillM01Explain(page);
   await page.getByRole('button', { name: 'Cerrar la misión' }).click();
   await expect(page.getByText('Misión completada')).toBeVisible();
 }
