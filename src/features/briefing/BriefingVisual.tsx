@@ -19,6 +19,7 @@ import {
   gaugeFrame,
   scanFrame,
 } from './visualModel';
+import { CollectLine } from './visuals/m03';
 
 type VisualId = NonNullable<Mission['briefing']['visual']>;
 
@@ -145,5 +146,6 @@ function Gauge() {
 }
 
 export function BriefingVisual({ id }: { id: VisualId }) {
+  if (id === 'collect-line') return <CollectLine />;
   return id === 'gauge' ? <Gauge /> : <EarlyExitScan />;
 }

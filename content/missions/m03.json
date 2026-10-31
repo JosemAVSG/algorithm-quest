@@ -13,6 +13,7 @@
   "prerequisites": { "missions": ["M02"], "concepts": ["C03", "C04"] },
   "workshop": { "systemId": "sys.line", "from": "broken", "to": "working" },
   "briefing": {
+    "visual": "collect-line",
     "headline": "El lote del proveedor",
     "body": "El jefe de turno cambió de opinión. Ya no quiere saber *si* hay que parar: quiere la **lista completa** de las unidades defectuosas para devolverlas al proveedor.\n\nNecesita los identificadores y la temperatura de cada una, en el mismo orden en que llegaron, para que coincida con la factura.\n\nOjo: no puedes devolver solo la primera. El proveedor rechaza la devolución si la lista está incompleta.",
     "requirements": [
