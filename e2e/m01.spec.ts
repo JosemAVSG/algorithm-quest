@@ -42,6 +42,15 @@ async function openM01(page: Page) {
   await expect(page.getByRole('heading', { name: 'El primer diagnóstico' })).toBeVisible();
 }
 
+/** Text of the CodeMirror contenteditable (or of the textarea fallback). */
+async function editorText(page: Page): Promise<string> {
+  return editor(page).evaluate((element) =>
+    element instanceof HTMLTextAreaElement
+      ? element.value
+      : Array.from(element.querySelectorAll('.cm-line'), (line) => line.textContent ?? '').join('\n'),
+  );
+}
+
 async function reachLab(page: Page) {
   await openM01(page);
   await page.getByRole('button', { name: 'Entendido →' }).click();
@@ -168,7 +177,7 @@ test('X6 · recargar a mitad de misión conserva el intento y no el buffer', asy
   await expect(editor(page)).toBeVisible();
   await expect(page.getByText('intentos 1')).toBeVisible();
   await expect(page.getByText('La comparación falla justo en el límite.')).toBeVisible();
-  await expect(editor(page)).toHaveValue(
+  expect(await editorText(page)).toBe(
     'function isOverLimit(temperature, limit) {\n  // your code here\n}\n',
   );
 });
@@ -198,4 +207,22 @@ test('X7 · exportar, borrar e importar conserva la maestría', async ({ page })
   await page.getByRole('button', { name: '← Volver al taller' }).click();
   await openWorld1(page);
   await expect(page.getByLabel('Sensor array: operativo')).toBeVisible();
+});
+
+test('X8 · el editor cierra llaves, indenta con Tab y deja salir con Esc + Tab', async ({ page }) => {
+  await reachLab(page);
+  await editor(page).fill('');
+  await editor(page).click();
+
+  await page.keyboard.type('function f(a) {');
+  await page.keyboard.press('Enter');
+  expect(await editorText(page)).toBe('function f(a) {\n  \n}');
+
+  await page.keyboard.press('Tab');
+  await expect(editor(page)).toBeFocused();
+  expect(await editorText(page)).toBe('function f(a) {\n    \n}');
+
+  await page.keyboard.press('Escape');
+  await page.keyboard.press('Tab');
+  await expect(editor(page)).not.toBeFocused();
 });

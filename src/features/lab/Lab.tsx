@@ -58,7 +58,7 @@ export function Lab({
         <section className="lab__code" aria-label="Editor de código">
           <div className="code__head">
             <span>{mission.contract.entryPoint}</span>
-            <span className="code__hint">Cmd/Ctrl + Enter</span>
+            <span className="code__hint">Cmd/Ctrl + Enter · Esc y Tab para salir</span>
           </div>
           <Editor
             value={state.source}

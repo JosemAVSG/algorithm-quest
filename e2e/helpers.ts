@@ -17,6 +17,18 @@ export function editor(page: Page) {
   return page.getByRole('textbox', { name: EDITOR_NAME });
 }
 
+/**
+ * The editor's text, whichever implementation is mounted: the CodeMirror
+ * contenteditable (lines are separate elements) or the textarea fallback.
+ */
+export async function editorText(page: Page): Promise<string> {
+  return editor(page).evaluate((element) =>
+    element instanceof HTMLTextAreaElement
+      ? element.value
+      : Array.from(element.querySelectorAll('.cm-line'), (line) => line.textContent ?? '').join('\n'),
+  );
+}
+
 export async function reachLab(page: Page) {
   await page.goto('/');
   await page.getByRole('button', { name: 'Continuar →' }).click();
