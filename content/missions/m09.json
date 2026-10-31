@@ -34,7 +34,8 @@
       "Devuelve cuántas comparaciones hará el detector en el peor caso",
       "El peor caso es una cola sin ninguna orden repetida"
     ],
-    "forbiddenVocabulary": ["cuadrática", "cuadrático", "O(n", "n(n-1)", "notación"]
+    "forbiddenVocabulary": ["cuadrática", "cuadrático", "O(n", "n(n-1)", "notación"],
+    "visual": "cost-grid"
   },
 
   "contract": {
@@ -204,7 +205,88 @@
     "realWorld": "Estimación de capacidad, presupuestos de cómputo, decisiones de arquitectura («¿esto aguanta el Black Friday?») y la primera pregunta de cualquier entrevista técnica seria.",
     "reasoningPrompt": "Explica por qué duplicar el número de órdenes cuadruplica el trabajo, no lo duplica. Usa los números de la tabla.",
     "objectiveNouns": ["comparaciones", "coste", "cola", "crecimiento"],
-    "reasoningLexicon": ["cuadruplica", "crece", "cuenta", "suma"]
+    "reasoningLexicon": ["cuadruplica", "crece", "cuenta", "suma"],
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe cómo cuenta el detector, y responde las dos preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Cada orden se compara solo con {b1}, cada pareja se cuenta {b2}, el total para n órdenes es {b3} y con 0 o 1 órdenes el coste es {b4}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": [
+            "todas las órdenes de la cola, ella incluida",
+            "todas las demás órdenes, delante y detrás",
+            "las órdenes que quedan detrás de ella"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "id": "b2",
+          "options": [
+            "una sola vez, sin importar el orden del par",
+            "dos veces, una por cada orden del par",
+            "tantas veces como órdenes haya en la cola"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "id": "b3",
+          "options": [
+            "n multiplicado por n",
+            "n multiplicado por (n-1)",
+            "la suma n + (n-1) + … + 1",
+            "la suma (n-1) + (n-2) + … + 1"
+          ],
+          "correctIndex": 3
+        },
+        {
+          "id": "b4",
+          "options": [
+            "1, porque queda una orden sin pareja",
+            "n, el tamaño de la cola entera",
+            "0, porque no existe ningún par que comparar"
+          ],
+          "correctIndex": 2
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "Con 3 órdenes el contador marca 3, pero n × n daría 9 y n × (n-1) daría 6. ¿Qué error explica esos valores de más?",
+          "options": [
+            "El contador está mal calibrado y cuenta menos comparaciones de las que hace el detector",
+            "Cuentan por separado (A,B) y (B,A), aunque el detector hace esa comparación una sola vez",
+            "Olvidan restar las órdenes repetidas, que el detector no llega a comparar entre sí",
+            "Calculan las comparaciones del mejor caso en lugar de las del peor caso"
+          ],
+          "correctIndex": 1,
+          "whyWrong": [
+            "El contador cuenta lo que el detector hace de verdad. Con 3 órdenes las parejas son (1,2), (1,3) y (2,3): tres.",
+            "",
+            "El peor caso es justo una cola sin repetidos, así que no hay nada que restar.",
+            "El mejor caso sería salir en la primera pareja; aquí se piden todas las comparaciones del peor caso."
+          ],
+          "explanation": "Una pareja es la misma comparación sin importar el orden, y una orden no se compara consigo misma. Por eso se cuenta cada pareja una vez, no n × n ni n × (n-1)."
+        },
+        {
+          "id": "q2",
+          "question": "¿Por qué el peor caso del detector es una cola sin ninguna orden repetida?",
+          "options": [
+            "Porque con repetidos cada pareja cuesta más de comparar y el trabajo total crece",
+            "Porque con repetidos hay que volver a pasar por toda la cola una segunda vez",
+            "Porque al encontrar un par igual el detector se detiene y ya no hace las comparaciones que faltaban",
+            "Porque el contador solo funciona cuando todas las órdenes son distintas"
+          ],
+          "correctIndex": 2,
+          "whyWrong": [
+            "Comparar una pareja cuesta lo mismo sea igual o distinta; lo que cambia es cuántas parejas se llegan a comparar.",
+            "El detector no repite el recorrido: en cuanto encuentra el par igual, termina.",
+            "",
+            "El contador cuenta cualquier cola; sin repetidos simplemente marca el máximo posible."
+          ],
+          "explanation": "Sin repetidos el detector nunca encuentra un par igual, así que no se detiene antes y compara todas las parejas posibles."
+        }
+      ]
+    }
   },
 
   "mastery": {

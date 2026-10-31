@@ -8,6 +8,8 @@
 import { useEffect, useState } from "react";
 
 import type { Mission } from "../../domain/content/schema";
+import { SeenDrawer } from './visuals/m10';
+import { CostGrid } from './visuals/m09';
 import {
   GAUGE_LIMIT,
   GAUGE_MAX,
@@ -200,5 +202,7 @@ export function BriefingVisual({ id }: { id: VisualId }) {
   if (id === "copy-rows") return <CopyRows />;
   if (id === "m11-tally") return <M11Visual />;
   if (id === "m12-strategy") return <M12Visual />;
+  if (id === "seen-drawer") return <SeenDrawer />;
+  if (id === "cost-grid") return <CostGrid />;
   return id === "gauge" ? <Gauge /> : <EarlyExitScan />;
 }

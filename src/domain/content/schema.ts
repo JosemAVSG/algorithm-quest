@@ -277,6 +277,8 @@ export const MissionSchema = z
             "copy-rows",
             "m11-tally",
             "m12-strategy",
+            "cost-grid",
+            "seen-drawer",
           ])
           .optional(),
       })
