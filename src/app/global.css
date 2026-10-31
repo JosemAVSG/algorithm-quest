@@ -757,21 +757,14 @@ code {
   background: var(--surface-sunken);
 }
 
-@media (min-width: 62rem) {
+@media (min-width: 48rem) {
   .brief:has(.brief__intro--visual) {
-    max-width: 68rem;
+    max-width: none;
   }
 
   .brief__intro--visual {
-    grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
-    gap: 2rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .visual__cell,
-  .visual__level {
-    transition: none;
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 44%);
+    gap: 2.5rem;
   }
 }
 
