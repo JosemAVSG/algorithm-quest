@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 1,
+  "id": "M04",
+  "contentVersion": "1.0.0",
+  "locale": "es",
+  "world": "w1",
+  "order": 4,
+  "title": "La auditoría del inventario",
+  "subtitle": "Acumuladores",
+  "difficulty": 2,
+  "estimatedMinutes": 12,
+  "concepts": { "primary": "C06", "secondary": ["C07"] },
+  "prerequisites": { "missions": ["M03"], "concepts": ["C05"] },
+  "workshop": { "systemId": "sys.store", "from": "broken", "to": "working" },
+  "briefing": {
+    "headline": "Cierre de mes en el almacén",
+    "body": "El almacén lleva tres años con la misma hoja de cálculo y ya nadie sabe cuántas piezas hay. Necesito dos números para el cierre:\n\n1. El **total de piezas** en existencia, sumando todas las líneas.\n2. Cuántas **líneas están por debajo del mínimo**, que son las que hay que reponer.\n\nEl mínimo de reposición son 5 unidades por línea. Una línea con exactamente 5 **no** hay que reponerla.\n\nDevuélveme los dos números juntos, no me mandes dos mensajes.",
+    "requirements": [
+      "Recibe las líneas del inventario, cada una con su categoría y su cantidad",
+      "Calcula el total de piezas sumando todas las líneas",
+      "Cuenta las líneas por debajo del mínimo de reposición (5 unidades)",
+      "Devuelve los dos números juntos, cada uno con su nombre"
+    ],
+    "forbiddenVocabulary": ["acumulador", "acumular", "contador", "contar", "+=", "++", "reduce"]
+  },
+  "contract": {
+    "entryPoint": "auditInventory",
+    "signature": "auditInventory(items) -> { total, lowStock }",
+    "inputShape": "items: { category: string, quantity: number }[]",
+    "outputShape": "{ total: number, lowStock: number }",
+    "rules": [
+      "total es la suma de la quantity de todas las líneas",
+      "lowStock es el número de líneas con quantity estrictamente menor que 5",
+      "Con una lista vacía devuelve { total: 0, lowStock: 0 }",
+      "Devuelve un objeto con esos dos campos y no modifica items"
+    ]
+  },
+  "constraints": {
+    "bannedConstructs": [".reduce", ".filter", ".map", ".forEach"],
+    "allowClosedForm": false,
+    "mustNotMutate": true
+  },
+  "starterCode": "function auditInventory(items) {\n  // your code here\n}\n",
+  "tests": {
+    "visible": [
+      {
+        "id": "v1",
+        "input": [[]],
+        "expected": { "total": 0, "lowStock": 0 },
+        "note": "almacén sin líneas"
+      },
+      {
+        "id": "v2",
+        "input": [
+          [
+            { "category": "tornillos", "quantity": 10 },
+            { "category": "cables", "quantity": 2 }
+          ]
+        ],
+        "expected": { "total": 12, "lowStock": 1 },
+        "note": "una línea baja y otra holgada"
+      },
+      {
+        "id": "v3",
+        "input": [
+          [
+            { "category": "a", "quantity": 1 },
+            { "category": "b", "quantity": 2 },
+            { "category": "c", "quantity": 3 }
+          ]
+        ],
+        "expected": { "total": 6, "lowStock": 3 },
+        "note": "todas por debajo del mínimo"
+      }
+    ],
+    "hidden": [
+      {
+        "id": "h1",
+        "input": [[{ "category": "a", "quantity": 100 }]],
+        "expected": { "total": 100, "lowStock": 0 },
+        "note": "una sola línea, holgada"
+      },
+      {
+        "id": "h2",
+        "input": [[{ "category": "a", "quantity": 5 }]],
+        "expected": { "total": 5, "lowStock": 0 },
+        "note": "exactamente en el mínimo"
+      },
+      {
+        "id": "h3",
+        "input": [[{ "category": "b", "quantity": 10 }, { "category": "a", "quantity": 0 }]],
+        "expected": { "total": 10, "lowStock": 1 },
+        "note": "cero también es stock bajo"
+      },
+      {
+        "id": "h4",
+        "input": [[{ "category": "a", "quantity": 4 }, { "category": "b", "quantity": 6 }]],
+        "expected": { "total": 10, "lowStock": 1 },
+        "note": "una por debajo, otra por encima"
+      }
+    ],
+    "edge": [
+      {
+        "id": "ed1",
+        "input": [
+          [
+            { "category": "a", "quantity": 5 },
+            { "category": "b", "quantity": 5 },
+            { "category": "c", "quantity": 5 }
+          ]
+        ],
+        "expected": { "total": 15, "lowStock": 0 },
+        "note": "todas justo en el mínimo",
+        "edge": true,
+        "edgeKind": "boundary-equal"
+      },
+      {
+        "id": "ed2",
+        "input": [[{ "category": "a", "quantity": 0 }]],
+        "expected": { "total": 0, "lowStock": 1 },
+        "note": "total cero con una línea que reponer",
+        "edge": true,
+        "edgeKind": "zero"
+      },
+      {
+        "id": "ed3",
+        "input": [
+          [
+            { "category": "a", "quantity": 1000000 },
+            { "category": "b", "quantity": 1000000 }
+          ]
+        ],
+        "expected": { "total": 2000000, "lowStock": 0 },
+        "note": "cantidades muy grandes",
+        "edge": true,
+        "edgeKind": "extreme"
+      }
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "E12",
+      "message": "El cierre espera dos números con nombre, no una lista. ¿Qué estructura permite nombrarlos?"
+    },
+    {
+      "code": "E09",
+      "when": { "failingTestIds": ["v2", "v3", "h3", "h4", "ed1", "ed3"] },
+      "message": "Tu total se reinicia en cada vuelta. Con [10, 2] debería dar 12 y da 2. ¿Dónde se declara el total?"
+    },
+    {
+      "code": "E05",
+      "when": { "failingTestIds": ["h2", "ed1"] },
+      "message": "Una línea con exactamente 5 unidades no hay que reponerla. Tu código la cuenta. ¿Qué operador lo arregla?"
+    },
+    {
+      "code": "E09",
+      "message": "Tu total se reinicia en cada vuelta. Con [10, 2] debería dar 12 y da 2. ¿Dónde se declara el total?"
+    },
+    {
+      "code": "E10",
+      "message": "total empieza como undefined. undefined + 10 no es 10. ¿Con qué valor debería empezar?"
+    },
+    {
+      "code": "E05",
+      "message": "Una línea con exactamente 5 unidades no hay que reponerla. ¿Tu código la cuenta como baja?"
+    },
+    {
+      "code": "E11",
+      "message": "Modificaste el inventario. La auditoría no puede cambiar lo que audita."
+    },
+    {
+      "code": "E19",
+      "message": "Ese método esconde el recorrido y con él las dos variables que tienes que mantener. Escríbelo con un bucle y tus propias variables."
+    },
+    {
+      "code": "E20",
+      "message": "El mínimo está en dos lugares. Si mañana cambia a 8, ¿cuántos sitios hay que tocar?"
+    },
+    {
+      "code": "E01",
+      "message": "Hay un error de sintaxis antes de que el código pueda ejecutarse. Revisa la línea marcada: el motor no pudo interpretar esa expresión."
+    },
+    {
+      "code": "E02",
+      "message": "El código lanzó una excepción durante la ejecución. Revisa qué valor estabas usando cuando ocurrió."
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Necesitas dos números al mismo tiempo. ¿Cuántas variables tienen que sobrevivir desde antes del bucle hasta después del bucle? ¿Dónde se declaran?"
+    },
+    {
+      "level": 2,
+      "text": "Con [10, 2] tu total da 2 en lugar de 12. Recorre el bucle a mano y mira el valor de total al final de cada vuelta."
+    },
+    {
+      "level": 3,
+      "text": "antes del bucle:\n    total = 0\n    bajos = 0\npara cada línea:\n    total = total + cantidad\n    si cantidad < 5:\n        bajos = bajos + 1\nal terminar:\n    devolver { total, bajos }"
+    },
+    {
+      "level": 4,
+      "text": "Un gimnasio quiere saber cuántas horas se usaron sus máquinas y cuántas están fuera de servicio.\n\nfunction resumenMaquinas(maquinas) {\n  let horas = 0;\n  let fueraServicio = 0;\n  for (let i = 0; i < maquinas.length; i++) {\n    horas += maquinas[i].horasUso;\n    if (maquinas[i].estado === 'rota') {\n      fueraServicio++;\n    }\n  }\n  return { horas, fueraServicio };\n}\n\nDos variables declaradas fuera del bucle y devueltas juntas.",
+      "unlock": { "attempts": 4, "hintsUsed": 3 }
+    }
+  ],
+  "debrief": {
+    "whyItWorks": "Un acumulador es una variable que sobrevive al bucle. Si se declara dentro, se destruye en cada vuelta y solo conserva el último valor. La regla es mecánica: si el valor debe existir después del bucle, se declara antes. Aquí hay dos: total acumula una magnitud (suma en cada vuelta) y lowStock cuenta una ocurrencia (sube de uno en uno, solo si se cumple la condición). La diferencia no es de sintaxis, es de qué se acumula.",
+    "edgeCaseNote": "La línea con cantidad 0 es la interesante: el total no cambia, pero la cuenta de líneas bajas sí. Dos variables que parecían acopladas resultan ser independientes, y ese es el tipo de caso que rompe una solución que «funcionaba». Y una línea con exactamente 5 no se repone: el mínimo es estricto.",
+    "complexity": {
+      "question": "Con cuarenta líneas de inventario, ¿cuántas veces recorre tu función la lista para obtener los dos números?",
+      "options": [
+        "Una sola vez: los dos números se calculan en la misma pasada",
+        "Dos veces, una por cada número",
+        "Cuarenta veces, una por cada línea",
+        "Depende de cuántas líneas estén por debajo del mínimo"
+      ],
+      "correctIndex": 0,
+      "explanation": "Una pasada, con dos operaciones por línea. El coste crece de forma lineal con las líneas y no hay forma de hacerlo con menos trabajo: hay que mirar cada línea al menos una vez. Esto es lo que ya hace SUM y COUNT en SQL."
+    },
+    "realWorld": "Cierres de inventario, reportes financieros, SUM y COUNT en SQL (que es exactamente esta misión, en un lenguaje donde el bucle es implícito) y métricas de producto.",
+    "reasoningPrompt": "¿Por qué total tiene que declararse antes del bucle y no dentro? Explica qué pasa con el valor en cada vuelta si lo mueves dentro.",
+    "objectiveNouns": ["total", "mínimo", "línea", "cierre"],
+    "reasoningLexicon": ["acumulo", "sumo", "cuento", "sobrevive"]
+  },
+  "mastery": { "transferMissionId": "M12", "reinforcementVariants": [] },
+  "reward": {
+    "systemId": "sys.store",
+    "effect": "broken → working",
+    "narrative": "El panel del almacén muestra totales en vivo y marca en rojo las líneas por reponer."
+  }
+}

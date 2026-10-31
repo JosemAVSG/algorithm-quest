@@ -1,0 +1,224 @@
+{
+  "schemaVersion": 1,
+  "id": "M02",
+  "contentVersion": "1.0.0",
+  "locale": "es",
+  "world": "w1",
+  "order": 2,
+  "title": "La inspección completa",
+  "subtitle": "Salida temprana",
+  "difficulty": 2,
+  "estimatedMinutes": 10,
+  "concepts": { "primary": "C04", "secondary": ["C03"] },
+  "prerequisites": { "missions": ["M01"], "concepts": ["C01"] },
+  "workshop": { "systemId": "sys.sensor", "from": "working", "to": "reliable" },
+  "briefing": {
+    "headline": "Cuarenta sensores, una pregunta",
+    "body": "Ya arreglaste el sensor del horno. Ahora el taller tiene cuarenta sensores en la línea y el jefe de turno no quiere un informe: quiere saber **una sola cosa** antes de arrancar. Si hay un solo sensor por encima del límite, la línea no arranca.\n\nTienes la lista de lecturas y el límite. Dime si hay que parar.\n\nY no me hagas revisar los cuarenta si el primero ya está mal: cada segundo que la línea está parada cuesta dinero.",
+    "requirements": [
+      "Recibe la lista de lecturas de los sensores y el límite seguro",
+      "Devuelve si hay que parar la línea: un sí o un no",
+      "Un solo sensor por encima del límite basta para parar",
+      "No revises más sensores de los necesarios"
+    ],
+    "forbiddenVocabulary": [
+      "recorrido",
+      "recorrer",
+      "bucle",
+      "return",
+      "iterar",
+      "iteración",
+      "salida temprana",
+      "early"
+    ]
+  },
+  "contract": {
+    "entryPoint": "anyDeviceFaulty",
+    "signature": "anyDeviceFaulty(readings, limit) -> boolean",
+    "inputShape": "readings: number[], limit: number",
+    "outputShape": "boolean",
+    "rules": [
+      "Devuelve true cuando al menos una lectura supera estrictamente limit",
+      "Devuelve false si la lista está vacía o si ninguna lectura supera limit",
+      "Una lectura igual a limit no es un fallo (igual que en M01)",
+      "Siempre devuelve un boolean, nunca texto ni undefined"
+    ]
+  },
+  "constraints": {
+    "bannedConstructs": [
+      ".some",
+      ".every",
+      ".filter",
+      ".find",
+      ".map",
+      ".reduce",
+      ".forEach",
+      "Math.max"
+    ],
+    "allowClosedForm": false,
+    "mustNotMutate": true
+  },
+  "starterCode": "function anyDeviceFaulty(readings, limit) {\n  // your code here\n}\n",
+  "tests": {
+    "visible": [
+      {
+        "id": "v1",
+        "input": [[80, 95, 88], 90],
+        "expected": true,
+        "note": "hay un sensor por encima"
+      },
+      {
+        "id": "v2",
+        "input": [[80, 88], 90],
+        "expected": false,
+        "note": "ninguno supera el límite"
+      },
+      {
+        "id": "v3",
+        "input": [[], 90],
+        "expected": false,
+        "note": "la línea no tiene sensores"
+      }
+    ],
+    "hidden": [
+      {
+        "id": "h1",
+        "input": [[95], 90],
+        "expected": true,
+        "note": "un único sensor defectuoso"
+      },
+      {
+        "id": "h2",
+        "input": [[80, 88, 95], 90],
+        "expected": true,
+        "note": "el fallo está en el último sensor"
+      },
+      {
+        "id": "h3",
+        "input": [[90, 90], 90],
+        "expected": false,
+        "note": "justo en el límite no es un fallo"
+      },
+      {
+        "id": "h4",
+        "input": [[100, 95, 80], 90],
+        "expected": true,
+        "note": "el primer sensor falla, y otro más"
+      }
+    ],
+    "edge": [
+      {
+        "id": "ed1",
+        "input": [[90], 90],
+        "expected": false,
+        "note": "un sensor justo en el límite",
+        "edge": true,
+        "edgeKind": "boundary-equal"
+      },
+      {
+        "id": "ed2",
+        "input": [[91], 90],
+        "expected": true,
+        "note": "un sensor apenas por encima",
+        "edge": true,
+        "edgeKind": "singleton"
+      },
+      {
+        "id": "ed3",
+        "input": [[90, 90, 90], 90],
+        "expected": false,
+        "note": "todos justo en el límite",
+        "edge": true,
+        "edgeKind": "duplicate"
+      }
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "E05",
+      "when": { "failingTestIds": ["h3", "ed1", "ed3"] },
+      "message": "Con un sensor justo en 90 y límite 90, tu función dice que hay un fallo. ¿Un sensor que está exactamente en el límite lo supera?"
+    },
+    {
+      "code": "E06",
+      "when": { "failingTestIds": ["h2"] },
+      "message": "Tu bucle termina una posición antes. ¿Qué pasa si el único sensor defectuoso es el último de la lista?"
+    },
+    {
+      "code": "E07",
+      "message": "Con [100, 80] aciertas, pero con [80, 100] no. Tu función decide con el primer elemento y no mira el resto."
+    },
+    {
+      "code": "E06",
+      "message": "El recorrido no cubre toda la lista. Revisa dónde empieza y dónde termina tu bucle: ¿llega hasta la última posición, y solo hasta ella?"
+    },
+    {
+      "code": "E05",
+      "message": "Con un sensor justo en el límite el resultado no es el esperado. ¿Un valor igual al límite cuenta como fallo?"
+    },
+    {
+      "code": "E08",
+      "message": "Cuando ningún sensor está mal, ¿qué devuelve tu función? Compruébalo con [80, 88]."
+    },
+    {
+      "code": "E11",
+      "message": "Ordenaste la lista original. El resto del taller sigue usando esa lista. ¿Puedes resolverlo sin tocarla?"
+    },
+    {
+      "code": "E19",
+      "message": "Ese método hace el recorrido por ti, y este ejercicio trata sobre el recorrido. Escríbelo con un bucle."
+    },
+    {
+      "code": "E01",
+      "message": "Hay un error de sintaxis antes de que el código pueda ejecutarse. Revisa la línea marcada: el motor no pudo interpretar esa expresión."
+    },
+    {
+      "code": "E02",
+      "message": "El código lanzó una excepción durante la ejecución. Revisa qué valor estabas usando cuando ocurrió."
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "¿Tienes que revisar todos los sensores siempre, o hay un momento en el que ya sabes la respuesta y puedes parar? ¿Cómo se llama esa situación en tu código?"
+    },
+    {
+      "level": 2,
+      "text": "Con [80, 88, 95] y límite 90, tu función devuelve false. Recórrela a mano: ¿en qué vuelta debería haber cambiado la respuesta, y en cuál se quedó?"
+    },
+    {
+      "level": 3,
+      "text": "para cada lectura de la lista:\n    si la lectura supera el límite:\n        devolver true      ← ya sabes la respuesta, no sigas\ndespués del bucle (nadie superó el límite):\n    devolver false\n\nFíjate en que hay DOS return, y en que el segundo está fuera del bucle."
+    },
+    {
+      "level": 4,
+      "text": "Un almacén revisa si algún paquete de un envío está dañado. Si encuentra uno, el envío se rechaza sin revisar el resto.\n\nfunction envioTieneDanado(paquetes) {\n  for (let i = 0; i < paquetes.length; i++) {\n    if (paquetes[i].danado) {\n      return true;\n    }\n  }\n  return false;\n}\n\nEl return false final solo se alcanza si el bucle terminó sin encontrar nada.",
+      "unlock": { "attempts": 4, "hintsUsed": 3 }
+    }
+  ],
+  "debrief": {
+    "whyItWorks": "La función tiene dos salidas posibles y ambas son correctas: salir en cuanto se demuestra que hay un fallo, o salir al final cuando se demuestra que no lo hay. La clave es que el return false esté fuera del bucle: si está dentro, la función responde tras mirar un solo sensor. Un bucle con salida temprana siempre tiene la misma forma: buscar, salir con éxito, salir con fracaso. Cambia la condición, cambia el tipo de retorno, pero la forma no.",
+    "edgeCaseNote": "Lista vacía: la respuesta es false, porque «hay algún fallo» es falso cuando no hay sensores. Es el caso que más gente rompe, y el que separa «recorrí la lista» de «la lista existe». Y un sensor justo en el límite sigue sin ser un fallo, igual que en M01.",
+    "complexity": {
+      "question": "Con cuarenta sensores, ¿cuántas comparaciones hace tu función como máximo, y cuántas como mínimo?",
+      "options": [
+        "Como máximo 40 y como mínimo 1",
+        "Siempre 40, sin importar los datos",
+        "Siempre 1, porque solo mira un sensor",
+        "Depende del valor del límite, no de la cantidad de sensores"
+      ],
+      "correctIndex": 0,
+      "explanation": "En el peor caso (ningún fallo, o el fallo en el último sensor) compara los 40; en el mejor caso (el primero ya está mal) compara uno y sale. El coste crece con la cantidad de sensores: es lineal. Ahora mismo no importa porque son 40; en M09 verás qué pasa cuando no lo son."
+    },
+    "realWorld": "Array.prototype.some, validación de formularios, cortocircuito en reglas de negocio, anyMatch en los streams de Java, EXISTS en SQL. Todos son esta misma función.",
+    "reasoningPrompt": "Explica por qué hay dos return y por qué el segundo no puede estar dentro del bucle. Después di qué devuelve tu función con una lista vacía y por qué eso es correcto.",
+    "objectiveNouns": ["línea", "sensor", "fallo", "parar"],
+    "reasoningLexicon": ["recorro", "paro", "encuentro", "devuelvo"]
+  },
+  "mastery": { "transferMissionId": "M12", "reinforcementVariants": [] },
+  "reward": {
+    "systemId": "sys.sensor",
+    "effect": "working → reliable",
+    "narrative": "La línea se detiene sola en cuanto un sensor se pasa del límite."
+  }
+}
