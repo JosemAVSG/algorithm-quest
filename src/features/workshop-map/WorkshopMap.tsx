@@ -32,6 +32,8 @@ import {
   type WorldState,
 } from '../../domain/progression/worlds';
 import { STATE_LABEL } from './stateLabels';
+import { ConceptFinder } from './ConceptFinder';
+import { ReadingOptions } from './ReadingOptions';
 import { WelcomeGuide } from './WelcomeGuide';
 import { WorldGem } from './WorldGem';
 
@@ -134,6 +136,7 @@ export function WorkshopMap({
             Ver progreso
           </button>
         </div>
+        <ReadingOptions />
       </header>
 
       {openWorld === null && completed.size === 0 ? <WelcomeGuide /> : null}
@@ -212,9 +215,18 @@ export function WorkshopMap({
       </section>
 
       {openWorld === null ? (
+        <ConceptFinder bundle={bundle} completed={completed} onOpenMission={onOpenMission} />
+      ) : null}
+
+      {openWorld === null ? (
         <ol className="path path--worlds" aria-label="Mundos">
           {worlds.map(({ world, state, blockedBy }, index) => {
             const locked = state === 'locked';
+            const doneHere = world.missionIds.filter((id) => completed.has(id)).length;
+            const percent =
+              world.missionIds.length === 0
+                ? 0
+                : Math.round((doneHere / world.missionIds.length) * 100);
             const nextLocked = worlds[index + 1]?.state === 'locked';
             const reason =
               blockedBy === null
@@ -230,7 +242,7 @@ export function WorkshopMap({
                   type="button"
                   className={`stop stop--${state}`}
                   aria-disabled={locked}
-                  aria-label={`${world.name}: ${WORLD_LABEL[state]}${locked ? `, ${reason}` : ''}`}
+                  aria-label={`${world.name}: ${WORLD_LABEL[state]}${locked ? `, ${reason}` : `, ${doneHere} de ${world.missionIds.length} misiones`}`}
                   onClick={
                     locked ? undefined : () => onOpenWorldChange(world.id)
                   }
@@ -247,6 +259,13 @@ export function WorkshopMap({
                     <span className="stop__state">
                       {locked ? reason : WORLD_LABEL[state]}
                     </span>
+                    {locked ? null : (
+                      <span
+                        className="stop__bar"
+                        aria-hidden="true"
+                        style={{ '--percent': `${percent}%` } as CSSProperties}
+                      />
+                    )}
                   </span>
                 </button>
               </li>

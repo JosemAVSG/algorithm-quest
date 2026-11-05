@@ -87,6 +87,7 @@ Every deliverable from the brief maps to exactly one place.
 | — | Spaced review: reinforcement variants | `docs/20-reinforcement.md` |
 | — | UX and accessibility review | `docs/21-ux-accessibility.md` |
 | — | World 7 missions M38–M42 (classic algorithms) | `docs/22-world7.md` |
+| — | Entry, reward, lab and reading improvements | `docs/23-ux-gamification.md` |
 
 ---
 

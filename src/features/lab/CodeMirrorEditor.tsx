@@ -109,6 +109,7 @@ export default function CodeMirrorEditor({
   onRun,
   disabled,
   highlightLine = null,
+  onReady,
 }: EditorProps) {
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<EditorView | null>(null);
@@ -192,7 +193,12 @@ export default function CodeMirrorEditor({
 
     const instance = new EditorView({ state, parent: host.current });
     view.current = instance;
+    onReady?.((text) => {
+      instance.dispatch(instance.state.replaceSelection(text));
+      instance.focus();
+    });
     return () => {
+      onReady?.(null);
       instance.destroy();
       view.current = null;
     };

@@ -22,11 +22,11 @@ async function fullMissions() {
 }
 
 describe('mission index (map data)', () => {
-  it('summarises only what the map, unlock and progress code read', async () => {
+  it('summarises only what the map, unlock, progress and concept search read', async () => {
     const [m01] = await fullMissions();
     const summary = summarizeMission(m01);
     expect(Object.keys(summary).sort()).toEqual(
-      ['id', 'order', 'prerequisites', 'reward', 'subtitle', 'title', 'workshop', 'world'].sort(),
+      ['concepts', 'id', 'order', 'prerequisites', 'reward', 'subtitle', 'title', 'workshop', 'world'].sort(),
     );
     expect(summary.workshop).toEqual({ systemId: m01.workshop.systemId, to: m01.workshop.to });
     expect(summary.prerequisites).toEqual({ missions: m01.prerequisites.missions });

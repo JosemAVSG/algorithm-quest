@@ -135,6 +135,18 @@ export function ProgressDashboard({
     [bundle.concepts, progress.events, progress.reinforcement],
   );
 
+  // Missions finished in the last seven days. A look back, never a streak.
+  const recent = useMemo(() => {
+    const since = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    return progress.completed
+      .filter((record) => record.completedAt >= since)
+      .map(
+        (record) =>
+          bundle.missions.find((mission) => mission.id === record.missionId)?.title ??
+          record.missionId,
+      );
+  }, [bundle.missions, progress.completed]);
+
   const [exported, setExported] = useState('');
   const [importText, setImportText] = useState('');
   const [message, setMessage] = useState<string | null>(null);
@@ -186,6 +198,18 @@ export function ProgressDashboard({
           evidencia
         </p>
       </header>
+
+      {recent.length === 0 ? null : (
+        <section className="week" aria-label="Esta semana">
+          <p className="week__kicker">Esta semana</p>
+          <p className="week__note">
+            {recent.length === 1
+              ? 'Reparaste 1 sistema:'
+              : `Reparaste ${recent.length} sistemas:`}{' '}
+            {recent.join(' · ')}
+          </p>
+        </section>
+      )}
 
       {dashboard.pendingReinforcement.length === 0 ? null : (
         <section className="reinforcement" aria-label="Refuerzo pendiente">

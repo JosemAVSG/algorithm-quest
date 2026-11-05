@@ -5,13 +5,14 @@
  * failed test. The run button is the only primary action.
  */
 
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import type { MissionSessionState } from '../../domain/session/mission-session';
 import type { ConsoleReport } from '../../domain/execution/console';
 import { ConsolePanel } from './ConsolePanel';
 import { Editor } from './Editor';
 import { MentorPanel } from './MentorPanel';
+import { SymbolBar } from './SymbolBar';
 import { TestPanel } from './TestPanel';
 import { TracePanel, type TraceView } from './TracePanel';
 
@@ -46,6 +47,7 @@ export function Lab({
   onCloseTrace = () => {},
 }: LabProps) {
   const { mission, lastEvaluation } = state;
+  const insertRef = useRef<((text: string) => void) | null>(null);
 
   // The step the trace is showing. UI state only; a new trace starts at its first step.
   const [step, setStep] = useState(0);
@@ -104,7 +106,11 @@ export function Lab({
               onRun={onRun}
               disabled={state.running}
               highlightLine={markedLine}
+              onReady={(insert) => {
+                insertRef.current = insert;
+              }}
             />
+            <SymbolBar disabled={state.running} onInsert={(text) => insertRef.current?.(text)} />
           </section>
 
           {onTrace === undefined ? null : (

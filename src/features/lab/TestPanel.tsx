@@ -12,6 +12,7 @@
 import type { RunCost } from '../../domain/evaluation/evaluate-run';
 import type { TestReport } from '../../domain/evaluation/test-engine';
 import { renderValue } from '../../domain/evaluation/test-engine';
+import { splitAtFirstDifference } from './diffText';
 
 interface TestPanelProps {
   report: TestReport | null;
@@ -21,6 +22,17 @@ interface TestPanelProps {
 }
 
 const steps = (value: number) => value.toLocaleString('es');
+
+/** The text with its first difference marked (underline and weight, not colour alone). */
+function Marked({ text, other }: { text: string; other: string }) {
+  const { same, rest } = splitAtFirstDifference(text, other);
+  return (
+    <code>
+      {same}
+      {rest === '' ? null : <mark className="diff__mark">{rest}</mark>}
+    </code>
+  );
+}
 
 export function TestPanel({ report, running, cost = null }: TestPanelProps) {
   const visible = report?.results.filter((result) => result.group === 'visible') ?? [];
@@ -73,11 +85,11 @@ export function TestPanel({ report, running, cost = null }: TestPanelProps) {
                   </span>
                   <span className="diff__row">
                     <span className="diff__key">esperado</span>
-                    <code>{renderValue(result.expected)}</code>
+                    <Marked text={renderValue(result.expected)} other={renderValue(result.actual)} />
                   </span>
                   <span className="diff__row">
                     <span className="diff__key">obtenido</span>
-                    <code>{renderValue(result.actual)}</code>
+                    <Marked text={renderValue(result.actual)} other={renderValue(result.expected)} />
                   </span>
                 </span>
               ) : null}
