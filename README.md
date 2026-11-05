@@ -1,6 +1,6 @@
 # Algorithm Quest — Specification Package
 
-Status: **Gates 1–3 approved. M0–M2 done; M3 partial.** M1 is *buildable*, not validated:
+Status: **Gates 1–3 approved. M0–M2 done; M3 partial. World 2 (M13–M16) authored — see `15-world2.md`.** M1 is *buildable*, not validated:
 assumption A7 is still unsatisfied and there is no playtest evidence — see
 `11-delivery-plan.md` §6, `12-m1-walkthrough.md`, `13-m2-hardening.md` and
 `14-m3-mentor.md`.
@@ -80,6 +80,7 @@ Every deliverable from the brief maps to exactly one place.
 | — | M1 walkthrough and its evidence class | `docs/12-m1-walkthrough.md` |
 | — | M2 hardening: shipped, refused, deviated | `docs/13-m2-hardening.md` |
 | — | M3 mentor: shipped, deviated, still open | `docs/14-m3-mentor.md` |
+| — | World 2 missions M13–M16 | `docs/15-world2.md` |
 
 ---
 
