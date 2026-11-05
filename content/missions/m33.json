@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "locale": "es",
+  "id": "M33",
+  "world": "w5",
+  "order": 5,
+  "title": "Las combinaciones del pedido",
+  "subtitle": "Probar, deshacer y probar otra cosa",
+  "difficulty": 5,
+  "estimatedMinutes": 30,
+  "concepts": { "primary": "C37", "secondary": ["C31"] },
+  "prerequisites": { "missions": ["M32"], "concepts": ["C36"] },
+  "workshop": { "systemId": "sys.maze", "from": "absent", "to": "installed" },
+  "briefing": {
+    "headline": "Qué piezas suman el pedido",
+    "body": "Un cliente pide una cantidad exacta de material y el almacén tiene piezas de distintos pesos (`pieces`, de 1 a 14 piezas, pueden repetirse). El encargado quiere ver **todas las formas** de elegir piezas que suman justo `target`.\n\nCada forma es un subconjunto de piezas: una pieza se cuenta por su posición, así que dos piezas con el mismo peso son piezas distintas. Se puede elegir **ninguna** pieza (suma 0) o **todas**.\n\nPara que el resultado sea siempre el mismo, las formas deben salir en este orden: se recorren las piezas de la primera a la última; para cada una **primero se prueba a incluirla y después a no incluirla**. Cada forma se escribe con los pesos en el orden de las piezas.\n\nDevuelve la lista de formas. Si ninguna suma `target`, devuelve una lista vacía.",
+    "requirements": ["Recibe la lista de pesos de las piezas y la cantidad exacta del pedido", "Devuelve todas las formas de elegir piezas cuya suma es target", "Las piezas se distinguen por su posición, aunque pesen lo mismo", "El orden es el de probar, en cada pieza, primero incluirla y luego no incluirla"],
+    "forbiddenVocabulary": ["backtracking", "retroceso", "subconjuntos", "potencia", "recursión", "combinaciones"]
+  },
+  "contract": {
+    "entryPoint": "waysToFill",
+    "signature": "waysToFill(pieces, target) -> number[][]",
+    "inputShape": "pieces: number[] (0 a 14 piezas), target: number",
+    "outputShape": "number[][]",
+    "rules": ["Cada forma es una lista con los pesos de las piezas elegidas, en el orden de la lista original", "Una forma entra en el resultado si la suma de sus pesos es exactamente target", "Dos piezas con el mismo peso son piezas distintas: pueden dar formas que se ven iguales", "Orden: de la primera a la última pieza, se prueba primero incluirla y después no incluirla", "Elegir ninguna pieza es una forma válida si target es 0", "No modifica pieces; cada forma del resultado es una lista independiente"]
+  },
+  "constraints": {
+    "bannedConstructs": [],
+    "allowClosedForm": false,
+    "mustNotMutate": true,
+    "rotationInvariant": false,
+    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 300000 }
+  },
+  "starterCode": "function waysToFill(pieces, target) {\n  // your code here\n}\n",
+  "tests": {
+    "visible": [
+      { "id": "v1", "input": [[], 0], "expected": [[]], "note": "sin piezas y pedido de 0" },
+      { "id": "v2", "input": [[2, 3, 5], 5], "expected": [[2, 3], [5]], "note": "dos formas de sumar 5" },
+      { "id": "v3", "input": [[1, 2], 10], "expected": [], "note": "ninguna forma llega" }
+    ],
+    "hidden": [
+      {
+        "id": "h1",
+        "input": [[1, 1, 1], 2],
+        "expected": [[1, 1], [1, 1], [1, 1]],
+        "note": "tres piezas iguales: tres formas"
+      },
+      {
+        "id": "h2",
+        "input": [[3, 4, 5, 6, 7], 12],
+        "expected": [[3, 4, 5], [5, 7]],
+        "note": "varias formas de distinto tamaño"
+      },
+      {
+        "id": "h3",
+        "input": [[-1, 2, 3, -2], 2],
+        "expected": [[-1, 2, 3, -2], [-1, 3], [2]],
+        "note": "pesos negativos"
+      },
+      {
+        "id": "h4",
+        "input": [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 20],
+        "expected": [[1, 2, 3, 4, 10], [1, 2, 3, 5, 9], [1, 2, 3, 6, 8], [1, 2, 4, 5, 8], [1, 2, 4, 6, 7], [1, 2, 5, 12], [1, 2, 6, 11], [1, 2, 7, 10], [1, 2, 8, 9], [1, 3, 4, 5, 7], [1, 3, 4, 12], [1, 3, 5, 11], [1, 3, 6, 10], [1, 3, 7, 9], [1, 4, 5, 10], [1, 4, 6, 9], [1, 4, 7, 8], [1, 5, 6, 8], [1, 7, 12], [1, 8, 11], [1, 9, 10], [2, 3, 4, 5, 6], [2, 3, 4, 11], [2, 3, 5, 10], [2, 3, 6, 9], [2, 3, 7, 8], [2, 4, 5, 9], [2, 4, 6, 8], [2, 5, 6, 7], [2, 6, 12], [2, 7, 11], [2, 8, 10], [3, 4, 5, 8], [3, 4, 6, 7], [3, 5, 12], [3, 6, 11], [3, 7, 10], [3, 8, 9], [4, 5, 11], [4, 6, 10], [4, 7, 9], [5, 6, 9], [5, 7, 8], [8, 12], [9, 11]],
+        "note": "12 piezas, muchas formas"
+      }
+    ],
+    "edge": [
+      {
+        "id": "ed1",
+        "input": [[7], 7],
+        "expected": [[7]],
+        "edge": true,
+        "edgeKind": "singleton",
+        "note": "una sola pieza que encaja"
+      },
+      {
+        "id": "ed2",
+        "input": [[0, 0], 0],
+        "expected": [[0, 0], [0], [0], []],
+        "edge": true,
+        "edgeKind": "zero",
+        "note": "piezas de peso cero"
+      },
+      {
+        "id": "ed3",
+        "input": [[5, 5], 5],
+        "expected": [[5], [5]],
+        "edge": true,
+        "edgeKind": "duplicate",
+        "note": "dos piezas iguales, dos formas"
+      }
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "E12",
+      "when": { "failingTestIds": ["v2", "ed1"] },
+      "message": "Las formas del resultado salen vacías o todas iguales. Si añades al resultado la lista que sigues modificando, sin copiarla, al deshacer las elecciones todas las formas guardadas cambian a la vez. ¿Guardas una copia cuando una forma suma target?"
+    },
+    {
+      "code": "E09",
+      "when": { "failingTestIds": ["v2", "h1", "ed3"] },
+      "message": "Con [2, 3, 5] y pedido 5 deberían salir [2, 3] y [5]. Cuando pruebas a no incluir una pieza, ¿has quitado la que habías incluido antes? Si no se deshace, las pruebas siguientes arrastran piezas de la anterior."
+    },
+    {
+      "code": "E21",
+      "when": { "failingTestIds": ["v2", "h2", "h3"] },
+      "message": "Las formas que salen son las correctas pero en otro orden. En cada pieza, primero se prueba a incluirla y después a no incluirla; y las formas se guardan en el orden en que se completan."
+    },
+    {
+      "code": "E21",
+      "when": { "failingTestIds": ["h1", "ed3"] },
+      "message": "Con [1, 1, 1] y pedido 2 hay tres formas, no una: dos piezas con el mismo peso son piezas distintas. No elimines las formas que se ven iguales."
+    },
+    {
+      "code": "E12",
+      "message": "El resultado debe ser una lista de formas, cada una una lista de pesos. Comprueba qué devuelves cuando una forma suma target y cuando ninguna lo hace."
+    },
+    {
+      "code": "E08",
+      "message": "¿Qué devuelve tu función cuando ninguna forma suma target? Compruébalo con [1, 2] y pedido 10: el contrato pide []."
+    },
+    {
+      "code": "E02",
+      "message": "Tu función lanzó una excepción. Si se llama a sí misma sin parar, comprueba cuándo debe dejar de probar: cuando ya has decidido incluir o no todas las piezas."
+    },
+    {
+      "code": "E11",
+      "message": "Tu función modificó la lista de piezas. Para probar formas solo necesitas leerla."
+    },
+    {
+      "code": "E01",
+      "message": "Hay un error de sintaxis antes de que el código pueda ejecutarse. Revisa la línea marcada: el motor no pudo interpretar esa expresión."
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Para cada pieza solo hay dos opciones: incluirla o no. ¿Qué te falta recordar de las decisiones que ya tomaste? ¿Cuándo sabes que has decidido sobre todas las piezas?"
+    },
+    {
+      "level": 2,
+      "text": "Prueba a incluir la primera pieza y, con esa decisión, resuelve el resto. Después deshaz esa decisión y prueba sin ella. Deshacer significa que lo elegido vuelve a estar como antes de elegir. ¿Qué estás guardando cuando una forma suma target: la misma lista o una copia?"
+    },
+    {
+      "level": 3,
+      "text": "resultado = lista vacía\nelegidas = lista vacía\nfunción probar(i, suma):\n    si i es igual a pieces.length:\n        si suma es igual a target: añadir una COPIA de elegidas al resultado\n        terminar\n    añadir pieces[i] a elegidas\n    probar(i + 1, suma + pieces[i])        (con la pieza)\n    quitar el último de elegidas           (deshacer)\n    probar(i + 1, suma)                    (sin la pieza)\nprobar(0, 0)\ndevolver resultado\n\nLa copia es necesaria porque elegidas se sigue modificando; el «quitar el último» es lo que deja las cosas como estaban antes de probar la pieza."
+    },
+    {
+      "level": 4,
+      "text": "Una pizzería quiere saber qué combinaciones de ingredientes suman un número de calorías exacto.\n\nfunction combosCalorias(calorias, total) {\n  const res = [];\n  const actual = [];\n  function probar(i, suma) {\n    if (i === calorias.length) {\n      if (suma === total) res.push([...actual]);\n      return;\n    }\n    actual.push(calorias[i]);\n    probar(i + 1, suma + calorias[i]);\n    actual.pop();\n    probar(i + 1, suma);\n  }\n  probar(0, 0);\n  return res;\n}",
+      "unlock": { "attempts": 4, "hintsUsed": 3 }
+    }
+  ],
+  "debrief": {
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe el caso, y responde las preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "En cada pieza pruebo {b1}; después de resolver el resto, {b2} y pruebo {b3}; cuando he decidido sobre todas las piezas y la suma es target, guardo {b4}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": ["primero a incluirla", "primero a no incluirla", "solo a incluirla", "las dos opciones a la vez"],
+          "correctIndex": 0
+        },
+        {
+          "id": "b2",
+          "options": ["borro todo el resultado", "deshago la elección quitando la pieza", "dejo la pieza elegida", "cambio el orden de las piezas"],
+          "correctIndex": 1
+        },
+        {
+          "id": "b3",
+          "options": ["a incluirla otra vez", "con otra pieza distinta del final", "a no incluirla", "ninguna otra opción"],
+          "correctIndex": 2
+        },
+        {
+          "id": "b4",
+          "options": ["la propia lista de elegidas", "solo la suma", "solo la última pieza", "una copia de las piezas elegidas"],
+          "correctIndex": 3
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "Con `[2, 3, 5]` y pedido 5, una función devuelve `[[], []]`. ¿Qué ha hecho?",
+          "options": ["Ha incluido una pieza de más", "Ha guardado la propia lista de elegidas, y al deshacer las elecciones se ha quedado vacía", "Ha probado las piezas al revés", "Ha comparado con > en vez de ==="],
+          "correctIndex": 1,
+          "whyWrong": ["Eso daría formas con piezas de más, no listas vacías.", "", "El orden no vacía las formas.", "La comparación de la suma no vacía la lista."],
+          "explanation": "Si se guarda la misma lista que se sigue modificando, todas las formas guardadas son esa lista, que al final está vacía. Hay que guardar una copia."
+        },
+        {
+          "id": "q2",
+          "question": "Después de probar «con la pieza» no se quita la pieza antes de probar «sin ella». ¿Qué ocurre?",
+          "options": ["Nada, da igual", "La función termina antes", "La pieza se queda en elegidas y aparece en formas que no la deberían incluir", "Las formas salen en orden inverso"],
+          "correctIndex": 2,
+          "whyWrong": ["Sí importa: cambia el contenido de las formas.", "La función sigue hasta decidir todas las piezas.", "", "El orden no se invierte, el contenido se contamina."],
+          "explanation": "Deshacer la elección es lo que permite que la prueba siguiente parta del mismo estado que tenía la anterior."
+        },
+        {
+          "id": "q3",
+          "question": "Con 12 piezas, ¿cuántas decisiones completas (incluir o no cada pieza) se llegan a probar?",
+          "options": ["12", "24", "144", "4.096: dos opciones por pieza, doce veces (2 elevado a 12)"],
+          "correctIndex": 3,
+          "whyWrong": ["Eso sería probar cada pieza una vez.", "Eso sería dos opciones por pieza, pero sumadas, no multiplicadas.", "Eso sería elevar 12 al cuadrado.", ""],
+          "explanation": "Cada pieza duplica el número de formas. Con 20 piezas serían más de un millón, y por eso este enfoque solo sirve para pocas piezas."
+        }
+      ]
+    },
+    "whyItWorks": "Hay que revisar todas las formas de elegir piezas, y cada forma es una secuencia de decisiones, una por pieza: incluirla o no. Se prueba una decisión, se resuelve el resto con la misma idea (la pieza siguiente), y al volver se deshace la decisión para probar la otra. Ese «probar, deshacer y probar otra cosa» es lo que permite recorrer todas las combinaciones usando una sola lista de elegidas. Cuando se ha decidido sobre todas las piezas, si la suma es target se guarda una copia, porque la lista de elegidas seguirá cambiando.",
+    "edgeCaseNote": "Con 0 piezas y pedido 0 hay una forma: no elegir nada. Con piezas de peso cero, incluir o no incluirlas da formas distintas con la misma suma. Dos piezas iguales cuentan por separado. Si ninguna forma suma target, se devuelve []. Y el resultado guarda copias: guardar la lista que se sigue modificando deja formas vacías o repetidas.",
+    "complexity": {
+      "question": "Con 12 piezas, ¿cuántas decisiones completas hay que revisar?",
+      "options": ["4.096", "12", "144", "24"],
+      "correctIndex": 0,
+      "explanation": "Cada pieza tiene dos opciones y se combinan: 2 elevado a 12. Añadir una pieza más duplica el trabajo. Es el precio de revisar todas las formas; con 30 piezas sería inviable."
+    },
+    "realWorld": "Resolver un sudoku o un crucigrama, encontrar rutas en un laberinto, generar contraseñas posibles, repartir turnos cumpliendo restricciones, el problema de la mochila en su versión exacta.",
+    "reasoningPrompt": "¿Por qué hay que deshacer la elección antes de probar sin la pieza? ¿Por qué se guarda una copia de las piezas elegidas y no la propia lista?",
+    "objectiveNouns": ["pieza", "forma", "suma", "elección"],
+    "reasoningLexicon": ["incluir", "deshago", "copia", "pruebo", "decido"]
+  },
+  "mastery": { "reinforcementVariants": [] },
+  "reward": {
+    "systemId": "sys.maze",
+    "effect": "absent → installed",
+    "narrative": "El enrutador prueba un camino, vuelve atrás cuando no lleva a ninguna parte y sigue por otro."
+  }
+}

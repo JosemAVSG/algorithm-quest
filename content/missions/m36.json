@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "locale": "es",
+  "id": "M36",
+  "world": "w6",
+  "order": 3,
+  "title": "Las escaleras del almacén",
+  "subtitle": "No repetir lo que ya has resuelto",
+  "difficulty": 5,
+  "estimatedMinutes": 28,
+  "concepts": { "primary": "C40", "secondary": ["C31"] },
+  "prerequisites": { "missions": ["M35"], "concepts": ["C31"] },
+  "workshop": { "systemId": "sys.memo", "from": "absent", "to": "installed" },
+  "briefing": {
+    "headline": "De cuántas formas se sube",
+    "body": "La escalera del almacén tiene `n` escalones. Una carretilla puede subir **1, 2 o 3 escalones** de cada vez. Dos recorridos son distintos si en algún momento cambian el tamaño de un salto: subir `1+2` y subir `2+1` son dos formas distintas.\n\nDevuelve **de cuántas formas distintas** se puede llegar exactamente al escalón `n`, empezando en el suelo (escalón 0). Con `n = 0` hay **una** forma: no moverse. Con `n = 3` hay **cuatro**: `1+1+1`, `1+2`, `2+1` y `3`.\n\nEl pedido más grande tiene `n = 50`. Resolverlo probando todas las secuencias de saltos una por una tarda más de lo que el programa permite: la respuesta es un número de trece cifras, pero el camino hasta ella repite muchas veces el mismo cálculo.",
+    "requirements": ["Recibe el número de escalones n (de 0 a 55)", "Devuelve cuántas secuencias de saltos de 1, 2 o 3 escalones llevan exactamente al escalón n", "Con n = 0 hay una forma", "Tiene que responder en menos de dos segundos hasta con n = 50"],
+    "forbiddenVocabulary": ["programación dinámica", "memoización", "memoizar", "tabulación", "subproblemas", "tribonacci", "Fibonacci"]
+  },
+  "contract": {
+    "entryPoint": "ways",
+    "signature": "ways(n) -> number",
+    "inputShape": "n: number (entero de 0 a 55)",
+    "outputShape": "number",
+    "rules": ["ways(0) es 1", "Para n >= 1, ways(n) es la suma de las formas de llegar a los tres escalones anteriores (los que existan)", "No hay escalones negativos: llegar a un escalón por debajo de 0 no cuenta", "El resultado cabe en un número normal de JavaScript para n hasta 55", "Debe responder en menos de dos segundos para n = 50"]
+  },
+  "constraints": {
+    "bannedConstructs": [],
+    "allowClosedForm": false,
+    "mustNotMutate": false,
+    "rotationInvariant": false,
+    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 1000 }
+  },
+  "starterCode": "function ways(n) {\n  // your code here\n}\n",
+  "tests": {
+    "visible": [
+      { "id": "v1", "input": [0], "expected": 1, "note": "no hay escalones: una forma" },
+      { "id": "v2", "input": [3], "expected": 4, "note": "cuatro formas, las del enunciado" },
+      { "id": "v3", "input": [5], "expected": 13, "note": "cinco escalones" }
+    ],
+    "hidden": [
+      { "id": "h1", "input": [1], "expected": 1, "note": "un escalón" },
+      { "id": "h2", "input": [2], "expected": 2, "note": "dos escalones" },
+      { "id": "h3", "input": [10], "expected": 274, "note": "diez escalones" },
+      {
+        "id": "h4",
+        "input": [40],
+        "expected": 23837527729,
+        "note": "cuarenta escalones: probar todas las secuencias ya es demasiado"
+      },
+      { "id": "h5", "input": [50], "expected": 10562230626642, "note": "cincuenta escalones" }
+    ],
+    "edge": [
+      {
+        "id": "ed1",
+        "input": [4],
+        "expected": 7,
+        "edge": true,
+        "edgeKind": "boundary-equal",
+        "note": "cuatro escalones: primer caso con los tres saltos"
+      },
+      {
+        "id": "ed2",
+        "input": [55],
+        "expected": 222332455004452,
+        "edge": true,
+        "edgeKind": "extreme",
+        "note": "el pedido más grande: 55 escalones"
+      }
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "E21",
+      "message": "El número de formas no coincide. Con 3 escalones deben salir 4 (1+1+1, 1+2, 2+1 y 3) y con n = 0 una sola forma. Comprueba que cuentas saltos de 1, de 2 y de 3, y que el suelo cuenta como una forma de «estar ya allí»."
+    },
+    {
+      "code": "E10",
+      "message": "La cuenta da NaN o undefined. Cuando miras los escalones anteriores a n, ¿qué valor tienen los que no existen (los que están antes del suelo)?"
+    },
+    {
+      "code": "E12",
+      "message": "El resultado debe ser un número: cuántas formas hay de llegar al escalón n. Comprueba qué devuelves."
+    },
+    {
+      "code": "E08",
+      "message": "¿Qué devuelve tu función con n = 0? Compruébalo a mano: el contrato pide 1 (la forma de no moverse)."
+    },
+    {
+      "code": "E02",
+      "message": "Tu función lanzó una excepción. Si se llama a sí misma sin parar, comprueba cuándo debe dejar de hacerlo: cuando n es 0 (una forma) o negativo (ninguna)."
+    },
+    {
+      "code": "E16",
+      "message": "Tu respuesta es correcta y tarda demasiado. Para llegar a n = 40, probar todas las secuencias repite el mismo cálculo (por ejemplo, las formas de llegar al escalón 10) miles de millones de veces. Resuelve cada escalón una sola vez y guarda el resultado."
+    },
+    {
+      "code": "E01",
+      "message": "Hay un error de sintaxis antes de que el código pueda ejecutarse. Revisa la línea marcada: el motor no pudo interpretar esa expresión."
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Para llegar al escalón n, ¿desde qué escalones puede venir el último salto? ¿Cuántas formas hay de llegar a cada uno de ellos?"
+    },
+    {
+      "level": 2,
+      "text": "Las formas de llegar a n son las de llegar a n - 1, más las de n - 2, más las de n - 3. Pero si calculas cada una desde cero, calculas muchas veces lo mismo (las formas de llegar al escalón 10, por ejemplo). ¿Cómo evitas repetir? ¿Qué valor inicial tienen el suelo y los escalones por debajo?"
+    },
+    {
+      "level": 3,
+      "text": "formas = lista donde formas[i] será el número de formas de llegar al escalón i\nformas[0] = 1\npara i desde 1 hasta n:\n    formas[i] = formas[i - 1]\n    si i >= 2: formas[i] = formas[i] + formas[i - 2]\n    si i >= 3: formas[i] = formas[i] + formas[i - 3]\ndevolver formas[n]\n\nCada escalón se calcula una sola vez, usando los ya calculados. Los escalones negativos no existen: por eso las comprobaciones i >= 2 e i >= 3."
+    },
+    {
+      "level": 4,
+      "text": "Un robot sube una cuesta en saltos de 1, 2 o 3 metros y se quiere saber de cuántas formas llega arriba.\n\nfunction caminosCuesta(m) {\n  const f = [1];\n  for (let i = 1; i <= m; i++) {\n    f[i] = f[i - 1];\n    if (i >= 2) f[i] += f[i - 2];\n    if (i >= 3) f[i] += f[i - 3];\n  }\n  return f[m];\n}",
+      "unlock": { "attempts": 4, "hintsUsed": 3 }
+    }
+  ],
+  "debrief": {
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe el caso, y responde las preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Las formas de llegar al escalón i son {b1}; para no repetir cálculos, {b2}; empiezo con {b3} y avanzo hasta n; los escalones por debajo del suelo {b4}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": ["las de i - 1, más las de i - 2, más las de i - 3", "las de i - 1 por las de i - 2", "solo las de i - 1", "las de n"],
+          "correctIndex": 0
+        },
+        {
+          "id": "b2",
+          "options": ["calculo cada escalón desde cero cada vez", "calculo cada escalón una sola vez y guardo el resultado", "ordeno los escalones", "solo guardo el último escalón"],
+          "correctIndex": 1
+        },
+        {
+          "id": "b3",
+          "options": ["formas[0] = 0", "formas[n] = 1", "formas[0] = 1 (no moverse)", "formas[1] = 1 y los demás vacíos"],
+          "correctIndex": 2
+        },
+        {
+          "id": "b4",
+          "options": ["suman una forma", "suman dos formas", "dan error siempre", "no existen y no suman formas"],
+          "correctIndex": 3
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "Probando todas las secuencias de saltos, ¿cuántas veces se calcula (aproximadamente) el número de formas de llegar a un escalón intermedio como el 10, cuando n = 40?",
+          "options": ["Una vez", "Millones de veces: cada camino que pasa por él lo recalcula", "Tres veces", "Cuarenta veces"],
+          "correctIndex": 1,
+          "whyWrong": ["Una vez es lo que se consigue guardando el resultado.", "", "Aparece en muchos más caminos que tres.", "El número de caminos crece mucho más rápido que n."],
+          "explanation": "El mismo subproblema (llegar al escalón 10) aparece dentro de muchísimos caminos. Resolverlo una vez y guardarlo evita repetirlo; ese es el sentido de guardar resultados."
+        },
+        {
+          "id": "q2",
+          "question": "Con n = 3 la solución correcta devuelve 4. Una función devuelve 3. ¿Qué ha olvidado?",
+          "options": ["Contar la forma 1+1+1", "Ordenar las formas", "Contar la forma «3» (un salto de tres escalones desde el suelo)", "Sumar n"],
+          "correctIndex": 2,
+          "whyWrong": ["La forma 1+1+1 sí se cuenta con saltos de 1.", "El orden de las formas no cuenta.", "", "No hay que sumar n."],
+          "explanation": "Las formas de n = 3 son 1+1+1, 1+2, 2+1 y 3. Si solo se miran saltos de 1 y de 2 salen 3."
+        },
+        {
+          "id": "q3",
+          "question": "Con memoria (guardando cada resultado), ¿cuántos cálculos se hacen para n = 50?",
+          "options": ["Unos 1.000 millones", "Más de un billón", "3", "Unos 50, uno por escalón, cada uno con tres sumas"],
+          "correctIndex": 3,
+          "whyWrong": ["Eso se parece a probar secuencias, no a guardar resultados.", "Eso sería probar las secuencias una a una.", "Hay un cálculo por escalón, no solo tres.", ""],
+          "explanation": "Cada escalón se calcula una vez y usa resultados ya calculados. El trabajo crece como n, no como la cantidad de secuencias posibles."
+        }
+      ]
+    },
+    "whyItWorks": "El último salto para llegar al escalón n vino de n - 1, n - 2 o n - 3, así que las formas de llegar a n son la suma de las formas de llegar a esos tres. Eso define el problema en términos de problemas más pequeños del mismo tipo. Pero si se resuelve probando secuencias una a una, el mismo escalón intermedio se vuelve a resolver una y otra vez, y el trabajo se dispara. Calcular los escalones en orden, del 0 al n, guardando cada resultado, resuelve cada escalón una sola vez. Es la misma recurrencia, sin repetir nada.",
+    "edgeCaseNote": "Con n = 0 hay una forma: no moverse. Con n = 1 hay una (1), con n = 2 hay dos (1+1 y 2): los escalones por debajo del suelo no existen y no suman. Con n = 3 aparece por primera vez el salto de tres escalones. Con n = 50 el resultado es un número de trece cifras, que JavaScript guarda sin pérdida; a partir de n = 70 ya no sería exacto.",
+    "complexity": {
+      "question": "Con n = 50 y guardando cada resultado, ¿cuántos escalones se calculan?",
+      "options": ["50 (más el suelo), cada uno una sola vez", "Más de 10.000 millones", "3 elevado a 50", "150"],
+      "correctIndex": 0,
+      "explanation": "Un cálculo por escalón, con tres sumas cada uno. Sin guardar resultados, el número de llamadas crece cerca de 1,84 elevado a n: para n = 50 serían billones, imposible en dos segundos."
+    },
+    "realWorld": "Contar formas de dar cambio, calcular rutas en una cuadrícula, comparar textos letra a letra (distancia entre textos), planificar con el menor coste, repartir recursos limitados.",
+    "reasoningPrompt": "¿Qué cálculo se repite al probar todas las secuencias? ¿Cómo evita repetirlo guardar los resultados?",
+    "objectiveNouns": ["escalón", "forma", "salto", "resultado"],
+    "reasoningLexicon": ["guardo", "repito", "anteriores", "suelo", "una sola vez"]
+  },
+  "mastery": { "reinforcementVariants": [] },
+  "reward": {
+    "systemId": "sys.memo",
+    "effect": "absent → installed",
+    "narrative": "La pizarra de memoria recuerda lo ya resuelto, y la escalera de 50 escalones se resuelve al instante."
+  }
+}
