@@ -84,6 +84,8 @@ interface MissionFlowProps {
   initialSnapshot: SessionSnapshot | null;
   execution: ExecutionPort;
   sessions: SessionStore;
+  /** System id → display name, for the "mission complete" screen. */
+  systemNames?: Readonly<Record<string, string>>;
   onCompleted: (record: CompletedMissionRecord) => void;
   onExit: () => void;
 }
@@ -93,6 +95,7 @@ export function MissionFlow({
   initialSnapshot,
   execution,
   sessions,
+  systemNames = {},
   onCompleted,
   onExit,
 }: MissionFlowProps) {
@@ -334,6 +337,9 @@ export function MissionFlow({
           <SideBySide visual={visual}>
             <Debrief
               state={state}
+              {...(systemNames[mission.reward.systemId] === undefined
+                ? {}
+                : { systemName: systemNames[mission.reward.systemId] })}
               onAnswerComplexity={(index) =>
                 dispatch({ type: 'answer_complexity', index })
               }

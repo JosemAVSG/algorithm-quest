@@ -191,6 +191,9 @@ export function App() {
                 initialSnapshot={snapshot}
                 execution={app.execution}
                 sessions={app.sessions}
+                systemNames={Object.fromEntries(
+                  bundle.systems.map((system) => [system.id, system.name]),
+                )}
                 onCompleted={handleCompleted}
                 onExit={() => setActiveMissionId(null)}
               />

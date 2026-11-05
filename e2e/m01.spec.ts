@@ -169,6 +169,10 @@ test('X4 · completar M01 y recargar mantiene el sensor operativo', async ({
   await runWith(page, CORRECT);
   await page.getByRole('button', { name: 'Abrir el informe →' }).click();
   await finishDebrief(page);
+  // The reward moment names the system and the repair in Spanish, not as `sys.sensor` / `broken → working`.
+  await expect(page.getByText('Misión completada')).toBeVisible();
+  await expect(page.locator('.complete__system')).toHaveText('Matriz de sensores');
+  await expect(page.locator('.complete__state')).toHaveText('averiado → operativo');
   await page.getByRole('button', { name: 'Volver al taller →' }).click();
   await openWorld1(page);
   await expect(page.getByLabel('Matriz de sensores: operativo')).toBeVisible();

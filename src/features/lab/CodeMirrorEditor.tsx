@@ -49,6 +49,8 @@ const traceLineField = StateField.define<DecorationSet>({
   provide: (field) => EditorView.decorations.from(field),
 });
 
+const narrowScreen = () => window.matchMedia('(max-width: 899px)');
+
 const theme = EditorView.theme(
   {
     '&': {
@@ -113,6 +115,7 @@ export default function CodeMirrorEditor({
   const latest = useRef({ onChange, onRun, disabled });
   latest.current = { onChange, onRun, disabled };
   const lock = useRef(new Compartment());
+  const wrapping = useRef(new Compartment());
 
   useEffect(() => {
     if (host.current === null) return;
@@ -174,6 +177,9 @@ export default function CodeMirrorEditor({
           ]),
         ),
         keymap.of([...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap]),
+        // On a narrow screen long lines wrap instead of scrolling sideways, which
+        // is miserable to type into. Desktop keeps the usual unwrapped code.
+        wrapping.current.of(narrowScreen().matches ? EditorView.lineWrapping : []),
         lock.current.of([
           EditorState.readOnly.of(latest.current.disabled),
           EditorView.editable.of(!latest.current.disabled),
@@ -209,6 +215,17 @@ export default function CodeMirrorEditor({
       ]),
     });
   }, [disabled]);
+
+  // Follow the screen width: rotating a tablet should not need a reload.
+  useEffect(() => {
+    const query = narrowScreen();
+    const apply = () =>
+      view.current?.dispatch({
+        effects: wrapping.current.reconfigure(query.matches ? EditorView.lineWrapping : []),
+      });
+    query.addEventListener('change', apply);
+    return () => query.removeEventListener('change', apply);
+  }, []);
 
   // Mark the trace's current line and bring it into view.
   useEffect(() => {

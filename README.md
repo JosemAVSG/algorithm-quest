@@ -85,6 +85,7 @@ Every deliverable from the brief maps to exactly one place.
 | — | Worlds 5–6 missions M29–M37 | `docs/18-worlds5-6.md` |
 | — | Step cost, E16 verdict, step-by-step trace | `docs/19-cost-and-trace.md` |
 | — | Spaced review: reinforcement variants | `docs/20-reinforcement.md` |
+| — | UX and accessibility review | `docs/21-ux-accessibility.md` |
 
 ---
 

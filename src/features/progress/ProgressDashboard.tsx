@@ -170,7 +170,7 @@ export function ProgressDashboard({
   }
 
   return (
-    <div className="dashboard">
+    <main className="dashboard">
       <header className="dashboard__header">
         <button type="button" className="btn btn--link" onClick={onBack}>
           ← Volver al taller
@@ -316,6 +316,6 @@ export function ProgressDashboard({
           </p>
         )}
       </section>
-    </div>
+    </main>
   );
 }

@@ -94,7 +94,7 @@ export function ReinforcementPractice({
 
   return (
     <div className="mission reinforce">
-      <div className="lab">
+      <main className="lab">
         <header className="lab__bar">
           <div>
             <p className="eyebrow">Refuerzo · {conceptLabel}</p>
@@ -195,7 +195,7 @@ export function ReinforcementPractice({
             </section>
           </aside>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
