@@ -34,14 +34,14 @@
     {
       "id": "w5",
       "name": "World 5 — The network yard",
-      "status": "planned",
-      "missionIds": []
+      "status": "in-progress",
+      "missionIds": ["M29", "M30", "M31", "M32", "M33"]
     },
     {
       "id": "w6",
       "name": "World 6 — The archive",
-      "status": "planned",
-      "missionIds": []
+      "status": "in-progress",
+      "missionIds": ["M34", "M35", "M36", "M37"]
     }
   ]
 }

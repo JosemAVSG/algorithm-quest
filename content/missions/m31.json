@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "locale": "es",
+  "id": "M31",
+  "world": "w5",
+  "order": 3,
+  "title": "Las zonas inundadas",
+  "subtitle": "Seguir un camino hasta el fondo",
+  "difficulty": 4,
+  "estimatedMinutes": 25,
+  "concepts": { "primary": "C35", "secondary": ["C31"] },
+  "prerequisites": { "missions": ["M30"], "concepts": ["C34"] },
+  "workshop": { "systemId": "sys.stacker", "from": "working", "to": "reliable" },
+  "briefing": {
+    "headline": "Cuántas manchas hay en el plano",
+    "body": "Una tormenta ha inundado partes del almacén. El plano es una cuadrícula de filas y columnas: cada casilla vale **1** si está inundada y **0** si está seca.\n\nDos casillas inundadas pertenecen a la **misma mancha** si se puede ir de una a otra moviéndose solo **arriba, abajo, izquierda o derecha** por casillas inundadas. **Las diagonales no cuentan**: `[[1,0],[0,1]]` son dos manchas.\n\nDevuelve cuántas manchas distintas hay. Un plano vacío, o sin casillas inundadas, tiene 0.\n\nImportante: **el plano no se puede modificar**. Otra pantalla lo está mostrando mientras tú cuentas.",
+    "requirements": ["Recibe una cuadrícula de 0 y 1", "Dos casillas con 1 son de la misma mancha si se conectan arriba, abajo, izquierda o derecha", "Las diagonales no conectan", "Devuelve el número de manchas; no modifica la cuadrícula"],
+    "forbiddenVocabulary": ["profundidad", "DFS", "flood fill", "relleno", "islas", "componentes conexas"]
+  },
+  "contract": {
+    "entryPoint": "countStains",
+    "signature": "countStains(grid) -> number",
+    "inputShape": "grid: (0 | 1)[][]",
+    "outputShape": "number",
+    "rules": ["Una mancha es un conjunto maximal de casillas con 1 conectadas por arriba, abajo, izquierda o derecha", "Las casillas en diagonal no están conectadas", "Una cuadrícula vacía ([]) o sin ningún 1 devuelve 0", "Todas las filas tienen la misma longitud", "No modifica grid"]
+  },
+  "constraints": {
+    "bannedConstructs": [],
+    "allowClosedForm": false,
+    "mustNotMutate": true,
+    "rotationInvariant": false
+  },
+  "starterCode": "function countStains(grid) {\n  // your code here\n}\n",
+  "tests": {
+    "visible": [
+      { "id": "v1", "input": [[]], "expected": 0, "note": "plano vacío" },
+      {
+        "id": "v2",
+        "input": [[[1, 1, 0], [0, 1, 0], [0, 0, 1]]],
+        "expected": 2,
+        "note": "una mancha de tres casillas y otra aparte"
+      },
+      {
+        "id": "v3",
+        "input": [[[1, 0], [0, 1]]],
+        "expected": 2,
+        "note": "dos casillas en diagonal no son la misma mancha"
+      }
+    ],
+    "hidden": [
+      {
+        "id": "h1",
+        "input": [[[1, 1, 1], [1, 0, 1], [1, 1, 1]]],
+        "expected": 1,
+        "note": "una mancha en forma de anillo"
+      },
+      {
+        "id": "h2",
+        "input": [[[0, 1], [1, 1]]],
+        "expected": 1,
+        "note": "una esquina que solo se alcanza yendo hacia atrás"
+      },
+      {
+        "id": "h3",
+        "input": [[[1, 0, 1], [0, 1, 0], [1, 0, 1]]],
+        "expected": 5,
+        "note": "cinco casillas sueltas"
+      },
+      {
+        "id": "h4",
+        "input": [
+          [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+          ]
+        ],
+        "expected": 1,
+        "note": "un camino en serpiente de 30 por 30"
+      },
+      {
+        "id": "h5",
+        "input": [
+          [[0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]]
+        ],
+        "expected": 200,
+        "note": "tablero de ajedrez de 20 por 20"
+      }
+    ],
+    "edge": [
+      {
+        "id": "ed1",
+        "input": [[[1]]],
+        "expected": 1,
+        "edge": true,
+        "edgeKind": "singleton",
+        "note": "una sola casilla inundada"
+      },
+      {
+        "id": "ed2",
+        "input": [[[0]]],
+        "expected": 0,
+        "edge": true,
+        "edgeKind": "zero",
+        "note": "una sola casilla seca"
+      },
+      {
+        "id": "ed3",
+        "input": [[[1, 1, 1, 1]]],
+        "expected": 1,
+        "edge": true,
+        "edgeKind": "all-match",
+        "note": "una fila entera inundada"
+      }
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "E21",
+      "when": { "failingTestIds": ["h2"] },
+      "message": "Con [[0,1],[1,1]] hay una sola mancha, y tu función cuenta dos. La casilla de abajo a la izquierda se alcanza desde la de abajo a la derecha yendo a la izquierda. ¿Exploras las cuatro direcciones desde cada casilla?"
+    },
+    {
+      "code": "E21",
+      "when": { "failingTestIds": ["v2", "v3"] },
+      "message": "Con [[1,0],[0,1]] hay dos manchas, no una: las casillas en diagonal no se conectan. ¿Estás explorando también las ocho direcciones?"
+    },
+    {
+      "code": "E12",
+      "message": "El resultado debe ser un número: cuántas manchas hay. Comprueba que no devuelves cuántas casillas inundadas hay en total ni el tamaño de una mancha."
+    },
+    {
+      "code": "E08",
+      "message": "¿Qué devuelve tu función con un plano vacío? Compruébalo a mano: el contrato pide 0."
+    },
+    {
+      "code": "E02",
+      "message": "Tu función lanzó una excepción. Si miras casillas fuera del plano (fila -1 o columna igual al ancho), el programa se detiene. Comprueba los límites antes de mirar una casilla."
+    },
+    {
+      "code": "E11",
+      "message": "Tu función modificó el plano. Poner a 0 las casillas que ya contaste es cómodo, pero aquí otra pantalla lo está mostrando: guarda lo visitado en una estructura aparte."
+    },
+    {
+      "code": "E01",
+      "message": "Hay un error de sintaxis antes de que el código pueda ejecutarse. Revisa la línea marcada: el motor no pudo interpretar esa expresión."
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Cuando encuentras una casilla inundada que no habías contado, ¿qué otras casillas son de su misma mancha? ¿Cómo evitas contarlas luego otra vez?"
+    },
+    {
+      "level": 2,
+      "text": "Desde una casilla inundada, mira sus cuatro vecinas; cada vecina inundada abre a su vez cuatro más. Sigue un camino hasta el fondo antes de probar otro. ¿Dónde apuntas qué casillas ya viste sin modificar el plano? ¿Qué compruebas antes de mirar una casilla?"
+    },
+    {
+      "level": 3,
+      "text": "vistas = tabla de las mismas dimensiones con todo en falso\nmanchas = 0\npara cada fila r y columna c:\n    si grid[r][c] es 1 y no está vista:\n        manchas = manchas + 1\n        explorar(r, c)\ndevolver manchas\n\nfunción explorar(r, c):\n    si (r, c) está fuera del plano, o es 0, o ya está vista: terminar\n    marcar (r, c) como vista\n    explorar(r + 1, c); explorar(r - 1, c); explorar(r, c + 1); explorar(r, c - 1)\n\nCada llamada sigue un camino hasta que no puede avanzar; la tabla de vistas evita volver atrás sin modificar el plano."
+    },
+    {
+      "level": 4,
+      "text": "Un mapa de cultivos marca con 1 las parcelas con plaga. Se quiere contar los focos, donde un foco son parcelas con plaga pegadas arriba, abajo, izquierda o derecha.\n\nfunction contarFocos(mapa) {\n  const vistas = mapa.map((f) => f.map(() => false));\n  let focos = 0;\n  function seguir(r, c) {\n    if (r < 0 || c < 0 || r >= mapa.length || c >= mapa[r].length) return;\n    if (mapa[r][c] !== 1 || vistas[r][c]) return;\n    vistas[r][c] = true;\n    seguir(r + 1, c);\n    seguir(r - 1, c);\n    seguir(r, c + 1);\n    seguir(r, c - 1);\n  }\n  for (let r = 0; r < mapa.length; r++) {\n    for (let c = 0; c < mapa[r].length; c++) {\n      if (mapa[r][c] === 1 && !vistas[r][c]) { focos++; seguir(r, c); }\n    }\n  }\n  return focos;\n}",
+      "unlock": { "attempts": 4, "hintsUsed": 3 }
+    }
+  ],
+  "debrief": {
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe el caso, y responde las preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Recorro todas las casillas; al encontrar una inundada que no está {b1}, sumo {b2} y la exploro: desde ella voy a {b3}, siguiendo cada camino {b4}; marco lo visto en {b5}.",
+      "blanks": [
+        { "id": "b1", "options": ["vista", "seca", "en la última fila", "en diagonal"], "correctIndex": 0 },
+        {
+          "id": "b2",
+          "options": ["el tamaño de la mancha", "1 al total de manchas", "1 a cada casilla", "el número de filas"],
+          "correctIndex": 1
+        },
+        {
+          "id": "b3",
+          "options": ["sus ocho vecinas", "solo la de la derecha", "sus cuatro vecinas, y de ellas a las suyas", "la casilla del extremo opuesto"],
+          "correctIndex": 2
+        },
+        {
+          "id": "b4",
+          "options": ["un paso cada vez, por capas", "solo un paso", "sin pararse nunca", "hasta que no puede avanzar, antes de probar otro"],
+          "correctIndex": 3
+        },
+        {
+          "id": "b5",
+          "options": ["una tabla aparte, sin tocar el plano", "el propio plano, poniendo 0", "una lista de las manchas", "ninguna parte"],
+          "correctIndex": 0
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "Con `[[1,0],[0,1]]` una función explora también las diagonales y devuelve 1. ¿Cuál es la respuesta correcta y por qué?",
+          "options": ["1: están en el mismo plano", "2: las diagonales no conectan, así que son dos manchas", "2: porque hay dos filas", "0: no se tocan"],
+          "correctIndex": 1,
+          "whyWrong": ["Estar en el mismo plano no las conecta.", "", "El número de filas no tiene que ver con el de manchas.", "Ambas están inundadas, así que cuentan."],
+          "explanation": "Solo se conectan casillas pegadas por un lado. Explorar ocho direcciones junta casillas que el enunciado separa."
+        },
+        {
+          "id": "q2",
+          "question": "Una función pone a 0 cada casilla que ya contó. ¿Qué problema tiene aquí?",
+          "options": ["Cuenta de menos", "Cuenta de más", "Modifica el plano, y el contrato lo prohíbe: otra pantalla lo está usando", "Es más lento"],
+          "correctIndex": 2,
+          "whyWrong": ["Cuenta lo mismo si lo hace bien.", "Cuenta lo mismo si lo hace bien.", "", "Es igual de rápido."],
+          "explanation": "Marcar en el propio plano es un truco válido en otros problemas, pero aquí el plano no debe cambiar: lo visto va en una tabla aparte."
+        },
+        {
+          "id": "q3",
+          "question": "En un camino en serpiente de 30 por 30, ¿cuántas llamadas de exploración están abiertas a la vez como máximo?",
+          "options": ["30", "2", "1", "Hasta unas 900: una por casilla, seguidas"],
+          "correctIndex": 3,
+          "whyWrong": ["Eso sería una sola fila.", "Solo con muy pocas casillas.", "Solo con una casilla.", ""],
+          "explanation": "El camino pasa por todas las casillas una detrás de otra, y cada una espera a la siguiente. La profundidad de las llamadas puede llegar al número de casillas de la mancha."
+        }
+      ]
+    },
+    "whyItWorks": "Una mancha es el conjunto de lo que se alcanza desde una casilla pasando de vecina a vecina. Se recorre el plano casilla a casilla; cada vez que se topa con una inundada que no se había visto, hay una mancha nueva, y se explora entera: desde esa casilla se sigue cada camino hasta el fondo antes de probar el siguiente, marcando lo visto en una tabla aparte. Así cada casilla se visita una vez y no se cuenta dos veces. Esta forma de explorar, siguiendo un camino hasta que se acaba y volviendo atrás, se parece a la pila de llamadas de la misión de la caja con cajas.",
+    "edgeCaseNote": "Un plano vacío tiene 0 manchas. Una sola casilla seca, 0; una sola casilla inundada, 1. Una fila entera de unos es una única mancha. Las diagonales no conectan. Antes de mirar una casilla hay que comprobar que está dentro del plano. Y si el plano no se puede modificar, lo visto se anota en una tabla aparte.",
+    "complexity": {
+      "question": "Con un plano de 30 por 30 (900 casillas), ¿cuántas veces se visita como máximo cada casilla?",
+      "options": ["Una vez para explorarla (más las consultas de sus vecinas)", "900 veces", "30 veces", "Ninguna: se saltan las secas"],
+      "correctIndex": 0,
+      "explanation": "Cada casilla se marca como vista la primera vez, y sus vecinas la consultan como mucho cuatro veces más. El trabajo total es proporcional al número de casillas: unas 900 por un factor pequeño."
+    },
+    "realWorld": "Contar regiones en un mapa o una imagen, detectar grupos de píxeles conectados, encontrar zonas conectadas en una red, el relleno de color de un editor de imágenes.",
+    "reasoningPrompt": "¿Por qué hace falta anotar las casillas ya vistas? ¿Qué pasaría con una mancha que da la vuelta sobre sí misma, como el anillo, si no lo hicieras?",
+    "objectiveNouns": ["mancha", "casilla", "vecina", "plano"],
+    "reasoningLexicon": ["exploro", "vistas", "fondo", "marco", "cuatro"]
+  },
+  "mastery": { "reinforcementVariants": [] },
+  "reward": {
+    "systemId": "sys.stacker",
+    "effect": "working → reliable",
+    "narrative": "La grúa explora cada zona inundada hasta el final y no vuelve a contar la misma mancha dos veces."
+  }
+}

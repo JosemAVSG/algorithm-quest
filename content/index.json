@@ -532,6 +532,177 @@
       "reward": {
         "narrative": "El mapa de ramas se lee de arriba abajo sin perder ninguna zona, por muchas ramas que tenga."
       }
+    },
+    {
+      "id": "M29",
+      "world": "w5",
+      "order": 1,
+      "title": "El plano del patio",
+      "subtitle": "Cómo guardar quién se conecta con quién",
+      "prerequisites": {
+        "missions": [
+          "M28"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.chain",
+        "to": "reliable"
+      },
+      "reward": {
+        "narrative": "El plano del patio sabe a qué estaciones se llega desde cada una sin repasar todo el inventario de vías."
+      }
+    },
+    {
+      "id": "M30",
+      "world": "w5",
+      "order": 2,
+      "title": "La ruta con menos paradas",
+      "subtitle": "Explorar por capas",
+      "prerequisites": {
+        "missions": [
+          "M29"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.queue",
+        "to": "reliable"
+      },
+      "reward": {
+        "narrative": "La ventanilla ahora planifica la ruta más corta por capas, sin volver a pasar por las mismas estaciones."
+      }
+    },
+    {
+      "id": "M31",
+      "world": "w5",
+      "order": 3,
+      "title": "Las zonas inundadas",
+      "subtitle": "Seguir un camino hasta el fondo",
+      "prerequisites": {
+        "missions": [
+          "M30"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.stacker",
+        "to": "reliable"
+      },
+      "reward": {
+        "narrative": "La grúa explora cada zona inundada hasta el final y no vuelve a contar la misma mancha dos veces."
+      }
+    },
+    {
+      "id": "M32",
+      "world": "w5",
+      "order": 4,
+      "title": "El pedido que se espera a sí mismo",
+      "subtitle": "Detectar un círculo de dependencias",
+      "prerequisites": {
+        "missions": [
+          "M31"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.balance",
+        "to": "reliable"
+      },
+      "reward": {
+        "narrative": "La balanza avisa de un círculo de tareas antes de que la fábrica se quede esperando para siempre."
+      }
+    },
+    {
+      "id": "M33",
+      "world": "w5",
+      "order": 5,
+      "title": "Las combinaciones del pedido",
+      "subtitle": "Probar, deshacer y probar otra cosa",
+      "prerequisites": {
+        "missions": [
+          "M32"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.maze",
+        "to": "installed"
+      },
+      "reward": {
+        "narrative": "El enrutador prueba un camino, vuelve atrás cuando no lleva a ninguna parte y sigue por otro."
+      }
+    },
+    {
+      "id": "M34",
+      "world": "w6",
+      "order": 1,
+      "title": "La caja que falta",
+      "subtitle": "Resolverlo sin memoria extra",
+      "prerequisites": {
+        "missions": [
+          "M33"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.vault",
+        "to": "installed"
+      },
+      "reward": {
+        "narrative": "La bóveda encuentra la caja perdida con unos pocos números sueltos, sin gastar memoria que no tiene."
+      }
+    },
+    {
+      "id": "M35",
+      "world": "w6",
+      "order": 2,
+      "title": "Los días hasta el siguiente pico",
+      "subtitle": "Un trabajo que parece mucho y suma poco",
+      "prerequisites": {
+        "missions": [
+          "M34"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.ledger",
+        "to": "installed"
+      },
+      "reward": {
+        "narrative": "El libro de cuentas del horno reparte el coste de cada espera entre todos los días, y la planificación sigue siendo rápida."
+      }
+    },
+    {
+      "id": "M36",
+      "world": "w6",
+      "order": 3,
+      "title": "Las escaleras del almacén",
+      "subtitle": "No repetir lo que ya has resuelto",
+      "prerequisites": {
+        "missions": [
+          "M35"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.memo",
+        "to": "installed"
+      },
+      "reward": {
+        "narrative": "La pizarra de memoria recuerda lo ya resuelto, y la escalera de 50 escalones se resuelve al instante."
+      }
+    },
+    {
+      "id": "M37",
+      "world": "w6",
+      "order": 4,
+      "title": "La auditoría del plan",
+      "subtitle": "Elegir qué guardar y qué cuesta",
+      "prerequisites": {
+        "missions": [
+          "M36"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.council",
+        "to": "installed"
+      },
+      "reward": {
+        "narrative": "El comité de diseño ya tiene un plan en el que cada tarea llega a su turno, y avisa cuando algo se espera a sí mismo."
+      }
     }
   ]
 }

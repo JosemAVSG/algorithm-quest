@@ -196,6 +196,41 @@
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.maze",
+      "name": "Maze router",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.vault",
+      "name": "Space vault",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.ledger",
+      "name": "Amortized ledger",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.memo",
+      "name": "Memo board",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.council",
+      "name": "Design council",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
     }
   ]
 }
