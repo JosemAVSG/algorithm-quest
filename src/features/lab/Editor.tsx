@@ -6,7 +6,7 @@
  * accessible name and the same props contract keeps the lab fully usable.
  */
 
-import { Component, lazy, Suspense, useState, type ReactNode } from 'react';
+import { Component, lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 
 export interface EditorProps {
   value: string;
@@ -15,14 +15,40 @@ export interface EditorProps {
   disabled: boolean;
   /** 1-based line to mark while a trace is open; the textarea fallback ignores it. */
   highlightLine?: number | null;
+  /**
+   * Hands the parent a function that inserts text at the cursor (the symbol
+   * bar on a phone), and `null` when the editor goes away.
+   */
+  onReady?: (insert: ((text: string) => void) | null) => void;
 }
 
 const INDENT = '  ';
 
-export function PlainEditor({ value, onChange, onRun, disabled }: EditorProps) {
+export function PlainEditor({ value, onChange, onRun, disabled, onReady }: EditorProps) {
+  const area = useRef<HTMLTextAreaElement>(null);
+  const latest = useRef({ value, onChange });
+  latest.current = { value, onChange };
+  useEffect(() => {
+    onReady?.((text) => {
+      const target = area.current;
+      if (target === null) return;
+      const { value: current, onChange: change } = latest.current;
+      const start = target.selectionStart;
+      const end = target.selectionEnd;
+      change(`${current.slice(0, start)}${text}${current.slice(end)}`);
+      target.focus();
+      requestAnimationFrame(() => {
+        target.selectionStart = start + text.length;
+        target.selectionEnd = start + text.length;
+      });
+    });
+    return () => onReady?.(null);
+    // Registered once per mount.
+  }, []);
   return (
     <div className="editor editor--plain">
       <textarea
+        ref={area}
         className="editor__area"
         aria-label="Código"
         spellCheck={false}

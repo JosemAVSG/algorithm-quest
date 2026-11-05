@@ -10,9 +10,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { loadBrowserCatalog } from '../adapters/content/browser';
+import type { ContentCatalog } from '../domain/content/catalog';
 import { countBySeverity } from '../domain/content/errors';
 import {
   declineReinforcement,
+  completedMissionIds,
   emptyProgress,
   recordCompletion,
   recordReinforcement,
@@ -27,13 +29,21 @@ import { ProgressDashboard } from '../features/progress/ProgressDashboard';
 import { ReinforcementPractice } from '../features/reinforcement/ReinforcementPractice';
 import { WorkshopMap } from '../features/workshop-map/WorkshopMap';
 import { createComposition } from './composition';
+import { nextMission } from '../domain/progression/unlock';
+import { applyStoredPreferences } from './preferences';
 import { takeReopen } from './reopen';
 
 type View = 'map' | 'progress';
 
+function upcomingFor(bundle: ContentCatalog, progress: PlayerProgress) {
+  const next = nextMission(bundle.missions, completedMissionIds(progress));
+  return next === null ? null : { id: next.id, title: next.title };
+}
+
 export function App() {
   const report = useMemo(() => loadBrowserCatalog(), []);
   const app = useMemo(() => createComposition(), []);
+  useMemo(() => applyStoredPreferences(), []);
 
   const [progress, setProgress] = useState<PlayerProgress | null>(null);
   const [storageWarning, setStorageWarning] = useState<string | null>(null);
@@ -196,6 +206,8 @@ export function App() {
                 systemNames={Object.fromEntries(
                   bundle.systems.map((system) => [system.id, system.name]),
                 )}
+                upcoming={upcomingFor(bundle, progress)}
+                onOpenMission={setActiveMissionId}
                 onCompleted={handleCompleted}
                 onExit={() => setActiveMissionId(null)}
               />

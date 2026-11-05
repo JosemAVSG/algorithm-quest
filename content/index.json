@@ -7,6 +7,12 @@
       "order": 1,
       "title": "El primer diagnóstico",
       "subtitle": "Condiciones y comparación",
+      "concepts": {
+        "primary": "C01",
+        "secondary": [
+          "C02"
+        ]
+      },
       "prerequisites": {
         "missions": []
       },
@@ -24,6 +30,12 @@
       "order": 2,
       "title": "La inspección completa",
       "subtitle": "Salida temprana",
+      "concepts": {
+        "primary": "C04",
+        "secondary": [
+          "C03"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M01"
@@ -43,6 +55,12 @@
       "order": 3,
       "title": "El lote defectuoso",
       "subtitle": "Recolección de resultados",
+      "concepts": {
+        "primary": "C05",
+        "secondary": [
+          "C08"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M02"
@@ -62,6 +80,12 @@
       "order": 4,
       "title": "La auditoría del inventario",
       "subtitle": "Acumuladores",
+      "concepts": {
+        "primary": "C06",
+        "secondary": [
+          "C07"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M03"
@@ -81,6 +105,12 @@
       "order": 5,
       "title": "El registro de reparaciones",
       "subtitle": "Transformar sin tocar el original",
+      "concepts": {
+        "primary": "C08",
+        "secondary": [
+          "C05"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M04"
@@ -100,6 +130,12 @@
       "order": 6,
       "title": "La revisión de límites",
       "subtitle": "Encontrar el defecto en código ajeno",
+      "concepts": {
+        "primary": "C15",
+        "secondary": [
+          "C02"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M05"
@@ -119,6 +155,12 @@
       "order": 7,
       "title": "La búsqueda urgente",
       "subtitle": "Mantener al mejor candidato",
+      "concepts": {
+        "primary": "C10",
+        "secondary": [
+          "C09"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M06"
@@ -138,6 +180,12 @@
       "order": 8,
       "title": "Las órdenes repetidas",
       "subtitle": "Duplicados por parejas",
+      "concepts": {
+        "primary": "C11",
+        "secondary": [
+          "C03"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M07"
@@ -157,6 +205,12 @@
       "order": 9,
       "title": "El costo de la inspección",
       "subtitle": "Medir antes de ejecutar",
+      "concepts": {
+        "primary": "C12",
+        "secondary": [
+          "C06"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M08"
@@ -176,6 +230,12 @@
       "order": 1,
       "title": "La memoria del sistema",
       "subtitle": "Recordar para no repetir",
+      "concepts": {
+        "primary": "C13",
+        "secondary": [
+          "C12"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M09"
@@ -195,6 +255,12 @@
       "order": 2,
       "title": "El contador inteligente",
       "subtitle": "Cuántas veces, no solo si",
+      "concepts": {
+        "primary": "C14",
+        "secondary": [
+          "C10"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M10"
@@ -214,6 +280,12 @@
       "order": 3,
       "title": "La auditoría final",
       "subtitle": "Tres preguntas, una función",
+      "concepts": {
+        "primary": "C16",
+        "secondary": [
+          "C14"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M09",
@@ -235,6 +307,12 @@
       "order": 1,
       "title": "Las piezas que encajan",
       "subtitle": "Buscar lo que falta",
+      "concepts": {
+        "primary": "C17",
+        "secondary": [
+          "C13"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M12"
@@ -254,6 +332,12 @@
       "order": 2,
       "title": "El almacén por zonas",
       "subtitle": "Ordenar por zona",
+      "concepts": {
+        "primary": "C18",
+        "secondary": [
+          "C14"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M13"
@@ -273,6 +357,12 @@
       "order": 3,
       "title": "El parte de incidencias",
       "subtitle": "Contar sin releer",
+      "concepts": {
+        "primary": "C19",
+        "secondary": [
+          "C14"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M14"
@@ -292,6 +382,12 @@
       "order": 4,
       "title": "Las fichas duplicadas",
       "subtitle": "Decidir qué hace igual a dos registros",
+      "concepts": {
+        "primary": "C20",
+        "secondary": [
+          "C18"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M14"
@@ -311,6 +407,12 @@
       "order": 1,
       "title": "El depósito que no puede vaciarse",
       "subtitle": "Lo que debe cumplirse tras cada paso",
+      "concepts": {
+        "primary": "C21",
+        "secondary": [
+          "C06"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M16"
@@ -330,6 +432,12 @@
       "order": 2,
       "title": "Dos registros, un solo orden",
       "subtitle": "Recorrer dos listas a la vez",
+      "concepts": {
+        "primary": "C22",
+        "secondary": [
+          "C21"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M17"
@@ -349,6 +457,12 @@
       "order": 3,
       "title": "La mejor racha de producción",
       "subtitle": "Un tramo que se desplaza",
+      "concepts": {
+        "primary": "C23",
+        "secondary": [
+          "C06"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M18"
@@ -368,6 +482,12 @@
       "order": 4,
       "title": "La cola de tickets",
       "subtitle": "Decidir cómo se comparan dos elementos",
+      "concepts": {
+        "primary": "C24",
+        "secondary": [
+          "C08"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M19"
@@ -387,6 +507,12 @@
       "order": 5,
       "title": "El primer lote vencido",
       "subtitle": "Buscar en lo que ya está ordenado",
+      "concepts": {
+        "primary": "C25",
+        "secondary": [
+          "C21"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M20"
@@ -406,6 +532,12 @@
       "order": 6,
       "title": "Medir el crecimiento",
       "subtitle": "Cómo crece el trabajo con el tamaño",
+      "concepts": {
+        "primary": "C26",
+        "secondary": [
+          "C12"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M21"
@@ -425,6 +557,12 @@
       "order": 1,
       "title": "Las marcas bien cerradas",
       "subtitle": "Lo último que se abre es lo primero que se cierra",
+      "concepts": {
+        "primary": "C27",
+        "secondary": [
+          "C21"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M22"
@@ -444,6 +582,12 @@
       "order": 2,
       "title": "La ventanilla del taller",
       "subtitle": "El que llega primero se atiende primero",
+      "concepts": {
+        "primary": "C28",
+        "secondary": [
+          "C07"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M23"
@@ -463,6 +607,12 @@
       "order": 3,
       "title": "La cadena de eslabones",
       "subtitle": "Quitar piezas sin romper la cadena",
+      "concepts": {
+        "primary": "C29",
+        "secondary": [
+          "C03"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M24"
@@ -482,6 +632,12 @@
       "order": 4,
       "title": "El monitor de llamadas",
       "subtitle": "Cada llamada abre un marco",
+      "concepts": {
+        "primary": "C30",
+        "secondary": [
+          "C27"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M25"
@@ -501,6 +657,12 @@
       "order": 5,
       "title": "Cajas dentro de cajas",
       "subtitle": "Un problema que contiene el mismo problema, más pequeño",
+      "concepts": {
+        "primary": "C31",
+        "secondary": [
+          "C30"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M26"
@@ -520,6 +682,12 @@
       "order": 6,
       "title": "El mapa de ramas",
       "subtitle": "Recorrer algo que se ramifica",
+      "concepts": {
+        "primary": "C32",
+        "secondary": [
+          "C31"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M27"
@@ -539,6 +707,12 @@
       "order": 1,
       "title": "El plano del patio",
       "subtitle": "Cómo guardar quién se conecta con quién",
+      "concepts": {
+        "primary": "C33",
+        "secondary": [
+          "C18"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M28"
@@ -558,6 +732,12 @@
       "order": 2,
       "title": "La ruta con menos paradas",
       "subtitle": "Explorar por capas",
+      "concepts": {
+        "primary": "C34",
+        "secondary": [
+          "C28"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M29"
@@ -577,6 +757,12 @@
       "order": 3,
       "title": "Las zonas inundadas",
       "subtitle": "Seguir un camino hasta el fondo",
+      "concepts": {
+        "primary": "C35",
+        "secondary": [
+          "C31"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M30"
@@ -596,6 +782,12 @@
       "order": 4,
       "title": "El pedido que se espera a sí mismo",
       "subtitle": "Detectar un círculo de dependencias",
+      "concepts": {
+        "primary": "C36",
+        "secondary": [
+          "C35"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M31"
@@ -615,6 +807,12 @@
       "order": 5,
       "title": "Las combinaciones del pedido",
       "subtitle": "Probar, deshacer y probar otra cosa",
+      "concepts": {
+        "primary": "C37",
+        "secondary": [
+          "C31"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M32"
@@ -634,6 +832,12 @@
       "order": 1,
       "title": "La caja que falta",
       "subtitle": "Resolverlo sin memoria extra",
+      "concepts": {
+        "primary": "C38",
+        "secondary": [
+          "C06"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M33"
@@ -653,6 +857,12 @@
       "order": 2,
       "title": "Los días hasta el siguiente pico",
       "subtitle": "Un trabajo que parece mucho y suma poco",
+      "concepts": {
+        "primary": "C39",
+        "secondary": [
+          "C27"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M34"
@@ -672,6 +882,12 @@
       "order": 3,
       "title": "Las escaleras del almacén",
       "subtitle": "No repetir lo que ya has resuelto",
+      "concepts": {
+        "primary": "C40",
+        "secondary": [
+          "C31"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M35"
@@ -691,6 +907,12 @@
       "order": 4,
       "title": "La auditoría del plan",
       "subtitle": "Elegir qué guardar y qué cuesta",
+      "concepts": {
+        "primary": "C41",
+        "secondary": [
+          "C16"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M36"
@@ -710,6 +932,12 @@
       "order": 1,
       "title": "La estantería por peso",
       "subtitle": "Sacar siempre la más ligera",
+      "concepts": {
+        "primary": "C42",
+        "secondary": [
+          "C10"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M37"
@@ -729,6 +957,12 @@
       "order": 2,
       "title": "Partir el montón en dos",
       "subtitle": "Resolver cada mitad con la misma idea",
+      "concepts": {
+        "primary": "C43",
+        "secondary": [
+          "C31"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M38"
@@ -748,6 +982,12 @@
       "order": 3,
       "title": "El mapa por plantas",
       "subtitle": "Leer el mapa de las zonas fila a fila",
+      "concepts": {
+        "primary": "C44",
+        "secondary": [
+          "C28"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M39"
@@ -767,6 +1007,12 @@
       "order": 4,
       "title": "La ruta más barata",
       "subtitle": "Cuando cada tramo cuesta distinto",
+      "concepts": {
+        "primary": "C45",
+        "secondary": [
+          "C34"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M40"
@@ -786,6 +1032,12 @@
       "order": 5,
       "title": "Cubrir todo el taller con pocas emisoras",
       "subtitle": "Elegir siempre lo que más aporta ahora",
+      "concepts": {
+        "primary": "C46",
+        "secondary": [
+          "C16"
+        ]
+      },
       "prerequisites": {
         "missions": [
           "M41"

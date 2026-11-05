@@ -18,6 +18,7 @@ export const MissionSummarySchema = MissionSchema.pick({
   order: true,
   title: true,
   subtitle: true,
+  concepts: true,
 }).extend({
   prerequisites: MissionSchema.shape.prerequisites.pick({ missions: true }),
   workshop: MissionSchema.shape.workshop.pick({ systemId: true, to: true }),
@@ -42,6 +43,7 @@ export function summarizeMission(mission: Mission): MissionSummary {
     order: mission.order,
     title: mission.title,
     subtitle: mission.subtitle,
+    concepts: { primary: mission.concepts.primary, secondary: [...mission.concepts.secondary] },
     prerequisites: { missions: [...mission.prerequisites.missions] },
     workshop: { systemId: mission.workshop.systemId, to: mission.workshop.to },
     reward: { narrative: mission.reward.narrative },

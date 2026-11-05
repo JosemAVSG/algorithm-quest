@@ -86,6 +86,9 @@ interface MissionFlowProps {
   sessions: SessionStore;
   /** System id → display name, for the "mission complete" screen. */
   systemNames?: Readonly<Record<string, string>>;
+  /** The mission the engine offers next, once this one is counted. */
+  upcoming?: { id: string; title: string } | null;
+  onOpenMission?: (missionId: string) => void;
   onCompleted: (record: CompletedMissionRecord) => void;
   onExit: () => void;
 }
@@ -96,6 +99,8 @@ export function MissionFlow({
   execution,
   sessions,
   systemNames = {},
+  upcoming = null,
+  onOpenMission,
   onCompleted,
   onExit,
 }: MissionFlowProps) {
@@ -340,6 +345,8 @@ export function MissionFlow({
               {...(systemNames[mission.reward.systemId] === undefined
                 ? {}
                 : { systemName: systemNames[mission.reward.systemId] })}
+              upcoming={upcoming}
+              {...(onOpenMission === undefined ? {} : { onOpenUpcoming: onOpenMission })}
               onAnswerComplexity={(index) =>
                 dispatch({ type: 'answer_complexity', index })
               }

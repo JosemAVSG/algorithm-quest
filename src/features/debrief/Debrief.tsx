@@ -17,6 +17,9 @@ interface DebriefProps {
   state: MissionSessionState;
   /** The repaired system's name, from the workshop registry. Falls back to its id. */
   systemName?: string;
+  /** The mission the engine would offer next, when there is one. */
+  upcoming?: { id: string; title: string } | null;
+  onOpenUpcoming?: (missionId: string) => void;
   onAnswerComplexity: (index: number) => void;
   onEditReasoning: (text: string) => void;
   onAnswerExplain: (id: string, index: number) => void;
@@ -34,6 +37,8 @@ export function Debrief({
   onSubmit,
   onFinish,
   systemName,
+  upcoming = null,
+  onOpenUpcoming,
 }: DebriefProps) {
   const { mission, assessment } = state;
   const debrief = mission.debrief;
@@ -80,7 +85,22 @@ export function Debrief({
         </dl>
 
         <div className="actions">
-          <button type="button" className="btn btn--primary" onClick={onFinish}>
+          {upcoming !== null && onOpenUpcoming !== undefined ? (
+            <button
+              type="button"
+              className="btn btn--primary"
+              onClick={() => onOpenUpcoming(upcoming.id)}
+            >
+              Siguiente: {upcoming.title} →
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className={
+              upcoming !== null && onOpenUpcoming !== undefined ? 'btn btn--ghost' : 'btn btn--primary'
+            }
+            onClick={onFinish}
+          >
             Volver al taller →
           </button>
         </div>

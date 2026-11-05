@@ -60,7 +60,7 @@ test('el nodo de mundo sigue accesible y clicable con la capa 3D, haya o no WebG
   const count = await canvas.count();
   expect(count).toBe(1);
   await expect(canvas).toHaveAttribute('aria-hidden', 'true');
-  await expect(node).toHaveAccessibleName(/^Mundo 1 .*: en curso$/);
+  await expect(node).toHaveAccessibleName(/^Mundo 1 .*: en curso, \d+ de \d+ misiones$/);
 
   await node.click();
   await expect(page.getByRole('list', { name: 'Misiones' })).toBeVisible();
