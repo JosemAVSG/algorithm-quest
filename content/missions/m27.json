@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "id": "M27",
   "world": "w4",
@@ -1052,7 +1052,7 @@
     "objectiveNouns": ["caja", "pieza", "total", "nivel"],
     "reasoningLexicon": ["llamo", "interior", "misma", "vacía", "termina"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C31-1"] },
   "reward": {
     "systemId": "sys.recurse",
     "effect": "absent → installed",

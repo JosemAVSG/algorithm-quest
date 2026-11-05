@@ -248,5 +248,5 @@ until M6 playtests produce evidence.
 | D10 | S | Invariant concept in World 3 | open |
 | D11 | B | Mastery computed, no XP | open |
 | D12 | S | One hard perf budget (M12) | open |
-| D13 | S | M12 measures operation count, not time | open |
+| D13 | S | M12 measures operation count, not time | implemented, awaiting confirmation (`19`) |
 | D14 | S | Post-MVP: 2D representation of problem + result, one-mission pilot | ⏸️ recorded 2026-10-29 (scope settled) |

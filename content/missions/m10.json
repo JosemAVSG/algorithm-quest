@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M10",
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "world": "transition",
   "order": 1,
@@ -63,7 +63,7 @@
       "budgetMs": 150,
       "calibrated": true,
       "enforced": false,
-      "operationBudget": 100000
+      "operationBudget": 200000
     }
   },
   "starterCode": "function findFirstDuplicateValue(ids) {\n  // your code here\n}\n",
@@ -198,7 +198,7 @@
     },
     {
       "code": "E16",
-      "message": "Tu respuesta es correcta y tarda demasiado. Con 20.000 órdenes el bucle interno hace casi 200 millones de comparaciones. La memoria tiene que evitar ese bucle, no hacerlo más rápido."
+      "message": "Tu solución hace demasiado trabajo para este tamaño de entrada. Con 20.000 órdenes el bucle interno hace casi 200 millones de comparaciones. La memoria tiene que evitar ese bucle, no hacerlo más rápido."
     },
     {
       "code": "E11",
@@ -354,7 +354,7 @@
   },
   "mastery": {
     "transferMissionId": "M12",
-    "reinforcementVariants": []
+    "reinforcementVariants": ["R-C13-1"]
   },
   "reward": {
     "systemId": "sys.memory",

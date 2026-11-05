@@ -42,6 +42,7 @@ import { Briefing } from '../briefing/Briefing';
 import { BriefingVisual } from '../briefing/BriefingVisual';
 import { Debrief } from '../debrief/Debrief';
 import { Lab } from '../lab/Lab';
+import type { TraceView } from '../lab/TracePanel';
 import { Strategy } from '../strategy/Strategy';
 
 const STEPS: Array<{ phase: StepPhase; label: string }> = [
@@ -136,6 +137,32 @@ export function MissionFlow({
       evidence: state.evidence,
     });
   }, [state, mission.id, onCompleted]);
+
+  // The step-by-step view of one visible case. Like the console, it is local to
+  // the lab: never saved, never read by the evaluation. Editing the code
+  // discards it, because its lines would no longer match.
+  const [traceView, setTraceView] = useState<TraceView | null>(null);
+  useEffect(() => {
+    setTraceView(null);
+  }, [state.source]);
+
+  const requestTrace = useCallback(
+    async (testId: string) => {
+      const testCase = mission.tests.visible.find((candidate) => candidate.id === testId);
+      if (testCase === undefined || execution.trace === undefined) return;
+      const label = testCase.note ?? testCase.id;
+      setTraceView({ testId, label, outcome: 'running' });
+      const outcome = await execution.trace({
+        code: state.source,
+        entryPoint: mission.contract.entryPoint,
+        input: testCase.input,
+        timeoutMs: 3_000,
+      });
+      // Ignore a result that arrives after the code was edited or another case chosen.
+      setTraceView((current) => (current?.testId === testId ? { testId, label, outcome } : current));
+    },
+    [execution, mission, state.source],
+  );
 
   const run = useCallback(async () => {
     if (state.phase !== 'lab' || state.running) return;
@@ -291,6 +318,15 @@ export function MissionFlow({
             }}
             onRequestHint={() => dispatch({ type: 'request_hint' })}
             onOpenDebrief={() => dispatch({ type: 'open_debrief' })}
+            {...(execution.trace === undefined
+              ? {}
+              : {
+                  onTrace: (testId: string) => {
+                    void requestTrace(testId);
+                  },
+                  traceView,
+                  onCloseTrace: () => setTraceView(null),
+                })}
           />
         ) : null}
 

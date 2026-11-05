@@ -27,8 +27,16 @@ import {
   type ProbeBudget,
 } from '../../../domain/execution/probes';
 import { createConsoleCollector, createConsoleStub } from '../../../domain/execution/console';
+import { createMeter, installBuiltinMeter } from '../../../domain/execution/meter';
 import { installConsole, installPrelude } from './prelude';
-import type { WorkerConsoleMessage, WorkerRequest, WorkerResponse } from './protocol';
+import { traceCase } from '../../../domain/execution/trace';
+import {
+  isTraceRequest,
+  type WorkerConsoleMessage,
+  type WorkerMessage,
+  type WorkerRequest,
+  type WorkerResponse,
+} from './protocol';
 
 const send = globalThis.postMessage.bind(globalThis);
 installPrelude(globalThis);
@@ -37,6 +45,11 @@ installPrelude(globalThis);
 // file only brackets the phases of the run.
 const consoleCollector = createConsoleCollector();
 installConsole(globalThis, createConsoleStub(consoleCollector));
+
+// Step counting (D13). The worker is a disposable realm, so wrapping the array
+// and set/map methods here is safe; the meter only counts while a case runs.
+const meter = createMeter();
+installBuiltinMeter(meter);
 
 /**
  * Time reserved for the probes, taken from what the main run did not use.
@@ -59,7 +72,7 @@ function oversizedCase(cases: readonly CaseOutcome[]): { testId: string; bytes: 
 function execute(request: WorkerRequest, startedAt: number): WorkerResponse {
   let fn;
   try {
-    fn = compileEntryPoint(request.code, request.entryPoint);
+    fn = compileEntryPoint(request.code, request.entryPoint, { meter });
     // Top-level output is over; probes and the rest are never captured.
     consoleCollector.leave();
   } catch (error) {
@@ -80,6 +93,8 @@ function execute(request: WorkerRequest, startedAt: number): WorkerResponse {
   try {
     cases = runCasesWith(fn, request.cases, {
       detectMutation: request.probes.mutation,
+      meter,
+      opLimit: request.opLimit,
       onCase: {
         before: (testCase) => consoleCollector.enterCase(testCase.testId, testCase.visible === true),
         after: () => consoleCollector.leave(),
@@ -155,7 +170,19 @@ function executeSafely(request: WorkerRequest): WorkerResponse {
   }
 }
 
-globalThis.onmessage = (event: MessageEvent<WorkerRequest>) => {
+globalThis.onmessage = (event: MessageEvent<WorkerMessage>) => {
+  if (isTraceRequest(event.data)) {
+    const { code, entryPoint, input, maxSteps, opLimit } = event.data;
+    try {
+      send(traceCase(code, entryPoint, input, { maxSteps, opLimit, meter }));
+    } catch (error) {
+      send({
+        kind: 'internal_error',
+        message: error instanceof Error ? `${error.name}: ${error.message}` : String(error),
+      });
+    }
+    return;
+  }
   const response = executeSafely(event.data);
   try {
     const message: WorkerConsoleMessage = { kind: 'console', report: consoleCollector.report() };

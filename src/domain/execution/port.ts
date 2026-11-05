@@ -8,6 +8,7 @@
  */
 
 import type { ConsoleReport } from './console';
+import type { TraceOutcome } from './trace';
 
 export interface ExecutionCase {
   testId: string;
@@ -41,7 +42,11 @@ export interface ExecutionRequest {
   budgetMs?: number;
   /** True when the mission treats the budget as a hard requirement. */
   enforced?: boolean;
-  /** Operations the mission expects a correct solution to need, when declared. */
+  /**
+   * Steps the worst case of a correct, reasonable solution is allowed. Cases
+   * are stopped at a multiple of it, so a runaway solution ends quickly and
+   * deterministically instead of at the wall-clock timeout (D13).
+   */
   operationBudget?: number;
   /**
    * Behavioural probes to run after the cases. Mutation detection is opt-in per
@@ -69,10 +74,16 @@ export type CaseOutcome =
       value: unknown;
       /** True when the call left its arguments different from a pre-call clone (E11). */
       mutatedInput?: boolean;
+      /** Steps the call took (loop iterations, calls, built-in work). Absent when not measured. */
+      ops?: number;
     }
   | {
       testId: string;
       status: 'threw';
+      /** Steps taken before the case stopped. */
+      ops?: number;
+      /** True when the case was stopped for crossing the step limit, not for an error. */
+      costExceeded?: true;
       message: string;
       /** 1-based, in the player's own source. Absent when the engine will not say. */
       line?: number;
@@ -116,6 +127,21 @@ export type ExecutionOutcome =
    */
   | { kind: 'internal_error'; message: string };
 
+/** One case, run step by step. Only ever asked for a case the player can already see. */
+export interface TraceRequest {
+  code: string;
+  entryPoint: string;
+  input: readonly unknown[];
+  /** How many steps to record before stopping the run. */
+  maxSteps?: number;
+  timeoutMs: number;
+}
+
 export interface ExecutionPort {
   execute(request: ExecutionRequest): Promise<ExecutionOutcome>;
+  /**
+   * Run a single case with the variables of every step recorded. Optional: an
+   * adapter that cannot trace simply does not offer the feature.
+   */
+  trace?(request: TraceRequest): Promise<TraceOutcome>;
 }

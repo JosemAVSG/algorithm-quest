@@ -10,7 +10,7 @@ test('una misión que tarda muestra "Cargando misión…" y luego el briefing', 
     await route.continue();
   });
   await page.goto('/');
-  await page.getByRole('button', { name: /^World 1/ }).click();
+  await page.getByRole('button', { name: /^Mundo 1/ }).click();
   await page.getByRole('button', { name: /^M01 .*disponible/ }).click();
 
   await expect(page.getByText('Cargando misión…')).toBeVisible();
@@ -24,7 +24,7 @@ test('si el chunk falla se ofrece reintentar y el reintento abre la misión', as
 }) => {
   await page.route(MISSION_FILE, (route) => route.abort());
   await page.goto('/');
-  await page.getByRole('button', { name: /^World 1/ }).click();
+  await page.getByRole('button', { name: /^Mundo 1/ }).click();
   await page.getByRole('button', { name: /^M01 .*disponible/ }).click();
 
   await expect(
@@ -41,7 +41,7 @@ test('si el chunk falla se ofrece reintentar y el reintento abre la misión', as
 test('volver al taller desde el error regresa al mapa', async ({ page }) => {
   await page.route(MISSION_FILE, (route) => route.abort());
   await page.goto('/');
-  await page.getByRole('button', { name: /^World 1/ }).click();
+  await page.getByRole('button', { name: /^Mundo 1/ }).click();
   await page.getByRole('button', { name: /^M01 .*disponible/ }).click();
   await page.getByRole('button', { name: 'Volver al taller' }).click();
   await expect(page.getByRole('list', { name: 'Misiones' })).toBeVisible();

@@ -205,6 +205,9 @@ M12 ships with 4 built-in reinforcement variants covering `C02`, `C04`, `C05`, `
 Other concepts fall back to "replay the mission with hints disabled", which is honest but
 weaker — and is the first content gap to fill after the MVP.
 
+> **Update:** all 41 concepts now have a variant, and the screen to practise one exists. See
+> `20-reinforcement.md`.
+
 ---
 
 ## 9. Unlock rules

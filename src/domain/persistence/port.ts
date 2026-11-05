@@ -101,6 +101,25 @@ export function recordCompletion(
   };
 }
 
+/**
+ * A reinforcement variant was solved: keep its evidence and take the concept
+ * off the pending queue. Not a decline (nothing is recorded as refused), and
+ * not a mission completion (the map is untouched).
+ */
+export function recordReinforcement(
+  progress: PlayerProgress,
+  evidence: readonly EvidenceEvent[],
+  conceptId: string,
+): PlayerProgress {
+  const known = new Set(progress.events.map((event) => event.id));
+  const added = evidence.filter((event) => !known.has(event.id));
+  return {
+    ...progress,
+    events: [...progress.events, ...added],
+    reinforcement: progress.reinforcement.filter((item) => item.conceptId !== conceptId),
+  };
+}
+
 export function declineReinforcement(
   progress: PlayerProgress,
   conceptId: string,

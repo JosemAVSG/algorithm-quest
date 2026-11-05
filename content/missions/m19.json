@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "id": "M19",
   "world": "w3",
@@ -30,7 +30,7 @@
     "allowClosedForm": false,
     "mustNotMutate": true,
     "rotationInvariant": false,
-    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 300000 }
+    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 40000 }
   },
   "starterCode": "function bestStreak(output, k) {\n  // your code here\n}\n",
   "tests": {
@@ -124,7 +124,7 @@
     },
     {
       "code": "E16",
-      "message": "Tu respuesta es correcta y tarda demasiado. Con 12.000 horas y rachas de 4.000, volver a sumar las 4.000 horas de cada racha son unos 32 millones de sumas. Al pasar de una racha a la siguiente solo cambian dos horas: una sale y otra entra."
+      "message": "Tu solución hace demasiado trabajo para este tamaño de entrada. Con 12.000 horas y rachas de 4.000, volver a sumar las 4.000 horas de cada racha son unos 32 millones de sumas. Al pasar de una racha a la siguiente solo cambian dos horas: una sale y otra entra."
     },
     {
       "code": "E01",
@@ -220,7 +220,7 @@
     "objectiveNouns": ["racha", "hora", "total", "producción"],
     "reasoningLexicon": ["entra", "sale", "actualizo", "mayor", "solapan"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C23-1"] },
   "reward": {
     "systemId": "sys.window",
     "effect": "broken → working",

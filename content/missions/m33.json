@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "id": "M33",
   "world": "w5",
@@ -30,7 +30,7 @@
     "allowClosedForm": false,
     "mustNotMutate": true,
     "rotationInvariant": false,
-    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 300000 }
+    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 25000 }
   },
   "starterCode": "function waysToFill(pieces, target) {\n  // your code here\n}\n",
   "tests": {
@@ -219,7 +219,7 @@
     "objectiveNouns": ["pieza", "forma", "suma", "elección"],
     "reasoningLexicon": ["incluir", "deshago", "copia", "pruebo", "decido"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C37-1"] },
   "reward": {
     "systemId": "sys.maze",
     "effect": "absent → installed",

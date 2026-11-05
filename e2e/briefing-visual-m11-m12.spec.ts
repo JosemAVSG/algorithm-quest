@@ -30,7 +30,7 @@ async function openMission(page: Page, id: 'M11' | 'M12') {
     }
   }, done);
   await page.goto('/');
-  await page.getByRole('button', { name: /^Transition Arc/ }).click();
+  await page.getByRole('button', { name: /^Arco de transición/ }).click();
   await page.getByRole('button', { name: new RegExp(`^${id}`) }).click();
 }
 

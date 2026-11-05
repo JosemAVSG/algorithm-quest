@@ -21,6 +21,7 @@ import {
 import { validateMissionShape, validateReferences, findPrerequisiteCycles } from './validate';
 import { lintMission, lintWorkshopTimeline } from './lint';
 import { buildSequence, checkCoverage, checkWorlds } from './coverage';
+import { lintVariants } from './variants';
 
 export interface RawMissionRecord {
   /** Path relative to the project root, used in issue messages. */
@@ -177,6 +178,7 @@ export function assembleContent(raw: RawContent): ContentReport {
   issues.push(...checkWorlds(missions, worlds));
   issues.push(...lintWorkshopTimeline(missions, systemMap, sequenceById));
   issues.push(...checkCoverage(missions, worlds, concepts));
+  issues.push(...lintVariants(reinforcementParsed.data.variants, concepts, missions));
 
   return {
     bundle: { missions, concepts, systems, worlds, sequenceById },

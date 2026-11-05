@@ -18,6 +18,8 @@
  */
 
 import { deepEqual } from '../../shared/lib/deep-equal';
+import { instrumentSource } from './instrument';
+import { CostLimitExceeded, type Meter } from './meter';
 import type { CaseOutcome, ExecutionCase } from './port';
 
 const IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
@@ -78,7 +80,7 @@ function engineLineShift(): number {
   return calibratedShift;
 }
 
-function frameOf(stack: string | undefined): { line: number; column: number } | undefined {
+export function frameOf(stack: string | undefined): { line: number; column: number } | undefined {
   if (stack === undefined) return undefined;
   const shift = engineLineShift();
   if (shift < 0) return undefined;
@@ -120,19 +122,43 @@ export type PlayerFunction = (...args: unknown[]) => unknown;
  * @throws PlayerSyntaxError when the source does not parse
  * @throws MissingEntryPointError when the entry point is absent or not callable
  */
-export function compileEntryPoint(code: string, entryPoint: string): PlayerFunction {
+export interface CompileOptions {
+  /**
+   * When present, the source is instrumented so loop iterations and calls tick
+   * this meter. Source that cannot be instrumented runs as written and reports
+   * no cost (never a made-up one).
+   */
+  meter?: Meter;
+  /** Receives a variable snapshot at each step. Only used for the trace. */
+  snapshot?: (line: number, read: () => [string, boolean, unknown?][]) => void;
+}
+
+export function compileEntryPoint(
+  code: string,
+  entryPoint: string,
+  options: CompileOptions = {},
+): PlayerFunction {
   if (!IDENTIFIER.test(entryPoint)) throw new MissingEntryPointError(entryPoint);
 
-  const body = `"use strict";\n${code}\nreturn typeof ${entryPoint} === "function" ? ${entryPoint} : undefined;`;
+  const instrumented =
+    options.meter === undefined
+      ? null
+      : instrumentSource(code, { snapshots: options.snapshot !== undefined });
+  const source = instrumented ?? code;
+  const body = `"use strict";\n${source}\nreturn typeof ${entryPoint} === "function" ? ${entryPoint} : undefined;`;
 
-  let factory: () => unknown;
+  let factory: (tick: () => void, snap: (line: number, read: () => [string, boolean, unknown?][]) => void) => unknown;
   try {
-    factory = new Function(body) as () => unknown;
+    factory = new Function('__t', '__s', body) as typeof factory;
   } catch (error) {
     throw new PlayerSyntaxError((error as Error).message);
   }
 
-  const candidate = factory();
+  const meter = options.meter;
+  const candidate = factory(
+    meter === undefined ? () => {} : () => meter.tick(),
+    options.snapshot ?? (() => {}),
+  );
   if (typeof candidate !== 'function') throw new MissingEntryPointError(entryPoint);
   return candidate as PlayerFunction;
 }
@@ -169,45 +195,104 @@ export function runCasesWith(
     detectMutation?: boolean;
     /** Bracket each case, so the caller can attribute side effects (console output) to it. */
     onCase?: { before(testCase: ExecutionCase): void; after(testCase: ExecutionCase): void };
+    /** Counts steps while a case runs. Absent means no cost is reported. */
+    meter?: Meter;
+    /** Steps a single case may take before it is stopped. */
+    opLimit?: number;
   } = {},
 ): CaseOutcome[] {
-  return cases.map((testCase) => {
+  // Once a case crosses the step limit the verdict is already known, and each
+  // further runaway case would burn its own limit again. The rest are reported
+  // as not run, for that reason, instead of waiting for the wall-clock timeout.
+  let stoppedByCost = false;
+  return cases.map((testCase): CaseOutcome => {
+    if (stoppedByCost) {
+      return {
+        testId: testCase.testId,
+        status: 'threw',
+        message: 'no se ejecutó: un caso anterior superó el límite de pasos',
+        costExceeded: true,
+      };
+    }
     options.onCase?.before(testCase);
     try {
-      return runOne(fn, testCase, options.detectMutation === true);
+      const outcome = runOne(
+        fn,
+        testCase,
+        options.detectMutation === true,
+        options.meter,
+        options.opLimit ?? Number.POSITIVE_INFINITY,
+      );
+      if (outcome.status === 'threw' && outcome.costExceeded === true) stoppedByCost = true;
+      return outcome;
     } finally {
       options.onCase?.after(testCase);
     }
   });
 }
 
-function runOne(fn: PlayerFunction, testCase: ExecutionCase, detectMutation: boolean): CaseOutcome {
+function runOne(
+  fn: PlayerFunction,
+  testCase: ExecutionCase,
+  detectMutation: boolean,
+  meter: Meter | undefined,
+  opLimit: number,
+): CaseOutcome {
   const before = detectMutation ? tryClone(testCase.input) : null;
+
+  // Only the call itself is metered: cloning, comparing and sanitising the
+  // result are the harness, and must not be charged to the player.
+  let value: unknown;
+  let failure: unknown;
+  let threw = false;
+  meter?.start(opLimit);
   try {
-    const value = fn(...testCase.input);
-    const mutatedInput =
-      before === null ? undefined : !deepEqual(before, testCase.input);
+    value = fn(...testCase.input);
+  } catch (error) {
+    threw = true;
+    failure = error;
+  }
+  const ops = meter?.stop();
+  const costExceeded =
+    meter !== undefined && (meter.exceeded || failure instanceof CostLimitExceeded);
+  const cost = ops === undefined ? {} : { ops };
+  const mutated = before === null ? undefined : !deepEqual(before, testCase.input);
+  const mutation = mutated === undefined ? {} : { mutatedInput: mutated };
+
+  if (costExceeded) {
+    return {
+      testId: testCase.testId,
+      status: 'threw',
+      message: `se detuvo al superar ${opLimit} pasos en este caso`,
+      costExceeded: true,
+      ...cost,
+      ...mutation,
+    };
+  }
+
+  if (!threw) {
     return {
       testId: testCase.testId,
       status: 'returned',
       value: sanitizeForTransfer(value),
-      ...(mutatedInput === undefined ? {} : { mutatedInput }),
-    };
-  } catch (error) {
-    const frame = frameOf((error as Error | undefined)?.stack);
-    const message =
-      error instanceof Error
-        ? `${error.name}: ${error.message}`
-        : `se lanzó un valor no-Error: ${String(error)}`;
-    const mutatedInput = before === null ? undefined : !deepEqual(before, testCase.input);
-    return {
-      testId: testCase.testId,
-      status: 'threw',
-      message,
-      ...(frame ?? {}),
-      ...(mutatedInput === undefined ? {} : { mutatedInput }),
+      ...cost,
+      ...mutation,
     };
   }
+
+  const frame = frameOf((failure as Error | undefined)?.stack);
+  const message =
+    failure instanceof Error
+      ? `${failure.name}: ${failure.message}`
+      : `se lanzó un valor no-Error: ${String(failure)}`;
+  return {
+    testId: testCase.testId,
+    status: 'threw',
+    message,
+    ...(frame ?? {}),
+    ...cost,
+    ...mutation,
+  };
 }
 
 function tryClone(value: unknown): unknown[] | null {

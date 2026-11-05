@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M08",
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "world": "w1",
   "order": 8,
@@ -317,7 +317,7 @@
 
   "mastery": {
     "transferMissionId": "M10",
-    "reinforcementVariants": []
+    "reinforcementVariants": ["R-C11-1"]
   },
 
   "reward": {

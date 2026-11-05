@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M04",
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "world": "w1",
   "order": 4,
@@ -322,7 +322,7 @@
       ]
     }
   },
-  "mastery": { "transferMissionId": "M12", "reinforcementVariants": [] },
+  "mastery": { "transferMissionId": "M12", "reinforcementVariants": ["R-C06-1"] },
   "reward": {
     "systemId": "sys.store",
     "effect": "broken → working",

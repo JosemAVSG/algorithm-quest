@@ -73,6 +73,34 @@ export interface RunEvaluation {
   passed: boolean;
   probes: ProbeVerdict;
   durationMs: number;
+  /** What the run cost in steps (D13). Null when the run was not measured. */
+  cost: RunCost | null;
+}
+
+export interface RunCost {
+  /** Steps of the most expensive case, hidden ones included. */
+  maxOps: number;
+  /** The mission's step budget, when it declares one. */
+  budget: number | null;
+  /** True when the budget was crossed, or a case was stopped for crossing the limit. */
+  over: boolean;
+  /** True when going over blocks completion. */
+  enforced: boolean;
+}
+
+function runCost(mission: Mission, report: TestReport): RunCost | null {
+  const measured = report.results.filter((result) => result.ops !== undefined);
+  if (measured.length === 0) return null;
+  const maxOps = measured.reduce((max, result) => Math.max(max, result.ops ?? 0), 0);
+  const efficiency = mission.constraints.efficiency;
+  const budget = efficiency?.operationBudget ?? null;
+  const stopped = report.results.some((result) => result.costExceeded === true);
+  return {
+    maxOps,
+    budget,
+    over: stopped || (budget !== null && maxOps > budget),
+    enforced: efficiency?.enforced === true && budget !== null,
+  };
 }
 
 function probeVerdict(outcome: ExecutionOutcome): ProbeVerdict {
@@ -101,6 +129,7 @@ export function evaluateRun(input: EvaluateRunInput): RunEvaluation {
       passed: false,
       probes,
       durationMs: 0,
+      cost: null,
     };
   }
 
@@ -115,7 +144,12 @@ export function evaluateRun(input: EvaluateRunInput): RunEvaluation {
   const durationMs = outcome.kind === 'completed' ? outcome.durationMs : 0;
   // E19 is a mission constraint: the tests can be green and the mission still
   // cannot be completed by using the construct it bans (docs/04 §2).
-  const passed = report.allPassed && !probes.failed && primary.code !== 'E19';
+  const cost = runCost(mission, report);
+  // A budget the mission treats as a requirement blocks completion; otherwise
+  // exceeding it is advice the mentor gives about a solution that works.
+  const blockedByCost = cost !== null && cost.enforced && cost.over;
+  const passed =
+    report.allPassed && !probes.failed && primary.code !== 'E19' && !blockedByCost;
 
   return {
     report,
@@ -125,5 +159,6 @@ export function evaluateRun(input: EvaluateRunInput): RunEvaluation {
     passed,
     probes,
     durationMs,
+    cost,
   };
 }

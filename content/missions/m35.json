@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "id": "M35",
   "world": "w6",
@@ -30,7 +30,7 @@
     "allowClosedForm": false,
     "mustNotMutate": true,
     "rotationInvariant": false,
-    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 100000 }
+    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 40000 }
   },
   "starterCode": "function daysUntilHigher(temps) {\n  // your code here\n}\n",
   "tests": {
@@ -139,7 +139,7 @@
     },
     {
       "code": "E16",
-      "message": "Tu respuesta es correcta y tarda demasiado. Con 4.000 días a la baja, mirar hacia delante desde cada día recorre casi toda la lista cada vez: unos 8 millones de comparaciones. Si guardas los días que todavía esperan una lectura mayor, cada día entra y sale de esa espera una sola vez."
+      "message": "Tu solución hace demasiado trabajo para este tamaño de entrada. Con 4.000 días a la baja, mirar hacia delante desde cada día recorre casi toda la lista cada vez: unos 8 millones de comparaciones. Si guardas los días que todavía esperan una lectura mayor, cada día entra y sale de esa espera una sola vez."
     },
     {
       "code": "E01",
@@ -235,7 +235,7 @@
     "objectiveNouns": ["día", "temperatura", "espera", "lectura"],
     "reasoningLexicon": ["guardo", "quito", "una vez", "resuelve", "mayor"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C39-1"] },
   "reward": {
     "systemId": "sys.ledger",
     "effect": "absent → installed",

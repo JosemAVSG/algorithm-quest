@@ -30,6 +30,7 @@ export const CONTENT_ISSUE_CODES = [
   'REF_WORLD_ORDER',
   'REF_DUP_MISSION',
   'REF_REGISTRY',
+  'REF_VARIANT',
 
   // Pedagogical lints (docs/10-testing-and-security.md §4, L1–L8)
   'L1_VOCABULARY_LEAK',
@@ -41,6 +42,7 @@ export const CONTENT_ISSUE_CODES = [
   'L7_EDGE_COVERAGE',
   'L8_DEBRIEF_SUBSTANCE',
   'L9_EXPLAIN_SHAPE',
+  'L10_VARIANT',
 
   // Curriculum invariants
   'COVERAGE_INSUFFICIENT',

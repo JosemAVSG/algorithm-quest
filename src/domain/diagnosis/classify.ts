@@ -147,6 +147,9 @@ function matchUnconditionalAuthored(
     : { code: unconditional.code, message: unconditional.message };
 }
 
+const COST_FALLBACK =
+  'Tu solución hace más trabajo del necesario para este tamaño de entrada. Piensa qué se repite en cada vuelta y si puedes recordarlo en lugar de volver a calcularlo.';
+
 function evidenceFor(report: TestReport, extra: Partial<Diagnosis['evidence']> = {}) {
   const firstFailing = report.results.find(
     (result) => result.status !== 'pass' && result.status !== 'not_run',
@@ -232,6 +235,35 @@ export function classify(input: ClassifyInput): Diagnosis {
     };
   }
 
+  // 4b. a case was stopped for crossing the step limit → E16. This is not an
+  //     error the player threw: the solution does so much work that the case
+  //     never finished. It sits above E02 for that reason, and it is the
+  //     deterministic counterpart of the wall-clock timeout (D13).
+  const stopped = report.results.find((result) => result.costExceeded === true);
+  if (stopped !== undefined && mission.constraints.efficiency?.operationBudget === undefined) {
+    // No budget was declared, so this is not a cost problem: only a loop that
+    // does not end gets here. It is the same fault the wall-clock timeout
+    // reports, found deterministically and sooner.
+    return {
+      code: 'E03',
+      confidence: 'certain',
+      evidence: evidenceFor(report, {
+        message: `${stopped.message ?? ''} Comprueba que el bucle llega a terminar.`.trim(),
+      }),
+      modifiers: [],
+    };
+  }
+  if (stopped !== undefined) {
+    return {
+      code: 'E16',
+      confidence: 'certain',
+      evidence: evidenceFor(report, {
+        message: `${authoredMessage(mission, 'E16') ?? COST_FALLBACK} ${stopped.message ?? ''}`.trim(),
+      }),
+      modifiers: [],
+    };
+  }
+
   const threw = report.results.find((result) => result.status === 'error');
   if (threw !== undefined) {
     return {
@@ -313,6 +345,26 @@ export function classify(input: ClassifyInput): Diagnosis {
       },
       modifiers: [],
     };
+  }
+
+  // everything passed, but the work done exceeds the mission's step budget → E16.
+  //
+  //    The tests are green and the solution is correct, so this never blocks by
+  //    itself: `evaluateRun` only treats it as uncompletable when the mission
+  //    declares the budget `enforced`. Otherwise the mentor reports it as advice.
+  const budget = mission.constraints.efficiency?.operationBudget;
+  if (report.allPassed && budget !== undefined) {
+    const worst = report.results.reduce((max, result) => Math.max(max, result.ops ?? 0), 0);
+    if (worst > budget) {
+      return {
+        code: 'E16',
+        confidence: 'certain',
+        evidence: evidenceFor(report, {
+          message: `${authoredMessage(mission, 'E16') ?? COST_FALLBACK} Tu solución usó ${worst.toLocaleString('es')} pasos en el caso más grande; lo esperable es hasta ${budget.toLocaleString('es')}.`,
+        }),
+        modifiers: [],
+      };
+    }
   }
 
   // everything passed → CLEAR

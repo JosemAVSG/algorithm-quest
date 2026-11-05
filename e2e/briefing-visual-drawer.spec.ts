@@ -32,7 +32,7 @@ test("el briefing de M10 muestra el cajón de ids vistos", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedCompleted(page, 9);
   await page.goto("/");
-  await page.getByRole("button", { name: /^World 1/ }).click();
+  await page.getByRole("button", { name: /^Mundo 1/ }).click();
   await page.getByRole("button", { name: "Continuar →" }).click();
 
   await expect(page.getByRole("heading", { name: "La memoria del sistema" })).toBeVisible();

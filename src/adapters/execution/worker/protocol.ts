@@ -18,6 +18,8 @@ export interface WorkerRequest {
   entryPoint: string;
   cases: readonly ExecutionCase[];
   timeoutMs: number;
+  /** Steps one case may take before it is stopped (D13). */
+  opLimit: number;
   probes: {
     /** True only when the mission declares `mustNotMutate`. */
     mutation: boolean;
@@ -48,4 +50,24 @@ export type WorkerResponse =
 export interface WorkerConsoleMessage {
   kind: 'console';
   report: ConsoleReport;
+}
+
+/**
+ * A trace request. It shares the worker with ordinary runs but is a different
+ * message: no probes, no console, and the reply is a `TraceOutcome`.
+ */
+export interface WorkerTraceRequest {
+  type: 'trace';
+  code: string;
+  entryPoint: string;
+  input: readonly unknown[];
+  maxSteps: number;
+  /** Steps the work itself may take, so a runaway loop ends deterministically. */
+  opLimit: number;
+}
+
+export type WorkerMessage = WorkerRequest | WorkerTraceRequest;
+
+export function isTraceRequest(message: WorkerMessage): message is WorkerTraceRequest {
+  return (message as WorkerTraceRequest).type === 'trace';
 }

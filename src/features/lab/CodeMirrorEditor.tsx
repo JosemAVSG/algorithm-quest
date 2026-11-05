@@ -16,8 +16,10 @@ import {
   indentOnInput,
   syntaxHighlighting,
 } from '@codemirror/language';
-import { Compartment, EditorState, Prec } from '@codemirror/state';
+import { Compartment, EditorState, Prec, StateEffect, StateField } from '@codemirror/state';
 import {
+  Decoration,
+  type DecorationSet,
   EditorView,
   drawSelection,
   highlightActiveLine,
@@ -30,6 +32,23 @@ import { useEffect, useRef } from 'react';
 
 import type { EditorProps } from './Editor';
 
+/** The line the trace is on. Set from outside, never edited by the player. */
+const setTraceLine = StateEffect.define<number | null>();
+const traceLineField = StateField.define<DecorationSet>({
+  create: () => Decoration.none,
+  update(decorations, transaction) {
+    for (const effect of transaction.effects) {
+      if (!effect.is(setTraceLine)) continue;
+      const line = effect.value;
+      if (line === null || line < 1 || line > transaction.state.doc.lines) return Decoration.none;
+      const from = transaction.state.doc.line(line).from;
+      return Decoration.set([Decoration.line({ class: 'cm-trace-line' }).range(from)]);
+    }
+    return decorations.map(transaction.changes);
+  },
+  provide: (field) => EditorView.decorations.from(field),
+});
+
 const theme = EditorView.theme(
   {
     '&': {
@@ -40,13 +59,22 @@ const theme = EditorView.theme(
     },
     '&.cm-focused': { outline: '2px solid var(--structure)', outlineOffset: '-2px' },
     '.cm-scroller': { fontFamily: 'var(--font-mono)', lineHeight: '1.6', overflow: 'auto' },
-    '.cm-content': { padding: '1rem 0', caretColor: 'var(--text)' },
+    '.cm-content': {
+      padding: '1rem 0',
+      caretColor: 'var(--text)',
+      fontVariantLigatures: 'none',
+      fontFeatureSettings: '"liga" 0, "calt" 0',
+    },
     '.cm-cursor': { borderLeftColor: 'var(--text)' },
     '.cm-gutters': {
       backgroundColor: 'var(--surface-sunken)',
       color: '#55606c',
       border: 'none',
       borderRight: '1px solid var(--border)',
+    },
+    '.cm-trace-line': {
+      backgroundColor: 'rgba(210, 153, 34, 0.2)',
+      boxShadow: 'inset 3px 0 0 var(--attention)',
     },
     '.cm-activeLine': { backgroundColor: 'rgba(88, 166, 255, 0.07)' },
     '.cm-activeLineGutter': { backgroundColor: 'rgba(88, 166, 255, 0.07)', color: 'var(--text-muted)' },
@@ -73,7 +101,13 @@ const highlight = HighlightStyle.define([
   { tag: [tags.operator, tags.punctuation], color: '#8b98a5' },
 ]);
 
-export default function CodeMirrorEditor({ value, onChange, onRun, disabled }: EditorProps) {
+export default function CodeMirrorEditor({
+  value,
+  onChange,
+  onRun,
+  disabled,
+  highlightLine = null,
+}: EditorProps) {
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<EditorView | null>(null);
   const latest = useRef({ onChange, onRun, disabled });
@@ -97,6 +131,7 @@ export default function CodeMirrorEditor({ value, onChange, onRun, disabled }: E
       doc: value,
       extensions: [
         lineNumbers(),
+        traceLineField,
         highlightActiveLineGutter(),
         highlightActiveLine(),
         drawSelection(),
@@ -174,6 +209,17 @@ export default function CodeMirrorEditor({ value, onChange, onRun, disabled }: E
       ]),
     });
   }, [disabled]);
+
+  // Mark the trace's current line and bring it into view.
+  useEffect(() => {
+    const instance = view.current;
+    if (instance === null) return;
+    const effects: StateEffect<unknown>[] = [setTraceLine.of(highlightLine)];
+    if (highlightLine !== null && highlightLine >= 1 && highlightLine <= instance.state.doc.lines) {
+      effects.push(EditorView.scrollIntoView(instance.state.doc.line(highlightLine).from, { y: 'nearest' }));
+    }
+    instance.dispatch({ effects });
+  }, [highlightLine]);
 
   return <div className="editor editor--cm" ref={host} />;
 }

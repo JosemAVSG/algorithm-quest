@@ -33,6 +33,10 @@ export interface TestResult {
   actual?: unknown;
   message?: string;
   line?: number;
+  /** Steps the case took, when the run measured them (D13). */
+  ops?: number;
+  /** True when the case was stopped for crossing the step limit. */
+  costExceeded?: boolean;
 }
 
 export interface GroupCount {
@@ -57,7 +61,7 @@ interface IndexedCase {
   testCase: TestCase;
 }
 
-function indexCases(mission: Mission): IndexedCase[] {
+function indexCases(mission: Pick<Mission, 'tests'>): IndexedCase[] {
   const out: IndexedCase[] = [];
   for (const testCase of mission.tests.visible) out.push({ group: 'visible', testCase });
   for (const testCase of mission.tests.hidden) out.push({ group: 'hidden', testCase });
@@ -85,7 +89,7 @@ function baseResult(group: TestGroup, testCase: TestCase) {
   };
 }
 
-function blockedReport(mission: Mission, blockedBy: ExecutionOutcome['kind']): TestReport {
+function blockedReport(mission: Pick<Mission, 'tests'>, blockedBy: ExecutionOutcome['kind']): TestReport {
   const results: TestResult[] = indexCases(mission).map(({ group, testCase }) => ({
     ...baseResult(group, testCase),
     status: 'not_run',
@@ -108,7 +112,10 @@ function describeUnserializable(value: { __unserializable: string }): string {
   }
 }
 
-export function buildTestReport(mission: Mission, outcome: ExecutionOutcome): TestReport {
+export function buildTestReport(
+  mission: Pick<Mission, 'tests'>,
+  outcome: ExecutionOutcome,
+): TestReport {
   if (outcome.kind !== 'completed') return blockedReport(mission, outcome.kind);
 
   const byId = new Map(outcome.cases.map((entry) => [entry.testId, entry]));
@@ -140,6 +147,8 @@ export function buildTestReport(mission: Mission, outcome: ExecutionOutcome): Te
         status: 'error',
         message: entry.message,
         ...(entry.line === undefined ? {} : { line: entry.line }),
+        ...(entry.ops === undefined ? {} : { ops: entry.ops }),
+        ...(entry.costExceeded === true ? { costExceeded: true } : {}),
       });
       failingIds.push(testCase.id);
       continue;
@@ -165,6 +174,7 @@ export function buildTestReport(mission: Mission, outcome: ExecutionOutcome): Te
       ...baseResult(group, testCase),
       status: passed ? 'pass' : 'fail',
       actual,
+      ...(entry.ops === undefined ? {} : { ops: entry.ops }),
     });
   }
 

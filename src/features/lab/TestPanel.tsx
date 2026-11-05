@@ -9,15 +9,20 @@
  * belongs to the workshop.
  */
 
+import type { RunCost } from '../../domain/evaluation/evaluate-run';
 import type { TestReport } from '../../domain/evaluation/test-engine';
 import { renderValue } from '../../domain/evaluation/test-engine';
 
 interface TestPanelProps {
   report: TestReport | null;
   running: boolean;
+  /** What the last run cost in steps (D13), when it was measured. */
+  cost?: RunCost | null;
 }
 
-export function TestPanel({ report, running }: TestPanelProps) {
+const steps = (value: number) => value.toLocaleString('es');
+
+export function TestPanel({ report, running, cost = null }: TestPanelProps) {
   const visible = report?.results.filter((result) => result.group === 'visible') ?? [];
   const passed = visible.filter((result) => result.status === 'pass').length;
 
@@ -84,6 +89,16 @@ export function TestPanel({ report, running }: TestPanelProps) {
           </li>
         ))}
       </ul>
+
+      {cost !== null ? (
+        <p
+          className={`tests__cost${cost.over ? ' tests__cost--over' : ''}`}
+          data-over={cost.over}
+        >
+          Coste del caso más grande: {steps(cost.maxOps)} pasos
+          {cost.budget !== null ? ` · presupuesto ${steps(cost.budget)}` : ''}
+        </p>
+      ) : null}
 
       {report !== null && report.counts.visible.passed === report.counts.visible.total && !report.allPassed ? (
         <p className="tests__note">

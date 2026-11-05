@@ -143,6 +143,65 @@ export function WorkshopMap({
         </div>
       </header>
 
+      <section className="next" aria-label="Siguiente misión">
+        {upcoming === null ? (
+          <>
+            <div className="next__body">
+              <p className="next__kicker">Taller reparado</p>
+              <h2>No queda nada jugable en este corte</h2>
+              <p className="next__note">
+                El resto del taller llega en el siguiente hito. Puedes repetir
+                una misión ya resuelta.
+              </p>
+            </div>
+            {replayable.length > 0 ? (
+              <div className="next__actions">
+                {replayable.map((mission) => (
+                  <button
+                    key={mission.id}
+                    type="button"
+                    className="btn btn--ghost"
+                    onClick={() => onOpenMission(mission.id)}
+                  >
+                    Repetir {mission.id}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </>
+        ) : (
+          <>
+            <div className="next__body">
+              <p className="next__kicker">
+                {upcoming.id} · {upcoming.subtitle}
+              </p>
+              <h2>{upcoming.title}</h2>
+              <p className="next__note">{upcoming.reward.narrative}</p>
+            </div>
+            <div className="next__actions">
+              <button
+                type="button"
+                className="btn btn--primary"
+                onClick={() => onOpenMission(upcoming.id)}
+              >
+                Continuar →
+              </button>
+              {replayable.length > 0 ? (
+                <button
+                  type="button"
+                  className="btn btn--ghost"
+                  onClick={() =>
+                    onOpenMission(replayable[replayable.length - 1].id)
+                  }
+                >
+                  Repetir {replayable[replayable.length - 1].id}
+                </button>
+              ) : null}
+            </div>
+          </>
+        )}
+      </section>
+
       {openWorld === null ? (
         <ol className="path path--worlds" aria-label="Mundos">
           {worlds.map(({ world, state, blockedBy }, index) => {
@@ -151,7 +210,7 @@ export function WorkshopMap({
             const reason =
               blockedBy === null
                 ? 'próximamente'
-                : `se abre al terminar ${blockedBy}`;
+                : `se abre al terminar ${blockedBy.split(' — ')[0]}`;
             return (
               <li
                 key={world.id}
@@ -246,65 +305,6 @@ export function WorkshopMap({
           ) : null}
         </>
       )}
-
-      <section className="next" aria-label="Siguiente misión">
-        {upcoming === null ? (
-          <>
-            <div className="next__body">
-              <p className="next__kicker">Taller reparado</p>
-              <h2>No queda nada jugable en este corte</h2>
-              <p className="next__note">
-                El resto del taller llega en el siguiente hito. Puedes repetir
-                una misión ya resuelta.
-              </p>
-            </div>
-            {replayable.length > 0 ? (
-              <div className="next__actions">
-                {replayable.map((mission) => (
-                  <button
-                    key={mission.id}
-                    type="button"
-                    className="btn btn--ghost"
-                    onClick={() => onOpenMission(mission.id)}
-                  >
-                    Repetir {mission.id}
-                  </button>
-                ))}
-              </div>
-            ) : null}
-          </>
-        ) : (
-          <>
-            <div className="next__body">
-              <p className="next__kicker">
-                {upcoming.id} · {upcoming.subtitle}
-              </p>
-              <h2>{upcoming.title}</h2>
-              <p className="next__note">{upcoming.reward.narrative}</p>
-            </div>
-            <div className="next__actions">
-              <button
-                type="button"
-                className="btn btn--primary"
-                onClick={() => onOpenMission(upcoming.id)}
-              >
-                Continuar →
-              </button>
-              {replayable.length > 0 ? (
-                <button
-                  type="button"
-                  className="btn btn--ghost"
-                  onClick={() =>
-                    onOpenMission(replayable[replayable.length - 1].id)
-                  }
-                >
-                  Repetir {replayable[replayable.length - 1].id}
-                </button>
-              ) : null}
-            </div>
-          </>
-        )}
-      </section>
 
       {openWorld === null ? (
         <p className="map__footer">

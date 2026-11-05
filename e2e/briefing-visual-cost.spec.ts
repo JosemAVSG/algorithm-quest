@@ -32,7 +32,7 @@ test("el briefing de M09 muestra la cuadrícula de comparaciones", async ({ page
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedCompleted(page, 8);
   await page.goto("/");
-  await page.getByRole("button", { name: /^World 1/ }).click();
+  await page.getByRole("button", { name: /^Mundo 1/ }).click();
   await page.getByRole("button", { name: /^M09/ }).click();
 
   await expect(page.getByRole("heading", { name: "El costo de la inspección" })).toBeVisible();

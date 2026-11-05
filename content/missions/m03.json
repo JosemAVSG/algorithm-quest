@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M03",
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "world": "w1",
   "order": 3,
@@ -344,7 +344,7 @@
       ]
     }
   },
-  "mastery": { "transferMissionId": "M12", "reinforcementVariants": [] },
+  "mastery": { "transferMissionId": "M12", "reinforcementVariants": ["R-C05-1"] },
   "reward": {
     "systemId": "sys.line",
     "effect": "broken → working",

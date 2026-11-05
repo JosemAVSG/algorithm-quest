@@ -46,7 +46,7 @@ for (const { id, before, heading, image } of CASES) {
     await page.setViewportSize({ width: 1280, height: 900 });
     await seedCompleted(page, before);
     await page.goto("/");
-    await page.getByRole("button", { name: /^World 1/ }).click();
+    await page.getByRole("button", { name: /^Mundo 1/ }).click();
     await page.getByRole("button", { name: new RegExp(`^${id} `) }).click();
     await expect(page.getByRole("heading", { name: heading })).toBeVisible();
     await expect(page.getByRole("img", { name: image })).toBeVisible();
@@ -78,7 +78,7 @@ test("el informe estructurado de M05: un hueco mal da pista, corregirlo cierra l
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedCompleted(page, ["M01", "M02", "M03", "M04"]);
   await page.goto("/");
-  await page.getByRole("button", { name: /^World 1/ }).click();
+  await page.getByRole("button", { name: /^Mundo 1/ }).click();
   await page.getByRole("button", { name: /^M05 / }).click();
   await page.getByRole("button", { name: "Entendido →" }).click();
   await page.getByLabel("Tu enfoque").fill("Recorro todo y creo un objeto nuevo por cada reparación.");

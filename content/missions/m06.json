@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M06",
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "world": "w1",
   "order": 6,
@@ -306,7 +306,7 @@
     "reasoningLexicon": ["divido","cuento","ignoro","excluyo"]
   },
   "mastery": {
-    "reinforcementVariants": []
+    "reinforcementVariants": ["R-C15-1"]
   },
   "reward": {
     "systemId": "sys.guard",

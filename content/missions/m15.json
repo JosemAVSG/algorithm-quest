@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M15",
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "world": "w2",
   "order": 3,
@@ -30,7 +30,7 @@
     "allowClosedForm": false,
     "mustNotMutate": true,
     "rotationInvariant": false,
-    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 200000 }
+    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 75000 }
   },
   "starterCode": "function codesAtLeast(codes, minCount) {\n  // your code here\n}\n",
   "tests": {
@@ -134,7 +134,7 @@
     },
     {
       "code": "E16",
-      "message": "Tu respuesta es correcta y tarda demasiado. Con 6.000 códigos distintos, contar cuántas veces aparece cada uno volviendo a recorrer el registro son unos 36 millones de comparaciones. ¿Puedes llevar la cuenta de todos los códigos mientras lees el registro una sola vez?"
+      "message": "Tu solución hace demasiado trabajo para este tamaño de entrada. Con 6.000 códigos distintos, contar cuántas veces aparece cada uno volviendo a recorrer el registro son unos 36 millones de comparaciones. ¿Puedes llevar la cuenta de todos los códigos mientras lees el registro una sola vez?"
     },
     {
       "code": "E01",
@@ -230,7 +230,7 @@
     "objectiveNouns": ["código", "registro", "cuenta", "mínimo"],
     "reasoningLexicon": ["anoto", "recorro", "cuenta", "al menos", "primera"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C19-1"] },
   "reward": {
     "systemId": "sys.log",
     "effect": "working → reliable",

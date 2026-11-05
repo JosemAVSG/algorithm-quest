@@ -45,7 +45,7 @@ const HEADLINES: Record<DiagnosisCode, string> = {
   E13: 'Pasa las pruebas visibles, pero no las ocultas.',
   E14: 'El código no cambió desde el intento anterior.',
   E15: 'Vuelve a fallar lo mismo que la vez anterior.',
-  E16: 'El resultado es correcto, pero el coste se pasa.',
+  E16: 'El coste se pasa del presupuesto.',
   E17: 'Pasa las pruebas, pero la explicación se queda corta.',
   E18: 'La misma entrada da resultados distintos.',
   E19: 'El código usa algo que esta misión no permite.',
@@ -88,6 +88,9 @@ const EXPLAINED_CODES: readonly DiagnosisCode[] = [
   'E13',
   'E14',
   'E15',
+  // The cost verdict has no diff to point at: its message (what was measured
+  // and what was expected) is the whole explanation.
+  'E16',
   'E18',
   'E19',
   'E20',
