@@ -22,8 +22,8 @@
     {
       "id": "w3",
       "name": "World 3 — The sorting floor",
-      "status": "planned",
-      "missionIds": []
+      "status": "in-progress",
+      "missionIds": ["M17", "M18", "M19", "M20", "M21", "M22"]
     },
     {
       "id": "w4",

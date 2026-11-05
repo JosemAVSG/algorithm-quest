@@ -304,6 +304,120 @@
       "reward": {
         "narrative": "El guardián reconoce a cada operario escrito de cualquier forma, y no confunde a dos personas distintas."
       }
+    },
+    {
+      "id": "M17",
+      "world": "w3",
+      "order": 1,
+      "title": "El depósito que no puede vaciarse",
+      "subtitle": "Lo que debe cumplirse tras cada paso",
+      "prerequisites": {
+        "missions": [
+          "M16"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.balance",
+        "to": "working"
+      },
+      "reward": {
+        "narrative": "La balanza del taller avisa en el movimiento exacto en que el depósito se vacía de más."
+      }
+    },
+    {
+      "id": "M18",
+      "world": "w3",
+      "order": 2,
+      "title": "Dos registros, un solo orden",
+      "subtitle": "Recorrer dos listas a la vez",
+      "prerequisites": {
+        "missions": [
+          "M17"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.merger",
+        "to": "working"
+      },
+      "reward": {
+        "narrative": "La mesa de mezcla une dos turnos en un único registro ordenado."
+      }
+    },
+    {
+      "id": "M19",
+      "world": "w3",
+      "order": 3,
+      "title": "La mejor racha de producción",
+      "subtitle": "Un tramo que se desplaza",
+      "prerequisites": {
+        "missions": [
+          "M18"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.window",
+        "to": "working"
+      },
+      "reward": {
+        "narrative": "El escáner de turnos señala el tramo de producción más fuerte sin volver a contar cada hora."
+      }
+    },
+    {
+      "id": "M20",
+      "world": "w3",
+      "order": 4,
+      "title": "La cola de tickets",
+      "subtitle": "Decidir cómo se comparan dos elementos",
+      "prerequisites": {
+        "missions": [
+          "M19"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.sorter",
+        "to": "working"
+      },
+      "reward": {
+        "narrative": "El brazo ordenador coloca primero los avisos urgentes y respeta el orden de llegada."
+      }
+    },
+    {
+      "id": "M21",
+      "world": "w3",
+      "order": 5,
+      "title": "El primer lote vencido",
+      "subtitle": "Buscar en lo que ya está ordenado",
+      "prerequisites": {
+        "missions": [
+          "M20"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.finder",
+        "to": "working"
+      },
+      "reward": {
+        "narrative": "El buscador encuentra la frontera entre lotes vencidos y vigentes sin revisar cada lote."
+      }
+    },
+    {
+      "id": "M22",
+      "world": "w3",
+      "order": 6,
+      "title": "Medir el crecimiento",
+      "subtitle": "Cómo crece el trabajo con el tamaño",
+      "prerequisites": {
+        "missions": [
+          "M21"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.growth",
+        "to": "installed"
+      },
+      "reward": {
+        "narrative": "El medidor de crecimiento instalado en el taller avisa antes de que una función se quede corta con más datos."
+      }
     }
   ]
 }

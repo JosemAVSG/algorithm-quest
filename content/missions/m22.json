@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "locale": "es",
+  "id": "M22",
+  "world": "w3",
+  "order": 6,
+  "title": "Medir el crecimiento",
+  "subtitle": "Cómo crece el trabajo con el tamaño",
+  "difficulty": 4,
+  "estimatedMinutes": 20,
+  "concepts": { "primary": "C26", "secondary": ["C12"] },
+  "prerequisites": { "missions": ["M21"], "concepts": ["C12"] },
+  "workshop": { "systemId": "sys.growth", "from": "absent", "to": "installed" },
+  "briefing": {
+    "headline": "Cuánto crece el trabajo",
+    "body": "El taller ha medido varias funciones con listas cada vez más grandes. Para cada función tienes una lista de medidas `[n, pasos]`: con una entrada de tamaño `n`, la función hizo esa cantidad de pasos. Los tamaños se multiplican por 10 de una medida a la siguiente (10, 100, 1000…).\n\nHay que clasificar cómo **crece el trabajo** cuando la entrada se multiplica por 10. Compara las **dos últimas medidas**:\n\n- Si los pasos no cambian: **`\"constante\"`**.\n- Si los pasos crecen muy poco (como mucho el triple): **`\"logarítmico\"`**.\n- Si los pasos se multiplican por unos 10: **`\"lineal\"`**.\n- Si los pasos se multiplican por unos 100: **`\"cuadrático\"`**.\n\nLas medidas siempre vienen de una de esas cuatro formas, y siempre hay al menos dos. Una función puede hacer un número fijo de pasos extra que no cambia el tipo de crecimiento.",
+    "requirements": ["Recibe la lista de medidas [n, pasos], con n multiplicado por 10 cada vez", "Compara los pasos de las dos últimas medidas", "Devuelve \"constante\", \"logarítmico\", \"lineal\" o \"cuadrático\"", "Unos pasos de más que no crecen no cambian la clasificación"],
+    "forbiddenVocabulary": ["O(n", "Big O", "notación", "complejidad", "asintótic"]
+  },
+  "contract": {
+    "entryPoint": "growthKind",
+    "signature": "growthKind(samples) -> \"constante\" | \"logarítmico\" | \"lineal\" | \"cuadrático\"",
+    "inputShape": "samples: [number, number][] (n, pasos), al menos 2 medidas, n × 10 cada vez",
+    "outputShape": "string",
+    "rules": ["Compara los pasos de las dos últimas medidas", "Mismo número de pasos: \"constante\"", "Los pasos se multiplican por más de 1 y como mucho por 3: \"logarítmico\"", "Los pasos se multiplican por más de 3 y como mucho por 30: \"lineal\"", "Los pasos se multiplican por más de 30: \"cuadrático\"", "Los pasos pueden ser 0; dos medidas con 0 pasos son \"constante\"", "No modifica samples"]
+  },
+  "constraints": {
+    "bannedConstructs": [],
+    "allowClosedForm": true,
+    "mustNotMutate": true,
+    "rotationInvariant": false
+  },
+  "starterCode": "// Devuelve exactamente uno de: \"constante\", \"logarítmico\", \"lineal\", \"cuadrático\"\nfunction growthKind(samples) {\n  // your code here\n}\n",
+  "tests": {
+    "visible": [
+      {
+        "id": "v1",
+        "input": [[[10, 7], [100, 7], [1000, 7]]],
+        "expected": "constante",
+        "note": "siempre 7 pasos"
+      },
+      {
+        "id": "v2",
+        "input": [[[10, 10], [100, 100], [1000, 1000]]],
+        "expected": "lineal",
+        "note": "un paso por cada elemento"
+      },
+      {
+        "id": "v3",
+        "input": [[[10, 100], [100, 10000], [1000, 1000000]]],
+        "expected": "cuadrático",
+        "note": "los pasos se multiplican por cien"
+      }
+    ],
+    "hidden": [
+      {
+        "id": "h1",
+        "input": [[[10, 4], [100, 7], [1000, 10]]],
+        "expected": "logarítmico",
+        "note": "los pasos solo suman 3 al multiplicar por 10"
+      },
+      {
+        "id": "h2",
+        "input": [[[10, 35], [100, 305], [1000, 3005]]],
+        "expected": "lineal",
+        "note": "tres pasos por elemento más cinco fijos"
+      },
+      {
+        "id": "h3",
+        "input": [[[10, 50], [100, 5000], [1000, 500000]]],
+        "expected": "cuadrático",
+        "note": "la mitad de los pares"
+      },
+      {
+        "id": "h4",
+        "input": [[[10, 3], [100, 3], [1000, 3], [10000, 3]]],
+        "expected": "constante",
+        "note": "cuatro medidas, siempre 3 pasos"
+      },
+      {
+        "id": "h5",
+        "input": [[[10, 4], [100, 7], [1000, 10], [10000, 14]]],
+        "expected": "logarítmico",
+        "note": "cuatro medidas, crecimiento lento"
+      }
+    ],
+    "edge": [
+      {
+        "id": "ed1",
+        "input": [[[10, 5], [100, 50]]],
+        "expected": "lineal",
+        "edge": true,
+        "edgeKind": "boundary-equal",
+        "note": "solo dos medidas"
+      },
+      {
+        "id": "ed2",
+        "input": [[[10, 0], [100, 0], [1000, 0]]],
+        "expected": "constante",
+        "edge": true,
+        "edgeKind": "zero",
+        "note": "cero pasos en todas"
+      },
+      {
+        "id": "ed3",
+        "input": [[[10, 105], [100, 10005], [1000, 1000005]]],
+        "expected": "cuadrático",
+        "edge": true,
+        "edgeKind": "extreme",
+        "note": "cuadrático con pasos fijos añadidos"
+      }
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "E10",
+      "when": { "failingTestIds": ["ed2"] },
+      "message": "Con 0 pasos en las dos últimas medidas el cociente es 0/0, que no es un número. Antes de dividir, comprueba el caso en que los pasos no cambian: ya sabes que es constante."
+    },
+    {
+      "code": "E21",
+      "when": { "failingTestIds": ["h2", "ed3"] },
+      "message": "Con 35, 305 y 3005 pasos el trabajo se multiplica por 10 aunque haya 5 pasos fijos. Estás exigiendo un múltiplo exacto: compara con un rango de factores, no con una igualdad."
+    },
+    {
+      "code": "E12",
+      "message": "La clasificación no coincide. Comprueba dos cosas: que devuelves exactamente \"constante\", \"logarítmico\", \"lineal\" o \"cuadrático\" (con esa ortografía y las tildes), y que comparas las dos últimas medidas, no la primera ni la penúltima con la antepenúltima."
+    },
+    {
+      "code": "E08",
+      "message": "¿Qué devuelve tu función cuando ninguna condición se cumple? Compruébalo con [[10, 4], [100, 7], [1000, 10]]."
+    },
+    {
+      "code": "E11",
+      "message": "Tu función modificó la lista de medidas. Para clasificar solo necesitas leerla."
+    },
+    {
+      "code": "E01",
+      "message": "Hay un error de sintaxis antes de que el código pueda ejecutarse. Revisa la línea marcada: el motor no pudo interpretar esa expresión."
+    },
+    {
+      "code": "E02",
+      "message": "El código lanzó una excepción durante la ejecución. Revisa qué valor estabas usando cuando ocurrió."
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Mira las dos últimas medidas: n se multiplicó por 10. ¿Por cuánto se multiplicaron los pasos? ¿Qué te dice ese número sobre cómo crece el trabajo?"
+    },
+    {
+      "level": 2,
+      "text": "Un número fijo de pasos extra no cambia cómo crece el trabajo. Por eso 35, 305 y 3005 pasos son lineales aunque 305 / 35 no sea exactamente 10. Piensa en rangos de cociente, no en igualdades. ¿Y cuando la medida anterior vale 0?"
+    },
+    {
+      "level": 3,
+      "text": "antes = pasos de la penúltima medida\ndespués = pasos de la última medida\nsi antes es igual a después: devolver \"constante\"\nfactor = después / antes\nsi factor <= 3: devolver \"logarítmico\"\nsi factor <= 30: devolver \"lineal\"\ndevolver \"cuadrático\"\n\nSe comprueba primero la igualdad: así no se divide por 0 y las medidas constantes (incluso de 0 pasos) quedan resueltas."
+    },
+    {
+      "level": 4,
+      "text": "Un laboratorio mide cuánto tarda en procesar muestras. Con n multiplicado por 10 quiere saber cómo crece el tiempo.\n\nfunction crecimiento(medidas) {\n  const previa = medidas[medidas.length - 2][1];\n  const ultima = medidas[medidas.length - 1][1];\n  if (previa === ultima) return \"constante\";\n  const factor = ultima / previa;\n  if (factor <= 3) return \"logarítmico\";\n  if (factor <= 30) return \"lineal\";\n  return \"cuadrático\";\n}",
+      "unlock": { "attempts": 4, "hintsUsed": 3 }
+    }
+  ],
+  "debrief": {
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe el caso, y responde las preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Miro {b1}; si los pasos {b2}, es constante; si no, calculo {b3}: hasta 3 es logarítmico, hasta 30 es lineal y por encima es cuadrático.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": ["las dos últimas medidas", "solo la primera medida", "la suma de todas las medidas", "la medida con más pasos"],
+          "correctIndex": 0
+        },
+        {
+          "id": "b2",
+          "options": ["se duplican", "no cambian", "son pares", "son menores que n"],
+          "correctIndex": 1
+        },
+        {
+          "id": "b3",
+          "options": ["la diferencia entre n y los pasos", "la media de todos los pasos", "cuántas veces mayor es el último número de pasos que el anterior", "el tamaño de la última entrada"],
+          "correctIndex": 2
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "Una función hace 35, 305 y 3005 pasos para n = 10, 100 y 1000. ¿Cómo crece?",
+          "options": ["Cuadrático, porque 3005 es mayor que 1000", "Lineal: los pasos se multiplican por unos 10 al multiplicar n por 10, y los 5 fijos no cuentan", "Constante, porque 5 siempre se suma", "Logarítmico, porque 305 es mayor que 35"],
+          "correctIndex": 1,
+          "whyWrong": ["Habría que multiplicar por 100, no por 10.", "", "Los pasos sí crecen con n.", "Un crecimiento logarítmico apenas cambia con n."],
+          "explanation": "Lo que importa es cuánto se multiplica el trabajo cuando la entrada se multiplica por 10. Unos pasos fijos de más no cambian eso."
+        },
+        {
+          "id": "q2",
+          "question": "Una búsqueda que descarta la mitad en cada paso hace 4, 7 y 10 pasos para n = 10, 100 y 1000. ¿Cómo crece?",
+          "options": ["Lineal, porque aumenta siempre", "Cuadrático, porque cada medida es mayor", "Logarítmico: al multiplicar n por 10, los pasos solo suman unos 3", "Constante, porque la diferencia es siempre 3"],
+          "correctIndex": 2,
+          "whyWrong": ["Lineal sería multiplicar los pasos por 10.", "Cuadrático sería multiplicarlos por 100.", "", "Constante sería no cambiar nada: aquí sí cambia, poco a poco."],
+          "explanation": "Sumar una cantidad fija al multiplicar n por 10 es el sello del crecimiento logarítmico: la lista puede ser enorme y el trabajo apenas cambia."
+        },
+        {
+          "id": "q3",
+          "question": "Con tres medidas y 0 pasos en todas, ¿por qué hay que comprobar la igualdad antes de dividir?",
+          "options": ["Porque dividir 0 entre 0 da 1", "Porque no se puede dividir entre números pares", "Porque la igualdad es más rápida de escribir", "Porque 0 / 0 no es un número y la comparación saldría mal"],
+          "correctIndex": 3,
+          "whyWrong": ["0 / 0 da NaN, no 1.", "No existe ese problema con pares.", "No es cuestión de velocidad, sino de evitar NaN.", ""],
+          "explanation": "Dos medidas iguales ya son constantes: no hace falta dividir, y así se evita el caso 0/0, que da NaN."
+        }
+      ]
+    },
+    "whyItWorks": "Para saber cómo crece el trabajo no hace falta el valor exacto de los pasos, sino cuánto se multiplican cuando la entrada se multiplica por un factor fijo. Si no cambian, es constante. Si solo suman una cantidad pequeña, es logarítmico. Si se multiplican por el mismo factor que n, es lineal, y si por su cuadrado, cuadrático. Los pasos fijos añadidos no cambian la clase, por eso se comparan rangos de cociente y no igualdades. Es la misma idea que se usó para comparar la búsqueda uno a uno con la que descarta la mitad.",
+    "edgeCaseNote": "Con 0 pasos el cociente sería 0/0, que no es un número: la igualdad se comprueba antes. Con solo dos medidas basta con una comparación. Con más de tres, solo importan las dos últimas. Los pasos fijos añadidos (35, 305, 3005) no impiden que el crecimiento sea lineal.",
+    "complexity": {
+      "question": "Si n pasa de 1.000 a 10.000 y los pasos pasan de 500.000 a 50.000.000, ¿cómo crece el trabajo?",
+      "options": ["Cuadrático: los pasos se multiplican por 100", "Lineal: los pasos se multiplican por 10", "Logarítmico: los pasos suman 3", "Constante"],
+      "correctIndex": 0,
+      "explanation": "Multiplicar n por 10 y los pasos por 100 es crecimiento cuadrático: el trabajo crece como el cuadrado del tamaño. Es el que tenían los bucles anidados de las primeras misiones."
+    },
+    "realWorld": "Decidir si un algoritmo aguanta mil veces más datos, comparar dos soluciones antes de implementarlas, leer un perfil de rendimiento, estimar cuánto tardará un trabajo nocturno si el volumen se duplica.",
+    "reasoningPrompt": "¿Por qué importa por cuánto se multiplican los pasos y no cuántos pasos hay exactamente? ¿Qué cambia entre 35, 305 y 3005 pasos y 10, 100 y 1000?",
+    "objectiveNouns": ["pasos", "crecimiento", "medida", "factor"],
+    "reasoningLexicon": ["multiplica", "cociente", "factor", "penúltima", "último"]
+  },
+  "mastery": { "reinforcementVariants": [] },
+  "reward": {
+    "systemId": "sys.growth",
+    "effect": "absent → installed",
+    "narrative": "El medidor de crecimiento instalado en el taller avisa antes de que una función se quede corta con más datos."
+  }
+}

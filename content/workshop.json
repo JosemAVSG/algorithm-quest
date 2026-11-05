@@ -88,6 +88,63 @@
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.balance",
+      "name": "Balance gauge",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.merger",
+      "name": "Merge table",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.window",
+      "name": "Window scanner",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.sorter",
+      "name": "Sorting arm",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.finder",
+      "name": "Bisect finder",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.growth",
+      "name": "Growth meter",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
     }
   ]
 }
