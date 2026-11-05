@@ -1,0 +1,247 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "locale": "es",
+  "id": "M41",
+  "world": "w7",
+  "order": 4,
+  "title": "La ruta más barata",
+  "subtitle": "Cuando cada tramo cuesta distinto",
+  "difficulty": 5,
+  "estimatedMinutes": 30,
+  "concepts": { "primary": "C45", "secondary": ["C34"] },
+  "prerequisites": { "missions": ["M40"], "concepts": ["C34"] },
+  "workshop": { "systemId": "sys.pathfinder", "from": "absent", "to": "installed" },
+  "briefing": {
+    "headline": "La ruta con menos pasos no siempre es la más barata",
+    "body": "La red de caminos del taller tiene `n` puestos numerados de `0` a `n - 1`. Cada camino va **en un solo sentido** de un puesto a otro y tiene un **coste** (un número entero positivo): combustible, tiempo, lo que cueste recorrerlo.\n\nRecibes `roads`, donde `roads[u]` es la lista de caminos que salen del puesto `u`, cada uno como `[destino, coste]`, y los puestos `start` y `goal`. Devuelve el **coste total más bajo** para ir de `start` a `goal`, o `-1` si desde `start` no se puede llegar a `goal`.\n\nLa ruta con menos caminos puede salir carísima: dos caminos baratos pueden costar menos que uno solo caro. Y hay redes con cientos de puestos y muchos caminos que se cruzan: probar todas las rutas posibles una por una nunca termina.",
+    "requirements": ["Recibe roads (caminos de ida con coste), el puesto de salida y el de llegada", "Devuelve el coste total más bajo de ir de start a goal", "Si start es igual a goal, devuelve 0; si goal no se puede alcanzar, devuelve -1", "Tiene que responder rápido con redes de cientos de puestos"],
+    "forbiddenVocabulary": ["Dijkstra", "relajación", "camino mínimo", "cola de prioridad", "montículo", "heap"]
+  },
+  "contract": {
+    "entryPoint": "cheapestRoute",
+    "signature": "cheapestRoute(roads, start, goal) -> number",
+    "inputShape": "roads: Array<Array<[number, number]>>, start: number, goal: number",
+    "outputShape": "number",
+    "rules": ["roads[u] lista los caminos que salen de u como [destino, coste]; los costes son enteros mayores que 0", "Los caminos son de un solo sentido", "Devuelve la suma de costes más baja de las rutas de start a goal", "Si start es igual a goal, devuelve 0", "Si goal no se puede alcanzar desde start, devuelve -1", "La red puede tener ciclos, y varios caminos entre los mismos puestos con distinto coste", "No modifica roads"]
+  },
+  "constraints": {
+    "bannedConstructs": [],
+    "allowClosedForm": false,
+    "mustNotMutate": true,
+    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 70000 }
+  },
+  "starterCode": "function cheapestRoute(roads, start, goal) {\n  // your code here\n}\n",
+  "tests": {
+    "visible": [
+      {
+        "id": "v1",
+        "input": [[[[1, 4]], []], 0, 0],
+        "expected": 0,
+        "note": "salida y llegada son el mismo puesto"
+      },
+      {
+        "id": "v2",
+        "input": [[[[1, 9], [2, 2]], [[3, 1]], [[1, 3]], []], 0, 3],
+        "expected": 6,
+        "note": "el camino directo es más caro que dos baratos"
+      },
+      {
+        "id": "v3",
+        "input": [[[[1, 1]], [], [[1, 1]]], 0, 2],
+        "expected": -1,
+        "note": "no se puede llegar"
+      }
+    ],
+    "hidden": [
+      {
+        "id": "h1",
+        "input": [[[[1, 5]], [[2, 7]], [[3, 2]], []], 0, 3],
+        "expected": 14,
+        "note": "una sola ruta de tres caminos"
+      },
+      {
+        "id": "h2",
+        "input": [[[[1, 1], [2, 10]], [[2, 1], [3, 10]], [[3, 1]], []], 0, 3],
+        "expected": 3,
+        "note": "dos rutas, la de más caminos es la barata"
+      },
+      {
+        "id": "h3",
+        "input": [[[[1, 3], [2, 3]], [[3, 4]], [[3, 4]], []], 0, 3],
+        "expected": 7,
+        "note": "dos rutas con el mismo coste"
+      },
+      {
+        "id": "h4",
+        "input": [[[[1, 2]], [[2, 2], [0, 1]], [[0, 1], [3, 6], [1, 1]], []], 0, 3],
+        "expected": 10,
+        "note": "caminos de vuelta y ciclos"
+      },
+      {
+        "id": "h5",
+        "input": [
+          [[[1, 32], [62, 3], [12, 12], [64, 24]], [[2, 30], [2, 15], [32, 13], [132, 1]], [[3, 30], [20, 1], [56, 23], [60, 8]], [[4, 42], [126, 18], [110, 4], [106, 25]], [[5, 30], [96, 22], [56, 3], [40, 6]], [[6, 34], [86, 8], [142, 16], [146, 24]], [[7, 34], [12, 18], [36, 14], [56, 11]], [[8, 42], [12, 20], [136, 18], [4, 24]], [[9, 42], [40, 14], [108, 16], [74, 4]], [[10, 30], [138, 17], [50, 17], [92, 24]], [[11, 30], [24, 9], [24, 10], [136, 22]], [[12, 38], [80, 1], [4, 19], [130, 3]], [[13, 38], [82, 11], [124, 11], [126, 21]], [[14, 30], [8, 10], [76, 19], [126, 17]], [[15, 38], [102, 17], [74, 19], [38, 17]], [[16, 46], [76, 20], [58, 8], [24, 3]], [[17, 30], [4, 1], [18, 15], [24, 14]], [[18, 30], [74, 24], [126, 4], [78, 16]], [[19, 42], [70, 8], [0, 6], [4, 15]], [[20, 46], [56, 5], [60, 17], [42, 16]], [[21, 38], [138, 6], [78, 17]], [[22, 38], [36, 24], [4, 22], [74, 9]], [[23, 30], [118, 4], [20, 15], [80, 5]], [[24, 42], [6, 4], [148, 8], [64, 24]], [[25, 30], [14, 14], [98, 10], [100, 6]], [[26, 38], [114, 24], [30, 2], [144, 16]], [[27, 34], [62, 9], [60, 22], [62, 4]], [[28, 34], [98, 20], [92, 21], [120, 14]], [[29, 42], [64, 11], [16, 1], [100, 18]], [[30, 42], [74, 2], [0, 2], [48, 1]], [[31, 38], [122, 6], [74, 1], [28, 13]], [[32, 30], [132, 20], [114, 24], [26, 14]], [[33, 30], [42, 24], [104, 14], [60, 9]], [[34, 38], [104, 11], [38, 19], [34, 18]], [[35, 46], [86, 16], [48, 17], [118, 18]], [[36, 30], [96, 22], [80, 17], [108, 14]], [[37, 34], [146, 3], [20, 14], [58, 25]], [[38, 30], [54, 23], [132, 16], [4, 5]], [[39, 34], [22, 1], [16, 25], [114, 2]], [[40, 46], [54, 23], [86, 12], [46, 21]], [[41, 38], [88, 6], [102, 7], [8, 5]], [[42, 30], [8, 22], [24, 13], [110, 8]], [[43, 34], [102, 3], [58, 3], [30, 25]], [[44, 38], [140, 4], [78, 2], [112, 20]], [[45, 30], [100, 20], [134, 12], [102, 6]], [[46, 46], [66, 21], [92, 6], [118, 2]], [[47, 42], [148, 16], [32, 10], [40, 1]], [[48, 34], [102, 14], [62, 10], [110, 20]], [[49, 46], [96, 8], [20, 21], [12, 9]], [[50, 42], [142, 20], [106, 13], [88, 25]], [[51, 42], [68, 10], [108, 12], [26, 21]], [[52, 34], [120, 14], [132, 23], [78, 21]], [[53, 30], [10, 2], [38, 20], [36, 7]], [[54, 30], [26, 24], [10, 15], [0, 11]], [[55, 42], [134, 25], [136, 9], [6, 2]], [[56, 42], [86, 17], [44, 23], [12, 3]], [[57, 30], [76, 2], [18, 3], [114, 23]], [[58, 42], [28, 12], [82, 13], [72, 9]], [[59, 46], [66, 4], [44, 14], [38, 1]], [[60, 38], [16, 21], [106, 10], [142, 14]], [[61, 34], [70, 15], [46, 8], [110, 7]], [[62, 30], [40, 12], [100, 14], [84, 11]], [[63, 34], [60, 3], [68, 16], [102, 15]], [[64, 46], [122, 13], [44, 9], [138, 7]], [[65, 34], [44, 14], [4, 7], [24, 11]], [[66, 38], [137, 22], [72, 24], [84, 20]], [[67, 34], [16, 16], [32, 15], [148, 23]], [[68, 34], [82, 13], [4, 16], [20, 22]], [[69, 38], [50, 19], [92, 23], [58, 17]], [[70, 34], [46, 5], [146, 24], [108, 22]], [[71, 46], [18, 14], [26, 7], [102, 19]], [[72, 30], [78, 15], [136, 12], [124, 3]], [[73, 38], [130, 12], [96, 24], [102, 1]], [[74, 34], [76, 9], [42, 5], [80, 2]], [[75, 46], [120, 8], [92, 24], [84, 12]], [[76, 30], [146, 13], [84, 1], [148, 14]], [[77, 42], [84, 17], [98, 12], [30, 11]], [[78, 38], [124, 11], [122, 13], [56, 25]], [[79, 30], [98, 11], [130, 7], [136, 21]], [[80, 46], [96, 10], [126, 19], [20, 1]], [[81, 38], [120, 14], [6, 9], [44, 15]], [[82, 46], [56, 15], [0, 8], [138, 21]], [[83, 30], [69, 3], [62, 16], [94, 14]], [[84, 30], [88, 22], [77, 22], [32, 16]], [[85, 30], [100, 6], [46, 10], [126, 21]], [[86, 34], [88, 15], [118, 11], [16, 14]], [[87, 38], [44, 3], [26, 8], [40, 20]], [[88, 46], [44, 4], [36, 2], [98, 23]], [[89, 46], [46, 21], [8, 21], [144, 15]], [[90, 46], [76, 13], [110, 15], [122, 1]], [[91, 38], [36, 11], [66, 15], [42, 22]], [[92, 34], [148, 5], [40, 24], [78, 10]], [[93, 30], [12, 1], [40, 15], [18, 20]], [[94, 42], [68, 8], [32, 11], [42, 8]], [[95, 34], [74, 6], [110, 25], [58, 16]], [[96, 38], [94, 22], [122, 25], [116, 2]], [[97, 30], [106, 24], [36, 20], [124, 8]], [[98, 38], [130, 19], [138, 14], [102, 2]], [[99, 46], [10, 4], [8, 11], [64, 16]], [[100, 30], [38, 4], [60, 23], [136, 7]], [[101, 42], [110, 7], [52, 20], [0, 9]], [[102, 38], [108, 13], [26, 1], [68, 18]], [[103, 46], [90, 7], [76, 8], [46, 17]], [[104, 30], [56, 22], [82, 2], [76, 18]], [[105, 42], [102, 14], [142, 11], [36, 18]], [[106, 34], [78, 13], [100, 23], [64, 1]], [[107, 46], [80, 1], [72, 11], [26, 14]], [[108, 38], [12, 24], [12, 13], [46, 17]], [[109, 34], [34, 7], [88, 22], [120, 24]], [[110, 30], [68, 18], [52, 17], [12, 8]], [[111, 42], [6, 13], [66, 20], [144, 22]], [[112, 38], [0, 3], [58, 7], [122, 15]], [[113, 34], [22, 17], [66, 18]], [[114, 42], [116, 22], [80, 20], [26, 5]], [[115, 46], [30, 13], [110, 23], [100, 12]], [[116, 34], [64, 22], [52, 19], [80, 21]], [[117, 38], [78, 19], [106, 7], [74, 18]], [[118, 30], [134, 12], [86, 23], [54, 5]], [[119, 38], [104, 12], [92, 1], [54, 17]], [[120, 38], [106, 22], [136, 13], [90, 14]], [[121, 30], [68, 9], [36, 22], [94, 6]], [[122, 38], [116, 9], [50, 18], [58, 2]], [[123, 42], [52, 15], [100, 18], [2, 25]], [[124, 34], [42, 18], [116, 4], [6, 1]], [[125, 38], [92, 22], [94, 19], [34, 2]], [[126, 38], [36, 20], [74, 12], [12, 24]], [[127, 42], [86, 12], [20, 10], [62, 15]], [[128, 34], [60, 23], [44, 9], [22, 19]], [[129, 42], [77, 21], [26, 22], [18, 1]], [[130, 34], [46, 24], [54, 13], [134, 1]], [[131, 30], [124, 25], [22, 25], [98, 16]], [[132, 38], [20, 11], [48, 18], [134, 13]], [[133, 34], [30, 15], [36, 11], [94, 25]], [[134, 34], [22, 5], [114, 13], [16, 10]], [[135, 30], [82, 12], [14, 12], [94, 18]], [[136, 38], [58, 8], [38, 18], [120, 5]], [[137, 46], [132, 15], [90, 1], [68, 20]], [[138, 34], [112, 22], [122, 4], [78, 17]], [[139, 34], [40, 10], [132, 20], [146, 18]], [[140, 30], [52, 8], [58, 16], [84, 17]], [[141, 30], [104, 1], [90, 24], [108, 21]], [[142, 38], [12, 20], [140, 3], [8, 18]], [[143, 30], [58, 22], [50, 15], [34, 14]], [[144, 42], [26, 25], [100, 16], [88, 6]], [[145, 30], [102, 20], [98, 4], [92, 1]], [[146, 46], [124, 23], [34, 24], [80, 24]], [[147, 30], [52, 11], [50, 8], [94, 24]], [[148, 38], [86, 21], [34, 5], [112, 12]], [[149, 30], [143, 6], [14, 6], [98, 16]], [[108, 15], [116, 9], [58, 11]]],
+          0,
+          149
+        ],
+        "expected": 60,
+        "note": "una red de 150 puestos"
+      }
+    ],
+    "edge": [
+      {
+        "id": "ed1",
+        "input": [[[]], 0, 0],
+        "expected": 0,
+        "edge": true,
+        "edgeKind": "singleton",
+        "note": "un solo puesto sin caminos"
+      },
+      {
+        "id": "ed2",
+        "input": [[[[1, 7], [1, 3], [1, 5]], []], 0, 1],
+        "expected": 3,
+        "edge": true,
+        "edgeKind": "duplicate",
+        "note": "tres caminos entre los mismos dos puestos"
+      },
+      {
+        "id": "ed3",
+        "input": [[[], [[0, 1]]], 0, 1],
+        "expected": -1,
+        "edge": true,
+        "edgeKind": "none-match",
+        "note": "el camino solo va hacia atrás"
+      }
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "E12",
+      "when": { "failingTestIds": ["v2"] },
+      "message": "Tu función devuelve un coste mayor que el mejor con la red de cuatro puestos del enunciado. Fíjate en cómo eliges la ruta: ¿estás contando caminos o sumando costes? Dos caminos baratos pueden costar menos que uno solo caro."
+    },
+    {
+      "code": "E08",
+      "when": { "failingTestIds": ["v3"] },
+      "message": "Cuando goal no se puede alcanzar, el contrato pide -1. Comprueba qué devuelve tu función en ese caso."
+    },
+    {
+      "code": "E12",
+      "message": "El coste no es el más bajo. Comprueba que, antes de darle un puesto por resuelto, no queda ninguna ruta más barata que llegue hasta él, y que sumas el coste de cada camino y no solo cuentas los pasos."
+    },
+    {
+      "code": "E11",
+      "message": "Tu función modificó roads. Para guardar los costes que vas encontrando usa listas aparte."
+    },
+    {
+      "code": "E16",
+      "message": "Tu solución prueba demasiadas rutas. Con cientos de puestos hay más rutas distintas que átomos, pero solo hace falta guardar, para cada puesto, el mejor coste hallado hasta ahora y seguir siempre por el puesto sin resolver más barato."
+    },
+    {
+      "code": "E02",
+      "message": "El código lanzó una excepción. Si lees roads[u] o el coste de un puesto, comprueba que ese puesto existe y que ya tiene un coste guardado."
+    },
+    {
+      "code": "E01",
+      "message": "Hay un error de sintaxis antes de que el código pueda ejecutarse. Revisa la línea marcada: el motor no pudo interpretar esa expresión."
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Piensa en el puesto de salida: sabes que llegar a él cuesta 0. De todos los puestos a los que aún no sabes llegar por el camino más barato, ¿cuál puedes dar ya por resuelto con seguridad?"
+    },
+    {
+      "level": 2,
+      "text": "Guarda, para cada puesto, el mejor coste conocido hasta ahora (al principio, infinito salvo el de salida). El puesto sin resolver con el coste más bajo ya no puede mejorar: ninguna otra ruta llega a él más barata, porque todos los costes son positivos. Desde ese puesto, mira cada camino que sale y mejora el coste del destino si encuentras uno más bajo."
+    },
+    {
+      "level": 3,
+      "text": "costes = lista con infinito para cada puesto, 0 para start\nresueltos = lista de falsos\nrepetir mientras queden puestos sin resolver con coste conocido:\n  u = el sin resolver con el coste más bajo\n  marcar u como resuelto\n  para cada [v, c] de roads[u]:\n    si costes[u] + c < costes[v]: costes[v] = costes[u] + c\ndevolver costes[goal], o -1 si sigue siendo infinito\n\nNo hace falta seguir si goal ya está resuelto, pero no hace daño."
+    },
+    {
+      "level": 4,
+      "text": "Un GPS calcula el tiempo mínimo entre ciudades; `tramos[c]` lista `[ciudad, minutos]`:\n\nfunction minutosHasta(tramos, origen, destino) {\n  const mejor = tramos.map(() => Infinity);\n  const cerrada = tramos.map(() => false);\n  mejor[origen] = 0;\n  for (let paso = 0; paso < tramos.length; paso++) {\n    let u = -1;\n    for (let i = 0; i < tramos.length; i++) {\n      if (!cerrada[i] && mejor[i] < Infinity && (u === -1 || mejor[i] < mejor[u])) u = i;\n    }\n    if (u === -1) break;\n    cerrada[u] = true;\n    for (const [v, m] of tramos[u]) {\n      if (mejor[u] + m < mejor[v]) mejor[v] = mejor[u] + m;\n    }\n  }\n  return mejor[destino] === Infinity ? -1 : mejor[destino];\n}",
+      "unlock": { "attempts": 4, "hintsUsed": 3 }
+    }
+  ],
+  "debrief": {
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe el caso, y responde las preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Guardo para cada puesto el {b1} conocido, que empieza en {b2}; repito: elijo el puesto {b3}, lo doy por {b4}, y miro sus caminos para {b5}; al final devuelvo el coste de goal o -1 si no se alcanzó.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": ["mejor coste", "primer coste que encontré", "número de caminos", "último coste que encontré"],
+          "correctIndex": 0
+        },
+        {
+          "id": "b2",
+          "options": ["0 en todos los puestos", "infinito, salvo 0 en la salida", "el coste del primer camino", "infinito en todos, también en la salida"],
+          "correctIndex": 1
+        },
+        {
+          "id": "b3",
+          "options": ["con menos caminos de salida", "con el número más bajo", "sin resolver con el coste más bajo", "más cercano al destino por numeración"],
+          "correctIndex": 2
+        },
+        {
+          "id": "b4",
+          "options": ["sin resolver, por si mejora más tarde", "descartado", "una segunda vez, sumando su coste", "resuelto, sin volver a tocar su coste"],
+          "correctIndex": 3
+        },
+        {
+          "id": "b5",
+          "options": ["mejorar el coste de sus destinos si encuentro uno más bajo", "sumar siempre el coste al destino", "contar cuántos caminos salen", "borrar los caminos que ya usé"],
+          "correctIndex": 0
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "Con una red `0→1` coste 9, `0→2` coste 2, `2→1` coste 3 y `1→3` coste 1, ¿cuál es el coste de ir de 0 a 3?",
+          "options": ["10: el camino con menos caminos", "6: pasar por 2 y por 1 cuesta 2 + 3 + 1, menos que los 9 + 1 del camino directo", "3: la suma de los dos caminos más baratos", "12: la suma de todos los costes"],
+          "correctIndex": 1,
+          "whyWrong": ["Contar caminos en vez de sumar costes da una ruta más cara.", "", "Los dos caminos más baratos no forman una ruta.", "No hay que sumar todo, solo los caminos de una ruta."],
+          "explanation": "La ruta con menos caminos (0→1→3) cuesta 10, pero 0→2→1→3 cuesta 6: gana la de menor suma, no la de menos pasos."
+        },
+        {
+          "id": "q2",
+          "question": "Un puesto sin resolver tiene el coste más bajo de todos los sin resolver. ¿Por qué su coste ya no puede mejorar?",
+          "options": ["Porque ya no tiene caminos de entrada", "Porque tiene el número de puesto más bajo", "Porque llegar a él por cualquier otro puesto sin resolver costaría al menos lo mismo, y los costes de los caminos son positivos", "Porque está más cerca de goal"],
+          "correctIndex": 2,
+          "whyWrong": ["Puede tener muchos caminos de entrada aún por mirar.", "El número de puesto no influye en el coste.", "", "La cercanía a goal no se mide aquí."],
+          "explanation": "Cualquier otra ruta pasa antes por un puesto sin resolver, que ya cuesta igual o más, y luego suma un coste positivo."
+        },
+        {
+          "id": "q3",
+          "question": "Si algún camino tuviera coste negativo, ¿qué pasaría con esta forma de elegir siempre el puesto sin resolver más barato?",
+          "options": ["Seguiría funcionando igual", "Solo daría error con ciclos", "Daría siempre -1", "Dejaría de ser válida: una ruta más larga podría abaratar un puesto que ya se dio por resuelto"],
+          "correctIndex": 3,
+          "whyWrong": ["Al sumar un coste negativo, los costes ya cerrados podrían mejorar.", "El problema aparece también sin ciclos.", "No devolvería -1 por sí mismo.", ""],
+          "explanation": "La garantía de que un puesto resuelto no mejora depende de que sumar un camino nunca abarate la ruta."
+        }
+      ]
+    },
+    "whyItWorks": "Se mantiene, para cada puesto, el mejor coste hallado hasta ahora. El puesto sin resolver con el coste más bajo es el siguiente que se puede dar por resuelto: cualquier otra ruta hasta él tendría que pasar por otro puesto sin resolver, que ya cuesta igual o más, y sumar un coste positivo. Al resolverlo, sus caminos pueden mejorar el coste de sus destinos. Se repite hasta que no quedan puestos alcanzables sin resolver, y entonces el coste de goal es el más bajo posible o sigue siendo infinito, que se traduce en -1. Cada puesto se resuelve una vez y cada camino se mira una vez al resolver su origen.",
+    "edgeCaseNote": "Con start igual a goal el coste es 0, aunque no haya caminos. Con caminos solo de vuelta o con goal aislado el resultado es -1, no 0 ni infinito. Varios caminos entre los mismos puestos: vale el más barato. Los ciclos no dan problemas porque un puesto resuelto no se vuelve a abrir. Si hay dos rutas con el mismo coste, el resultado es el mismo número.",
+    "complexity": {
+      "question": "Si la red tiene n puestos, ¿cuánto trabajo hace buscar cada vez el puesto sin resolver más barato recorriendo la lista de puestos?",
+      "options": ["Unas n por n comparaciones en total: n elecciones, cada una recorriendo hasta n puestos", "Unas n comparaciones en total", "Tantas como rutas distintas existen", "Unas 2 elevado a n comparaciones"],
+      "correctIndex": 0,
+      "explanation": "Se hacen n elecciones y cada una recorre la lista de puestos: del orden de n por n, más una visita a cada camino. Probar todas las rutas, en cambio, crece mucho más deprisa que cualquier potencia de n."
+    },
+    "realWorld": "Los GPS calculan así la ruta más rápida entre dos puntos, y los routers eligen por qué enlaces enviar los paquetes. Cambia lo que significa el coste (minutos, euros, saltos de red) y el procedimiento es el mismo.",
+    "reasoningPrompt": "¿Por qué el puesto sin resolver más barato ya no puede mejorar? ¿Qué pasa con los caminos de ese puesto al resolverlo?",
+    "objectiveNouns": ["coste", "puesto", "caminos", "ruta"],
+    "reasoningLexicon": ["mejor coste", "sin resolver", "resuelto", "más barato", "positivo"]
+  },
+  "mastery": { "transferMissionId": "M42", "reinforcementVariants": ["R-C45-1"] },
+  "reward": {
+    "systemId": "sys.pathfinder",
+    "effect": "absent → installed",
+    "narrative": "El trazador de rutas calcula el viaje más barato entre dos puestos de la red, con todos los cruces y desvíos."
+  }
+}

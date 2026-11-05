@@ -231,6 +231,27 @@
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.levels",
+      "name": "Mapa de niveles",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.pathfinder",
+      "name": "Trazador de rutas",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.radio",
+      "name": "Red de emisoras",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
     }
   ]
 }

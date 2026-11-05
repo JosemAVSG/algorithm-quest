@@ -41,6 +41,11 @@
     { "id": "C38", "label": "Complejidad espacial", "world": "w6", "mvp": true },
     { "id": "C39", "label": "Coste amortizado", "world": "w6", "mvp": true },
     { "id": "C40", "label": "Programación dinámica", "world": "w6", "mvp": true },
-    { "id": "C41", "label": "Articulación de compromisos", "world": "w6", "mvp": true }
+    { "id": "C41", "label": "Articulación de compromisos", "world": "w6", "mvp": true },
+    { "id": "C42", "label": "Ordenación por selección", "world": "w7", "mvp": true },
+    { "id": "C43", "label": "Dividir y vencerás", "world": "w7", "mvp": true },
+    { "id": "C44", "label": "Recorrido por niveles", "world": "w7", "mvp": true },
+    { "id": "C45", "label": "Caminos con pesos", "world": "w7", "mvp": true },
+    { "id": "C46", "label": "Algoritmos voraces", "world": "w7", "mvp": true }
   ]
 }

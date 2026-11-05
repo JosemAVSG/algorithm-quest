@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "locale": "es",
+  "id": "M38",
+  "world": "w7",
+  "order": 1,
+  "title": "La estantería por peso",
+  "subtitle": "Sacar siempre la más ligera",
+  "difficulty": 3,
+  "estimatedMinutes": 22,
+  "concepts": { "primary": "C42", "secondary": ["C10"] },
+  "prerequisites": { "missions": ["M37"], "concepts": ["C10"] },
+  "workshop": { "systemId": "sys.sorter", "from": "working", "to": "reliable" },
+  "briefing": {
+    "headline": "De la más ligera a la más pesada",
+    "body": "Llegan cajas con pesos desordenados y hay que colocarlas en una estantería **de la más ligera a la más pesada**. El encargado tiene un procedimiento fijo: mira **todas las cajas que quedan**, saca la más ligera, la pone al final de la fila ya colocada, y repite hasta que no queda ninguna.\n\nRecibes la lista de pesos y devuelves una **lista nueva** con los mismos pesos en orden ascendente. La lista original **no se toca**: otro turno la sigue usando.\n\nLos pesos pueden repetirse y pueden ser negativos (una devolución resta). **No se puede usar `.sort`**: lo que se evalúa es que sepas colocar las cajas tú mismo.",
+    "requirements": ["Recibe una lista de pesos (números, pueden repetirse y ser negativos)", "Devuelve una lista nueva con los mismos pesos, de menor a mayor", "No modifica la lista recibida", "No usa .sort ni .toSorted"],
+    "forbiddenVocabulary": ["selección", "ordenación", "burbuja", "ordenar por"]
+  },
+  "contract": {
+    "entryPoint": "sortByLightest",
+    "signature": "sortByLightest(weights) -> number[]",
+    "inputShape": "weights: number[]",
+    "outputShape": "number[]",
+    "rules": ["El resultado contiene exactamente los mismos valores que weights, de menor a mayor", "Los valores repetidos aparecen tantas veces como en weights", "Devuelve una lista nueva y no modifica weights", "Una lista vacía devuelve []", "No se permiten .sort ni .toSorted"]
+  },
+  "constraints": { "bannedConstructs": [".sort", "toSorted"], "allowClosedForm": false, "mustNotMutate": true },
+  "starterCode": "function sortByLightest(weights) {\n  // your code here\n}\n",
+  "tests": {
+    "visible": [
+      { "id": "v1", "input": [[]], "expected": [], "note": "sin cajas" },
+      { "id": "v2", "input": [[5, 2, 9, 1]], "expected": [1, 2, 5, 9], "note": "cuatro pesos distintos" },
+      { "id": "v3", "input": [[3, 3, 1]], "expected": [1, 3, 3], "note": "un peso repetido" }
+    ],
+    "hidden": [
+      {
+        "id": "h1",
+        "input": [[9, 8, 7, 6, 5]],
+        "expected": [5, 6, 7, 8, 9],
+        "note": "llegan de la más pesada a la más ligera"
+      },
+      {
+        "id": "h2",
+        "input": [[-3, 0, -7, 4]],
+        "expected": [-7, -3, 0, 4],
+        "note": "pesos negativos y cero"
+      },
+      { "id": "h3", "input": [[1, 2, 3, 4]], "expected": [1, 2, 3, 4], "note": "ya están colocadas" },
+      { "id": "h4", "input": [[2, 1]], "expected": [1, 2], "note": "dos cajas" },
+      {
+        "id": "h5",
+        "input": [
+          [800, 504, 520, -200, -616, -728, 728, -872, 760, 344, -1000, -760, -920, 808, -600, -360, -344, 960, -904, 968, -552, 632, 728, -488, -760, 936, -200, 312, 952, 344, 856, 568, -8, -96, 328, 904, 216, 728, -168, -576, -872, 104, -216, -616, -120, -376, -200, 184, -552, 312, -24, 488, -72, -8, 408, -600, -832, 232, 456, 504, 904, 664, -600, 648, -664, 536, -376, 136, 368, 856, -24, 856, -600, -264, 488, -856, -968, -136, -648, 744, -8, -376, -792, -8, -424, 824, -872, 968, -552, 392, -328, -344, -840, 264, -376, 936, -440, 312, 840, 424, 624, -808, -888, 296, -728, -792, 120, 904, -568, -952, -440, -920, -856, -280, -392, -1000, -552, 416, -440, 552, -952, 856, 344, -904, 760, 56, -344, -936, -232, -296, 552, 696, -440, -680, -984, 216, -8, 376, -648, -952, 72, -1000, 168, 696, -328, -776, 280, 216, 168, -248, 600, -72, -104, -584, 216, -360, 632, -344, 792, -744, 104, 856, -376, 280, 8, -856, -344, -776, -680, 824, 328, -968, 120, -56, -216, -216, -24, 72, 808, 648, 248, -360, -232, 536, 408, -184, -200, 648, 200, 104, 520, 424, 360, -104, -56, 424, -392, 888, 440, 840, 664, 312, -936, -424, -904, -904, 824, -120, -712, 776, 792, -600, -24, 920, -616, -136, 360, -968, -624, -504, 760, -584, -88, 744, 496, 856, 984, -568, -712, 984, 456, -600, 792, -440, 808, 776, 392, 888, 840, -1000, 88, -216, -72, -968, 136, -952, -648, -408, 920, -600, 152, -472, 40, 664, -712, -664, 232, 680, -744, -552, -344, -392, -872, 280, 888, 312, 56, 168, 616, 984, 472, -632, 648, 616, -56, -696, 392, 872, -792, -624, -136, -296, -760, 424, -456, -744, 24, 808, 8, -488, -360, 88, -520, 664, 856, -776, -24, -472, 424, 24, -760, -600, 776, 872, 88, 632, -344, 328, -824, -216, 56, 536, -312, 264, 72, 936, 616, -840, -8, 552, 184, 184, 728, 792, 680, -720, -728, 552, -904, -520, -552, -248, 824, -920, 536, -984, 456, 984, -248, 936, -520, 888, 440, -312, -952, 728, -424, -936, -424, -776, 728, 472, 488, -232, 552, 992, -104, -152, 328, 520, -616, -952, 632, 392, -856, -856, 232, 792, -664, -200, 552, -104, 632, -88, 712, 536, -88, 952, -72, -648, -776, 328, -504, 216, 520, -328, 856, 536, -392, -664, -936, -824, -984, 0, 248, 408, -552, 392, 640, -424, -440, -552, 696, 592, -184, 936, -488, 312, 248, 440, 552, -904, -232, 840, 968, -72, 184, -472, 568, 488, 328, -264, 440, 248, 168, -568, -872, 968, -328, -64, 120, 632, 360, -856, -472, -328, 472, 104, 104, 680, 600, -200, -392, 280, -968, -488, -616, -376, 728, -344, 552, 328, -408, 952, 232, 8, 184, -232, 696, -712, 744, -648, -616, -88, 408, -232, -760, -344, 504, -952, -520, 984, 840, -200, 344, 280, -584, 328, 264, -376, 808, -344, 424, -280, -808, -120, -520, -696, 296, 64, 408, -424, 600, -920, -472, 216, -968, 584, 696, -696, 328, 56, 200, 200, -584, 456, -120, 264, 264, 728, -56, -296, 408, -680, -808, -680, -872, -472, 72, -696, 504, 752, 776, 984, -344, 216, 8, -616, 520, -408, 456, -360, 520, 440, 824, -520, -920, 728, -616, -440, -424, 424, -168, 56, -616, 8, 232, -232, 40, 152, 344, -504, -440, -72, 56, -152, 600, -920, 904, -696, 912, 680, 840, -552, -440, 408, -776, -952, -280, 696, -544, -888, 456, -184, 680, 296, -408, -376, -760, 408, -1000, 712, -872, -744, 616, 72, -424, -936, 408, 584, 392, -456, 712, -536, 504, -680, 696, 504, -760, 161, -520, -888, -808, -616, -840, -824, 808, -712, -568, -56, 488, -664, -840, 216, -888, -504, -824, 744, 488, 440, 536, 936, -56, 136, -536, -648, 472, -152, -904, -408, -488, 376, 824, -856, -776, 744, 920, -56, 520, 936, -392, 24, 440, 856, -424, 488, -296, 776, 808, 952, -752, -440, 584, -824, -824, -552, -664, 88, 120, 56, 552, -200, -360, 856, 264, 24, -216, 520, -680, -776, -360, 376, -552, 24, 552, 712, -440, -104, 248, 8, -216, -632, -72, -584, -776, 536, 344, -856, -680, -968, 504, -600, 376, 920, 552, -808, -312, -664, 312, 344, -680, 840, 456, -376, 456, 600, -984, 392, -576, -408, -104, 304, 200, 184, -1000, 136, -808, -200, 952, -360, 168, -464, 792, 824, 296, -792, -792, 328, 8, 184, 792, 424, -760, 408, 904, 88, 400, 120, 840, 536, -88, -232, 152, 360, -200, 392, -488, -664, 968, 856, -504, 536, 968, -680, 40, 904, -264, -16, -1000, 264, -632, -56, -264, -536, -168, -472, -568, -648, -488, 616, -904, -440, -200, -24, 136, 376, -360, 792, -24, -696, -984, 648, 360, 856, -920, -632, 56, 984, -24, -280, -408, 328, 664, 344, -664, -56, 136, -88, 792, 584, -744, 632, 648, -536, -312, 312, -888, 776, -984, 584, -520, 696, -120, 328, -632, 616, 504, 552, -760, 616, 520, 216, -472, -8, 856, -712, 968, 760, -920, -24, 440, 776, 632, -568, -536, 824, -280, 40, 504, -424, 488, 72, -424, -360, -344, 208, -168, -808, 952, -952, -264, 680, 824, -976, 168, 808, -688, 232, -40, 280, -760, 648, -392, 504, 792, 264, 72, 360, 568, -200, -632, 536, 760, 760, 488, 984, -200, 808, -728, 312, 552, -264, 817, 360, -952, -952, -408, 168, 248, 152, 328, 56, -360, 600, 968, -968, -920, 728, -600, -728, 440, -824, -168, -936, 824, 264, 536, 344, -456, -168, -440, -440, 376, -456, -328, 136, 792, -488, -248, 824, 680, 568, 936, 408, 680, 712, 760, 216, 472, 584, -904, -872, -376, 872, -808, 552, 376, -376, -488, -56, 552, 888, 8, -1000, 904, -872, -904, -536, -584, -376, 216, 904, 168, 104, -120, 488, 872, 984, 984, 376, -504, -696, -664, -328, -120, -328, 24, 536, 344, -40, 568, 808, -776, 552, 8, 456, -376, -24, -600, -920, 792, -792, 872, -1000, 216, -152, 872, 200, -920, -504, -984, -344, -856, 168, 440, -520, 488, 936, 568, 712, -936, 360, -472, -872, -632, 264, -287, 312, -904, 792, -664, 456, 936, -376, -952, -728, 24, -696, -360, 40, -488, 88, -232, -872, 344, -936, -712, -88, 200, -344, -376, 776, 760, -488, 888, -40, 936, 40, -232, 648, 952, -584, 872, 488, 56, 536, -216, -776, -72, 632, -504, 424, 504, 120, -376, -664, -888, -280, 344, -56, 552, 104, 136, 264, -488, 200, 792, -280, -24, -1000, 344, 856, -392, -888, -584, -744, 824, -776, -576, 232, 440, 952, 664, -24, 152, -568, 712, -888, 152, 632, -760, -72, 456, 968, -280, -984, 312, -360, -344, -760, -856, 392, -632, 776, -376, -280, -456, -952, -984, -472, -712, -40, 312, -376, 856, -472, 456, 936, -408, -616, 968, -520, -280, 392, -376, -232, -904, 8, 248, -840, 264, -536, 184, -472, 200, 856, 536, -184, -952, -664, 568, 936, -872, 504, -712, 984, 664, -984, -488, 456, -344, -376, -200, 984, -376, -520, 680, 712, -536, 344, 472, -440, 776, -120, -664, 744, 424, 984, 288, -952, 744, -24, 568, -856, -248, 344, -520, 248, 520, -40, -624, -136, -696, -520, -360, -952, 728, -936, -200, -408, -24, 888, 104, -456, 776, -360, 440, -808, -904, 360, 632, -72, 648, 504, 328, 552, -680, -824, 40, -600, 952, 936, -872, -120, -184, -584, 440, 168, -504, 840, 840, -392, -968, 808, 696, -120, 504, 552, 600, -376, 840, -920, -984, 600, 888, -440, 952, -440, -952, -728, 888, -952, 24, -600, -664, 104, 360, -136, 376, -1000, -424, 136, -184, 8, -376, -184, -984, -632, -680, -920, -712, 968, 776, 8, -568, -696, -952, -360, 440, -472, -760, 680, 760, -456, -72, -152, 104, -312, -40, 984, -120, -552, -40, -808, -296, 776, 24, 664, 280, 760, -632, -696, -24, -904, -808, -488, 392, 424, -984, -88, -136, 904, -824, 216, -264, -792, 280, 24, 536, -440, 440, 488, -136, 536, -248, 776, -104, 296, -40, 856, 328, -152, -376, -264, 104, 664, 328, 552, -968, 216, 872, -632, 776, -152, -680, -472, -600, -344, -408, 984, 792, -72, -296, -8, -104, -616, -136, -40, -712, -360, 248, -200, -472, -872, -1000, -392, 536, -664, 152, 184, -472, -88, 664, 312, -1000, 40, 312, -776, 680, -520, 40, -520, 376, 920, 328, 616, 232, 648, -552, 984, 872, -56, -152, -920, 376, 664, -888, -40, 840, 648, 664, -920, 728, 552, -632, 184, 920, 984, 664, 232, 840, 8, 360, -424, 344, -296, 616, -952, -376, -488, 104, 520, 472, 424, 424, 24, 584, -984, -600, 512, 632, -312, 392, 584, -40, -760, 248, 744, 680, -808, -520, -56, 552, -136, 488, 184, 808, 728, 200, 168, 728, -616, -120, -456, -904, 840, -776, -536, -88, 72, 120, -424, 872, -504, 744, -952, 520, 952, -392, -88, 408, 824, 664, 200, 872, -552, -776, -840, -920, -216, -488, 904, 520, -152, -232, 696, 744, 216, 456, 920, 952, -776, -472, -8, 24, -72, -696, -312, 856, 216, 904, 328, 360, 152, 728, -520, 864, 152, 504, -728]
+        ],
+        "expected": [-1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -984, -984, -984, -984, -984, -984, -984, -984, -984, -984, -984, -984, -984, -984, -976, -968, -968, -968, -968, -968, -968, -968, -968, -968, -968, -952, -952, -952, -952, -952, -952, -952, -952, -952, -952, -952, -952, -952, -952, -952, -952, -952, -952, -952, -952, -952, -936, -936, -936, -936, -936, -936, -936, -936, -936, -920, -920, -920, -920, -920, -920, -920, -920, -920, -920, -920, -920, -920, -920, -920, -920, -904, -904, -904, -904, -904, -904, -904, -904, -904, -904, -904, -904, -904, -904, -904, -888, -888, -888, -888, -888, -888, -888, -888, -888, -872, -872, -872, -872, -872, -872, -872, -872, -872, -872, -872, -872, -872, -872, -856, -856, -856, -856, -856, -856, -856, -856, -856, -856, -856, -840, -840, -840, -840, -840, -840, -832, -824, -824, -824, -824, -824, -824, -824, -824, -824, -808, -808, -808, -808, -808, -808, -808, -808, -808, -808, -808, -808, -792, -792, -792, -792, -792, -792, -792, -776, -776, -776, -776, -776, -776, -776, -776, -776, -776, -776, -776, -776, -776, -776, -776, -760, -760, -760, -760, -760, -760, -760, -760, -760, -760, -760, -760, -760, -760, -752, -744, -744, -744, -744, -744, -744, -728, -728, -728, -728, -728, -728, -728, -728, -720, -712, -712, -712, -712, -712, -712, -712, -712, -712, -712, -712, -696, -696, -696, -696, -696, -696, -696, -696, -696, -696, -696, -696, -688, -680, -680, -680, -680, -680, -680, -680, -680, -680, -680, -680, -680, -664, -664, -664, -664, -664, -664, -664, -664, -664, -664, -664, -664, -664, -664, -664, -664, -648, -648, -648, -648, -648, -648, -648, -632, -632, -632, -632, -632, -632, -632, -632, -632, -632, -632, -632, -624, -624, -624, -616, -616, -616, -616, -616, -616, -616, -616, -616, -616, -616, -616, -616, -600, -600, -600, -600, -600, -600, -600, -600, -600, -600, -600, -600, -600, -600, -600, -584, -584, -584, -584, -584, -584, -584, -584, -584, -576, -576, -576, -568, -568, -568, -568, -568, -568, -568, -568, -552, -552, -552, -552, -552, -552, -552, -552, -552, -552, -552, -552, -552, -552, -544, -536, -536, -536, -536, -536, -536, -536, -536, -536, -520, -520, -520, -520, -520, -520, -520, -520, -520, -520, -520, -520, -520, -520, -520, -520, -520, -504, -504, -504, -504, -504, -504, -504, -504, -504, -504, -488, -488, -488, -488, -488, -488, -488, -488, -488, -488, -488, -488, -488, -488, -488, -488, -472, -472, -472, -472, -472, -472, -472, -472, -472, -472, -472, -472, -472, -472, -472, -472, -472, -464, -456, -456, -456, -456, -456, -456, -456, -456, -440, -440, -440, -440, -440, -440, -440, -440, -440, -440, -440, -440, -440, -440, -440, -440, -440, -440, -424, -424, -424, -424, -424, -424, -424, -424, -424, -424, -424, -424, -424, -424, -408, -408, -408, -408, -408, -408, -408, -408, -408, -408, -408, -392, -392, -392, -392, -392, -392, -392, -392, -392, -392, -392, -376, -376, -376, -376, -376, -376, -376, -376, -376, -376, -376, -376, -376, -376, -376, -376, -376, -376, -376, -376, -376, -376, -376, -376, -376, -360, -360, -360, -360, -360, -360, -360, -360, -360, -360, -360, -360, -360, -360, -360, -360, -360, -344, -344, -344, -344, -344, -344, -344, -344, -344, -344, -344, -344, -344, -344, -344, -344, -344, -328, -328, -328, -328, -328, -328, -328, -328, -312, -312, -312, -312, -312, -312, -312, -296, -296, -296, -296, -296, -296, -296, -287, -280, -280, -280, -280, -280, -280, -280, -280, -280, -280, -264, -264, -264, -264, -264, -264, -264, -264, -248, -248, -248, -248, -248, -248, -232, -232, -232, -232, -232, -232, -232, -232, -232, -232, -232, -232, -216, -216, -216, -216, -216, -216, -216, -216, -216, -200, -200, -200, -200, -200, -200, -200, -200, -200, -200, -200, -200, -200, -200, -200, -200, -184, -184, -184, -184, -184, -184, -184, -168, -168, -168, -168, -168, -168, -152, -152, -152, -152, -152, -152, -152, -152, -152, -136, -136, -136, -136, -136, -136, -136, -136, -136, -120, -120, -120, -120, -120, -120, -120, -120, -120, -120, -120, -120, -104, -104, -104, -104, -104, -104, -104, -104, -96, -88, -88, -88, -88, -88, -88, -88, -88, -88, -88, -88, -72, -72, -72, -72, -72, -72, -72, -72, -72, -72, -72, -72, -72, -64, -56, -56, -56, -56, -56, -56, -56, -56, -56, -56, -56, -56, -56, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -24, -24, -24, -24, -24, -24, -24, -24, -24, -24, -24, -24, -24, -24, -24, -16, -8, -8, -8, -8, -8, -8, -8, -8, -8, 0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 40, 40, 40, 40, 40, 40, 40, 40, 40, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 64, 72, 72, 72, 72, 72, 72, 72, 72, 88, 88, 88, 88, 88, 88, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 120, 120, 120, 120, 120, 120, 120, 136, 136, 136, 136, 136, 136, 136, 136, 136, 152, 152, 152, 152, 152, 152, 152, 152, 152, 161, 168, 168, 168, 168, 168, 168, 168, 168, 168, 168, 168, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 208, 216, 216, 216, 216, 216, 216, 216, 216, 216, 216, 216, 216, 216, 216, 216, 216, 232, 232, 232, 232, 232, 232, 232, 232, 232, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 264, 264, 264, 264, 264, 264, 264, 264, 264, 264, 264, 264, 280, 280, 280, 280, 280, 280, 280, 280, 288, 296, 296, 296, 296, 296, 304, 312, 312, 312, 312, 312, 312, 312, 312, 312, 312, 312, 312, 312, 312, 328, 328, 328, 328, 328, 328, 328, 328, 328, 328, 328, 328, 328, 328, 328, 328, 328, 328, 344, 344, 344, 344, 344, 344, 344, 344, 344, 344, 344, 344, 344, 344, 344, 344, 360, 360, 360, 360, 360, 360, 360, 360, 360, 360, 360, 360, 368, 376, 376, 376, 376, 376, 376, 376, 376, 376, 376, 376, 392, 392, 392, 392, 392, 392, 392, 392, 392, 392, 392, 392, 400, 408, 408, 408, 408, 408, 408, 408, 408, 408, 408, 408, 408, 416, 424, 424, 424, 424, 424, 424, 424, 424, 424, 424, 424, 424, 424, 440, 440, 440, 440, 440, 440, 440, 440, 440, 440, 440, 440, 440, 440, 440, 456, 456, 456, 456, 456, 456, 456, 456, 456, 456, 456, 456, 456, 456, 472, 472, 472, 472, 472, 472, 472, 488, 488, 488, 488, 488, 488, 488, 488, 488, 488, 488, 488, 488, 488, 496, 504, 504, 504, 504, 504, 504, 504, 504, 504, 504, 504, 504, 504, 504, 504, 512, 520, 520, 520, 520, 520, 520, 520, 520, 520, 520, 520, 520, 520, 536, 536, 536, 536, 536, 536, 536, 536, 536, 536, 536, 536, 536, 536, 536, 536, 536, 536, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 568, 568, 568, 568, 568, 568, 568, 568, 584, 584, 584, 584, 584, 584, 584, 584, 592, 600, 600, 600, 600, 600, 600, 600, 600, 616, 616, 616, 616, 616, 616, 616, 616, 616, 624, 632, 632, 632, 632, 632, 632, 632, 632, 632, 632, 632, 632, 640, 648, 648, 648, 648, 648, 648, 648, 648, 648, 648, 648, 664, 664, 664, 664, 664, 664, 664, 664, 664, 664, 664, 664, 664, 664, 680, 680, 680, 680, 680, 680, 680, 680, 680, 680, 680, 680, 696, 696, 696, 696, 696, 696, 696, 696, 696, 696, 712, 712, 712, 712, 712, 712, 712, 712, 728, 728, 728, 728, 728, 728, 728, 728, 728, 728, 728, 728, 728, 728, 728, 744, 744, 744, 744, 744, 744, 744, 744, 744, 744, 752, 760, 760, 760, 760, 760, 760, 760, 760, 760, 760, 776, 776, 776, 776, 776, 776, 776, 776, 776, 776, 776, 776, 776, 776, 776, 792, 792, 792, 792, 792, 792, 792, 792, 792, 792, 792, 792, 792, 792, 792, 800, 808, 808, 808, 808, 808, 808, 808, 808, 808, 808, 808, 808, 817, 824, 824, 824, 824, 824, 824, 824, 824, 824, 824, 824, 824, 824, 840, 840, 840, 840, 840, 840, 840, 840, 840, 840, 840, 840, 840, 840, 856, 856, 856, 856, 856, 856, 856, 856, 856, 856, 856, 856, 856, 856, 856, 856, 856, 856, 864, 872, 872, 872, 872, 872, 872, 872, 872, 872, 872, 872, 888, 888, 888, 888, 888, 888, 888, 888, 888, 904, 904, 904, 904, 904, 904, 904, 904, 904, 904, 904, 912, 920, 920, 920, 920, 920, 920, 920, 936, 936, 936, 936, 936, 936, 936, 936, 936, 936, 936, 936, 936, 936, 952, 952, 952, 952, 952, 952, 952, 952, 952, 952, 952, 952, 960, 968, 968, 968, 968, 968, 968, 968, 968, 968, 968, 968, 984, 984, 984, 984, 984, 984, 984, 984, 984, 984, 984, 984, 984, 984, 984, 984, 984, 992],
+        "note": "1.500 pesos desordenados"
+      }
+    ],
+    "edge": [
+      {
+        "id": "ed1",
+        "input": [[7]],
+        "expected": [7],
+        "edge": true,
+        "edgeKind": "singleton",
+        "note": "una sola caja"
+      },
+      {
+        "id": "ed2",
+        "input": [[4, 4, 4]],
+        "expected": [4, 4, 4],
+        "edge": true,
+        "edgeKind": "duplicate",
+        "note": "todas pesan lo mismo"
+      },
+      {
+        "id": "ed3",
+        "input": [[0, -1]],
+        "expected": [-1, 0],
+        "edge": true,
+        "edgeKind": "negative",
+        "note": "cero y un negativo"
+      }
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "E21",
+      "when": { "failingTestIds": ["v3", "ed2"] },
+      "message": "Con [3, 3, 1] el resultado pierde o repite pesos. Cada vez que sacas la más ligera tienes que quitar **esa** caja de las que quedan, y solo esa: si quitas todas las que pesan lo mismo, desaparecen."
+    },
+    {
+      "code": "E12",
+      "message": "El resultado debe ser una lista nueva con todos los pesos, de menor a mayor. Comprueba qué devuelves y que no falte ninguno."
+    },
+    {
+      "code": "E08",
+      "message": "¿Qué devuelve tu función con la lista vacía? Compruébalo a mano: el contrato pide []."
+    },
+    {
+      "code": "E19",
+      "message": "En esta misión no se permite .sort: se evalúa que sepas colocar las cajas con el procedimiento de sacar siempre la más ligera."
+    },
+    {
+      "code": "E11",
+      "message": "Tu función modificó la lista recibida. Si sacas las cajas de weights directamente, la dejas vacía: trabaja sobre una copia."
+    },
+    {
+      "code": "E01",
+      "message": "Hay un error de sintaxis antes de que el código pueda ejecutarse. Revisa la línea marcada: el motor no pudo interpretar esa expresión."
+    },
+    {
+      "code": "E02",
+      "message": "El código lanzó una excepción durante la ejecución. Revisa qué valor estabas usando cuando ocurrió."
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Si tuvieras las cajas encima de una mesa, ¿cómo encontrarías la más ligera? ¿Qué harías con ella antes de buscar la siguiente?"
+    },
+    {
+      "level": 2,
+      "text": "Repite dos pasos: buscar la posición de la más ligera entre las que quedan, y pasarla a la lista nueva quitándola de las que quedan. Quita la caja de esa posición, no todas las que pesen lo mismo. ¿Con qué valor empieza la búsqueda?"
+    },
+    {
+      "level": 3,
+      "text": "quedan = una copia de weights\nresultado = lista vacía\nmientras quedan no esté vacía:\n    posición = 0\n    para i desde 1 hasta quedan.length - 1:\n        si quedan[i] < quedan[posición]: posición = i\n    añadir quedan[posición] a resultado\n    quitar de quedan el elemento de esa posición\ndevolver resultado\n\nLa búsqueda empieza con la primera caja que queda, no con un valor inventado: así funcionan los negativos."
+    },
+    {
+      "level": 4,
+      "text": "Un cocinero ordena sus platos de menos a más calorías: siempre sirve el más ligero de los que quedan.\n\nfunction ordenarPlatos(calorias) {\n  const pendientes = [...calorias];\n  const servidos = [];\n  while (pendientes.length > 0) {\n    let menor = 0;\n    for (let i = 1; i < pendientes.length; i++) {\n      if (pendientes[i] < pendientes[menor]) menor = i;\n    }\n    servidos.push(pendientes[menor]);\n    pendientes.splice(menor, 1);\n  }\n  return servidos;\n}",
+      "unlock": { "attempts": 4, "hintsUsed": 3 }
+    }
+  ],
+  "debrief": {
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe el caso, y responde las preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Trabajo sobre {b1} de la lista; mientras queden cajas, busco {b2}, la paso a la lista nueva y {b3}; la búsqueda empieza con {b4}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": ["una copia", "la propia lista recibida", "una lista ya ordenada", "una lista vacía"],
+          "correctIndex": 0
+        },
+        {
+          "id": "b2",
+          "options": ["la posición de la más pesada", "la posición de la más ligera de las que quedan", "el valor medio", "la primera posición siempre"],
+          "correctIndex": 1
+        },
+        {
+          "id": "b3",
+          "options": ["quito todas las que pesen lo mismo", "la dejo donde estaba", "la quito de las que quedan, solo a ella", "vacío la lista"],
+          "correctIndex": 2
+        },
+        {
+          "id": "b4",
+          "options": ["el valor 0", "el valor más grande posible", "la última caja", "la primera caja que queda como mejor candidata"],
+          "correctIndex": 3
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "Con `[3, 3, 1]` una función devuelve `[1]`. ¿Qué ha hecho?",
+          "options": ["Ha comparado con > en vez de <", "Ha quitado de las que quedan todas las cajas que pesan lo mismo que la elegida, y se han perdido", "Ha ordenado de mayor a menor", "Ha modificado la lista original"],
+          "correctIndex": 1,
+          "whyWrong": ["Eso cambiaría el orden, no haría desaparecer valores.", "", "Eso devolvería los tres valores en orden inverso.", "Modificar la original no hace que falten valores en el resultado."],
+          "explanation": "Solo hay que quitar la caja elegida, la de esa posición. Quitar por valor elimina también a sus gemelas."
+        },
+        {
+          "id": "q2",
+          "question": "Con 1.500 cajas, ¿cuántas comparaciones hace este procedimiento aproximadamente?",
+          "options": ["Unas 1.500", "Unas 3.000", "Más de un millón: para cada caja recorre las que quedan", "Unas 15.000"],
+          "correctIndex": 2,
+          "whyWrong": ["Eso sería mirar cada caja una sola vez.", "Eso sería dos pasadas por la lista.", "", "Eso sería unas diez pasadas, no 1.500."],
+          "explanation": "La primera búsqueda mira 1.500, la segunda 1.499, y así hasta 1: casi 1,1 millones. Por eso es lento con listas grandes."
+        },
+        {
+          "id": "q3",
+          "question": "Una función guarda como «mejor candidata» el valor 0 al empezar cada búsqueda de la más ligera. ¿Qué pasa cuando todas las cajas que quedan pesan más de 0?",
+          "options": ["Elige la más pesada", "Elige siempre la última", "Funciona igual que con un valor real", "Ninguna le gana a 0, así que la búsqueda no elige ninguna caja de verdad"],
+          "correctIndex": 3,
+          "whyWrong": ["No elige la más pesada: no elige ninguna.", "La posición que elija no tiene relación con la última.", "Con un valor inventado el resultado cambia en cuanto los pesos no son negativos.", ""],
+          "explanation": "La búsqueda tiene que empezar con una caja real de las que quedan. Con un valor inventado como 0, solo pueden ganar las cajas menores que 0."
+        }
+      ]
+    },
+    "whyItWorks": "El procedimiento es siempre el mismo: de las cajas que quedan, la más ligera tiene que ir la siguiente en la fila ya colocada. Se busca su posición recorriendo las que quedan, se pasa a la lista nueva y se quita de las que quedan; después se repite. Al terminar, la lista nueva tiene todas las cajas de la más ligera a la más pesada. Se trabaja sobre una copia para no dejar vacía la lista original, y la búsqueda de la más ligera empieza con una caja real para que los negativos funcionen.",
+    "edgeCaseNote": "Con una lista vacía no hay nada que buscar y se devuelve []. Con una sola caja, el resultado es esa caja. Con todas iguales, hay que quitar una caja cada vez, no todas las que pesen lo mismo. Con negativos, el valor inicial de la búsqueda no puede ser 0. Y la lista recibida no debe cambiar.",
+    "complexity": {
+      "question": "Con 1.500 cajas, ¿cuántas comparaciones hace aproximadamente este procedimiento de sacar siempre la más ligera?",
+      "options": ["Más de un millón", "Unas 1.500", "Unas 3.000", "Unas 15.000"],
+      "correctIndex": 0,
+      "explanation": "Para colocar cada caja recorre todas las que quedan: 1.500 + 1.499 + … + 1, casi 1,1 millones. Si la lista se duplica, el trabajo se cuadruplica. La siguiente misión busca una forma de hacerlo mucho más barato."
+    },
+    "realWorld": "Es el procedimiento más intuitivo para ordenar (ordenar una mano de cartas, colocar libros por tamaño) y la base para entender por qué ordenar con listas grandes necesita algo mejor.",
+    "reasoningPrompt": "¿Por qué hay que quitar de las que quedan solo la caja elegida y no todas las que pesen lo mismo? ¿Cuánto crece el trabajo si la lista se duplica?",
+    "objectiveNouns": ["caja", "peso", "lista", "posición"],
+    "reasoningLexicon": ["quedan", "ligera", "quito", "copia", "repito"]
+  },
+  "mastery": { "transferMissionId": "M39", "reinforcementVariants": ["R-C42-1"] },
+  "reward": {
+    "systemId": "sys.sorter",
+    "effect": "working → reliable",
+    "narrative": "El brazo ordenador coloca cualquier tanda de cajas de la más ligera a la más pesada, sin saltarse ninguna."
+  }
+}

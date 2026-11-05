@@ -14,6 +14,7 @@ export type ShapeKind =
   | 'tower'
   | 'network'
   | 'archive'
+  | 'forge'
   | 'cube';
 
 export type PartGeometry = 'box' | 'cylinder' | 'sphere' | 'torus';
@@ -88,9 +89,16 @@ const BUILDERS: Record<Exclude<ShapeKind, 'cube'>, () => ShapePart[]> = {
     { geometry: 'cylinder', size: [0.8, 0.4, 12], position: [0, 0.3, 0] },
     { geometry: 'cylinder', size: [0.6, 0.4, 12], position: [0, 0.75, 0] },
   ],
+  // An anvil: the classics are the tools every other algorithm is struck from.
+  forge: () => [
+    { geometry: 'box', size: [1.1, 0.35, 0.8], position: [0, -0.7, 0] },
+    { geometry: 'box', size: [0.55, 0.5, 0.6], position: [0, -0.3, 0] },
+    { geometry: 'box', size: [1.7, 0.45, 0.8], position: [0, 0.18, 0] },
+    { geometry: 'cylinder', size: [0.22, 0.7, 8], position: [-1.05, 0.18, 0], rotationZ: Math.PI / 2 },
+  ],
 };
 
-function isKnown(id: string): id is 'w1' | 'transition' | 'w2' | 'w3' | 'w4' | 'w5' | 'w6' {
+function isKnown(id: string): id is 'w1' | 'transition' | 'w2' | 'w3' | 'w4' | 'w5' | 'w6' | 'w7' {
   return id in KIND_BY_WORLD;
 }
 
@@ -102,6 +110,7 @@ const KIND_BY_WORLD: Record<string, Exclude<ShapeKind, 'cube'>> = {
   w4: 'tower',
   w5: 'network',
   w6: 'archive',
+  w7: 'forge',
 };
 
 /** Shape descriptor for a world id; unknown ids get a generic cube. */

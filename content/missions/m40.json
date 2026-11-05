@@ -1,0 +1,347 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "locale": "es",
+  "id": "M40",
+  "world": "w7",
+  "order": 3,
+  "title": "El mapa por plantas",
+  "subtitle": "Leer el mapa de las zonas fila a fila",
+  "difficulty": 4,
+  "estimatedMinutes": 22,
+  "concepts": { "primary": "C44", "secondary": ["C28"] },
+  "prerequisites": { "missions": ["M39"], "concepts": ["C28", "C32"] },
+  "workshop": { "systemId": "sys.levels", "from": "absent", "to": "installed" },
+  "briefing": {
+    "headline": "De la zona de arriba hacia abajo, planta por planta",
+    "body": "El mapa del taller es el mismo conjunto de ramas de siempre: cada zona es un objeto `{ value, left, right }`, y `left` y `right` son las zonas que cuelgan de ella o `null`.\n\nEsta vez el operador no lee una rama hasta el fondo. Lee **por plantas**: primero la zona de arriba del todo, después **todas** las que cuelgan directamente de ella, después todas las que cuelgan de esas, y así hasta el final. Dentro de una planta, de **izquierda a derecha**.\n\nRecibes la zona de arriba (`root`, o `null` si el mapa está vacío). Devuelve una lista con **una lista por planta**, cada una con los números de esa planta en el orden de lectura.\n\nEjemplo: una zona `1` con `2` a la izquierda y `3` a la derecha, y una zona `4` colgando de `2`, da `[[1], [2, 3], [4]]`.",
+    "requirements": ["Recibe la zona de arriba del mapa, o null si el mapa está vacío", "Devuelve una lista de plantas; cada planta es una lista con sus números de izquierda a derecha", "La primera planta es solo la zona de arriba; cada planta siguiente son los hijos de la anterior", "Un mapa vacío devuelve []"],
+    "forbiddenVocabulary": ["BFS", "anchura", "breadth", "recorrido por niveles", "level order"]
+  },
+  "contract": {
+    "entryPoint": "readByFloors",
+    "signature": "readByFloors(root) -> number[][]",
+    "inputShape": "root: Zone | null, con Zone = { value: number, left: Zone | null, right: Zone | null }",
+    "outputShape": "number[][]",
+    "rules": ["Cada número aparece exactamente una vez en el resultado", "La planta k contiene las zonas que están k pasos por debajo de la de arriba", "Dentro de cada planta, el orden es de izquierda a derecha", "Un mapa vacío (null) devuelve []", "No modifica el mapa"]
+  },
+  "constraints": { "bannedConstructs": [], "allowClosedForm": false, "mustNotMutate": true },
+  "starterCode": "function readByFloors(root) {\n  // your code here\n}\n",
+  "tests": {
+    "visible": [
+      { "id": "v1", "input": [null], "expected": [], "note": "mapa vacío" },
+      {
+        "id": "v2",
+        "input": [
+          {
+            "value": 2,
+            "left": { "value": 1, "left": null, "right": null },
+            "right": { "value": 3, "left": null, "right": null }
+          }
+        ],
+        "expected": [[2], [1, 3]],
+        "note": "una zona con una a cada lado"
+      },
+      {
+        "id": "v3",
+        "input": [
+          {
+            "value": 5,
+            "left": { "value": 3, "left": { "value": 1, "left": null, "right": null }, "right": null },
+            "right": null
+          }
+        ],
+        "expected": [[5], [3], [1]],
+        "note": "una rama que baja por la izquierda"
+      }
+    ],
+    "hidden": [
+      {
+        "id": "h1",
+        "input": [
+          {
+            "value": 1,
+            "left": {
+              "value": 2,
+              "left": { "value": 4, "left": null, "right": null },
+              "right": { "value": 5, "left": null, "right": null }
+            },
+            "right": {
+              "value": 3,
+              "left": { "value": 6, "left": null, "right": null },
+              "right": { "value": 7, "left": null, "right": null }
+            }
+          }
+        ],
+        "expected": [[1], [2, 3], [4, 5, 6, 7]],
+        "note": "tres plantas completas"
+      },
+      {
+        "id": "h2",
+        "input": [
+          {
+            "value": 1,
+            "left": null,
+            "right": { "value": 2, "left": null, "right": { "value": 3, "left": null, "right": null } }
+          }
+        ],
+        "expected": [[1], [2], [3]],
+        "note": "una rama que baja por la derecha"
+      },
+      {
+        "id": "h3",
+        "input": [
+          {
+            "value": 1,
+            "left": { "value": 2, "left": { "value": 4, "left": null, "right": null }, "right": null },
+            "right": { "value": 3, "left": null, "right": null }
+          }
+        ],
+        "expected": [[1], [2, 3], [4]],
+        "note": "la izquierda baja más que la derecha"
+      },
+      {
+        "id": "h4",
+        "input": [
+          {
+            "value": -1,
+            "left": { "value": -5, "left": null, "right": { "value": -2, "left": null, "right": null } },
+            "right": { "value": 0, "left": { "value": 9, "left": null, "right": null }, "right": null }
+          }
+        ],
+        "expected": [[-1], [-5, 0], [-2, 9]],
+        "note": "números negativos y huecos"
+      },
+      {
+        "id": "h5",
+        "input": [
+          {
+            "value": 1,
+            "left": {
+              "value": 2,
+              "left": {
+                "value": 4,
+                "left": {
+                  "value": 8,
+                  "left": { "value": 16, "left": null, "right": null },
+                  "right": { "value": 17, "left": null, "right": null }
+                },
+                "right": {
+                  "value": 9,
+                  "left": { "value": 18, "left": null, "right": null },
+                  "right": { "value": 19, "left": null, "right": null }
+                }
+              },
+              "right": {
+                "value": 5,
+                "left": {
+                  "value": 10,
+                  "left": { "value": 20, "left": null, "right": null },
+                  "right": { "value": 21, "left": null, "right": null }
+                },
+                "right": {
+                  "value": 11,
+                  "left": { "value": 22, "left": null, "right": null },
+                  "right": { "value": 23, "left": null, "right": null }
+                }
+              }
+            },
+            "right": {
+              "value": 3,
+              "left": {
+                "value": 6,
+                "left": {
+                  "value": 12,
+                  "left": { "value": 24, "left": null, "right": null },
+                  "right": { "value": 25, "left": null, "right": null }
+                },
+                "right": {
+                  "value": 13,
+                  "left": { "value": 26, "left": null, "right": null },
+                  "right": { "value": 27, "left": null, "right": null }
+                }
+              },
+              "right": {
+                "value": 7,
+                "left": {
+                  "value": 14,
+                  "left": { "value": 28, "left": null, "right": null },
+                  "right": { "value": 29, "left": null, "right": null }
+                },
+                "right": {
+                  "value": 15,
+                  "left": { "value": 30, "left": null, "right": null },
+                  "right": { "value": 31, "left": null, "right": null }
+                }
+              }
+            }
+          }
+        ],
+        "expected": [
+          [1],
+          [2, 3],
+          [4, 5, 6, 7],
+          [8, 9, 10, 11, 12, 13, 14, 15],
+          [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+        ],
+        "note": "cinco plantas completas"
+      }
+    ],
+    "edge": [
+      {
+        "id": "ed1",
+        "input": [{ "value": 7, "left": null, "right": null }],
+        "expected": [[7]],
+        "edge": true,
+        "edgeKind": "singleton",
+        "note": "una sola zona"
+      },
+      {
+        "id": "ed2",
+        "input": [
+          {
+            "value": 0,
+            "left": { "value": -1, "left": null, "right": null },
+            "right": { "value": -2, "left": null, "right": null }
+          }
+        ],
+        "expected": [[0], [-1, -2]],
+        "edge": true,
+        "edgeKind": "negative",
+        "note": "cero y negativos"
+      },
+      {
+        "id": "ed3",
+        "input": [
+          {
+            "value": 4,
+            "left": { "value": 4, "left": { "value": 4, "left": null, "right": null }, "right": null },
+            "right": { "value": 4, "left": null, "right": null }
+          }
+        ],
+        "expected": [[4], [4, 4], [4]],
+        "edge": true,
+        "edgeKind": "duplicate",
+        "note": "todos los números iguales"
+      }
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "E12",
+      "message": "El resultado debe ser una lista de plantas, y cada planta una lista de números de izquierda a derecha. Compara, con el ejemplo del enunciado, qué planta has puesto dentro de cuál y si los números de una planta van en el orden en que aparecen de izquierda a derecha."
+    },
+    {
+      "code": "E08",
+      "message": "¿Qué devuelve tu función con el mapa vacío (null)? Compruébalo a mano: el contrato pide []."
+    },
+    {
+      "code": "E11",
+      "message": "Tu función modificó el mapa. Para recorrerlo no hace falta tocarlo: guarda las zonas pendientes en una lista aparte."
+    },
+    {
+      "code": "E02",
+      "message": "El código lanzó una excepción. Si lees `.value`, `.left` o `.right` de algo que puede ser null, comprueba antes que existe."
+    },
+    {
+      "code": "E01",
+      "message": "Hay un error de sintaxis antes de que el código pueda ejecutarse. Revisa la línea marcada: el motor no pudo interpretar esa expresión."
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Para leer una planta entera antes de bajar a la siguiente, ¿qué tienes que recordar de la planta actual para saber cuáles son las de la siguiente?"
+    },
+    {
+      "level": 2,
+      "text": "Si guardas en una lista las zonas de la planta que estás leyendo, sus hijos forman la planta siguiente. ¿Cuándo se termina? ¿Y qué hace falta para que cada planta salga en su propia lista?"
+    },
+    {
+      "level": 3,
+      "text": "si root es null: devolver []\nplanta = [root]\nmientras planta tenga zonas:\n  guardar los números de planta como una lista\n  siguiente = los hijos existentes de cada zona de planta, de izquierda a derecha\n  planta = siguiente\n\nQue una zona pueda no tener hijo por un lado: solo se añaden los que no son null."
+    },
+    {
+      "level": 4,
+      "text": "Un árbol de carpetas: cada carpeta tiene `sub` con sus subcarpetas. Para listar los nombres por profundidad:\n\nfunction nombresPorProfundidad(carpeta) {\n  if (!carpeta) return [];\n  const resultado = [];\n  let actual = [carpeta];\n  while (actual.length > 0) {\n    resultado.push(actual.map((c) => c.nombre));\n    actual = actual.flatMap((c) => c.sub);\n  }\n  return resultado;\n}",
+      "unlock": { "attempts": 4, "hintsUsed": 3 }
+    }
+  ],
+  "debrief": {
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe el caso, y responde las preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Empiezo con {b1} en la planta actual; mientras haya zonas, guardo {b2} y paso a la planta siguiente, formada por {b3} de las zonas de la actual, de {b4}; si el mapa es null devuelvo {b5}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": ["la zona de arriba", "todas las zonas del mapa", "la zona más a la izquierda", "una lista vacía"],
+          "correctIndex": 0
+        },
+        {
+          "id": "b2",
+          "options": ["todos los números en una sola lista", "los números de la planta actual en una lista propia", "solo el primer número de la planta", "la planta anterior"],
+          "correctIndex": 1
+        },
+        {
+          "id": "b3",
+          "options": ["todas las zonas del mapa", "solo los hijos de la izquierda", "los hijos que existen", "los hermanos"],
+          "correctIndex": 2
+        },
+        {
+          "id": "b4",
+          "options": ["derecha a izquierda", "menor a mayor número", "arriba a abajo", "izquierda a derecha"],
+          "correctIndex": 3
+        },
+        {
+          "id": "b5",
+          "options": ["una lista vacía", "null", "una lista con una lista vacía", "un error"],
+          "correctIndex": 0
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "Con el mapa `1` con `2` a la izquierda y `3` a la derecha, y `4` colgando de `2`, una función devuelve `[1, 2, 4, 3]`. ¿Qué hace mal?",
+          "options": ["Lee de derecha a izquierda", "Baja por una rama hasta el fondo antes de leer las otras, en vez de leer cada planta entera", "Devuelve cada número dos veces", "No comprueba el mapa vacío"],
+          "correctIndex": 1,
+          "whyWrong": ["Con orden inverso saldrían 3 antes que 2.", "", "Cada número sale una sola vez.", "El resultado es incorrecto aunque el mapa no esté vacío."],
+          "explanation": "Leer por plantas exige terminar una planta antes de bajar a la siguiente; ese orden es el de ir hasta el fondo de la rama izquierda."
+        },
+        {
+          "id": "q2",
+          "question": "El recorrido por plantas guarda las zonas pendientes en una lista y siempre saca la que lleva más tiempo esperando. ¿Por qué esa y no la última que entró?",
+          "options": ["Porque ocupa menos memoria", "Porque así no hace falta comprobar null", "Porque así se terminan todas las zonas de una planta antes de empezar con las hijas de la siguiente", "Porque así los números salen ordenados de menor a mayor"],
+          "correctIndex": 2,
+          "whyWrong": ["La memoria no es el motivo.", "Sigue haciendo falta saltarse los huecos.", "", "El orden del resultado es el del mapa, no el de los números."],
+          "explanation": "La primera en entrar es la de la planta más alta, y sus hijas entran detrás de las de la misma planta: se atiende por orden de llegada."
+        },
+        {
+          "id": "q3",
+          "question": "¿Qué cambia en tu solución si quieres devolver una lista plana `[1, 2, 3, 4]` en vez de una lista por planta?",
+          "options": ["Hay que cambiar a recorrer una rama hasta el fondo", "Hay que ordenar los números al final", "Hay que leer de derecha a izquierda", "Solo que añades los números a una lista común en vez de a una lista por planta; el recorrido es el mismo"],
+          "correctIndex": 3,
+          "whyWrong": ["Bajar por ramas daría otro orden.", "El orden ya es el de lectura por plantas.", "El sentido de lectura no cambia.", ""],
+          "explanation": "El orden en que se visitan las zonas no depende de cómo guardes los números."
+        }
+      ]
+    },
+    "whyItWorks": "Cada planta se obtiene de la anterior: los hijos existentes de cada zona de la planta actual forman, en el mismo orden, la planta siguiente. Se empieza con la planta de la zona de arriba y se repite hasta que una planta queda vacía. Como se termina de leer una planta antes de pasar a la siguiente, el orden de lectura es siempre el de plantas, y como los hijos se añaden de izquierda a derecha, cada planta sale en el orden pedido. Es la misma idea de atender por orden de llegada que ya usaste con la cola de espera.",
+    "edgeCaseNote": "Un mapa vacío (null) devuelve [], no [[]]. Una zona sin hijos por un lado no deja un hueco en la planta: solo se añaden los hijos que existen. Con una sola rama larga cada planta tiene una sola zona. Con números repetidos o negativos el recorrido no cambia, porque se lee por posición y no por valor.",
+    "complexity": {
+      "question": "Si el mapa tiene n zonas, ¿cuántas veces se visita cada zona al leerlo por plantas?",
+      "options": ["Una vez: n visitas en total", "Una vez por cada planta: n por el número de plantas", "Una vez por cada otra zona: n por n", "Depende de si es un mapa ancho o estrecho"],
+      "correctIndex": 0,
+      "explanation": "Cada zona entra en una planta una sola vez, y se lee una sola vez al llegar su turno. El trabajo es proporcional al número de zonas, sea el mapa ancho o estrecho."
+    },
+    "realWorld": "Recorrer por plantas es lo que haces al mostrar un organigrama por jerarquías, al listar las carpetas por profundidad o al propagar un aviso a todos los contactos directos antes que a los contactos de los contactos.",
+    "reasoningPrompt": "¿Por qué hay que terminar una planta antes de bajar a la siguiente? ¿Qué lista usas para recordarlo?",
+    "objectiveNouns": ["planta", "zona", "hijos", "lista"],
+    "reasoningLexicon": ["siguiente", "izquierda a derecha", "orden de llegada", "terminar"]
+  },
+  "mastery": { "transferMissionId": "M41", "reinforcementVariants": ["R-C44-1"] },
+  "reward": {
+    "systemId": "sys.levels",
+    "effect": "absent → installed",
+    "narrative": "El mapa de niveles se enciende: la torre de control ve el taller planta por planta, de la zona de arriba hacia abajo."
+  }
+}

@@ -162,5 +162,25 @@
  "R-C41-1": {
   "entry": "cheaperPlan",
   "source": "(n, q) => { const lg = n <= 1 ? 0 : Math.ceil(Math.log2(n)); return n * lg + q * lg < n * q ? 'ordenar y buscar' : 'buscar cada vez'; }"
+ },
+ "R-C42-1": {
+  "entry": "lightestIndex",
+  "source": "(ws) => { let best = -1; for (let i = 0; i < ws.length; i++) if (best === -1 || ws[i] < ws[best]) best = i; return best; }"
+ },
+ "R-C43-1": {
+  "entry": "splitAround",
+  "source": "(xs, r) => [xs.filter((x) => x <= r), xs.filter((x) => x > r)]"
+ },
+ "R-C44-1": {
+  "entry": "floorSizes",
+  "source": "(root) => { if (!root) return []; const out = []; let cur = [root]; while (cur.length) { out.push(cur.length); cur = cur.flatMap((c) => [c.left, c.right].filter(Boolean)); } return out; }"
+ },
+ "R-C45-1": {
+  "entry": "nextToSettle",
+  "source": "(costs, settled) => { let best = -1; for (let i = 0; i < costs.length; i++) { if (settled[i] || costs[i] === null) continue; if (best === -1 || costs[i] < costs[best]) best = i; } return best; }"
+ },
+ "R-C46-1": {
+  "entry": "mostNewZones",
+  "source": "(covered, options) => { const have = new Set(covered); let best = -1, bn = 0; options.forEach((o, i) => { const n = new Set(o.filter((z) => !have.has(z))).size; if (n > bn) { bn = n; best = i; } }); return best; }"
  }
 }

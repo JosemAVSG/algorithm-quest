@@ -42,6 +42,12 @@
       "name": "Mundo 6 — El archivo",
       "status": "in-progress",
       "missionIds": ["M34", "M35", "M36", "M37"]
+    },
+    {
+      "id": "w7",
+      "name": "Mundo 7 — El taller de los clásicos",
+      "status": "in-progress",
+      "missionIds": ["M38", "M39", "M40", "M41", "M42"]
     }
   ]
 }
