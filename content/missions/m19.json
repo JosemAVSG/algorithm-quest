@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "id": "M19",
   "world": "w3",
@@ -220,7 +220,7 @@
     "objectiveNouns": ["racha", "hora", "total", "producción"],
     "reasoningLexicon": ["entra", "sale", "actualizo", "mayor", "solapan"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C23-1"] },
   "reward": {
     "systemId": "sys.window",
     "effect": "broken → working",

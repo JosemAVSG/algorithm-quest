@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "id": "M23",
   "world": "w4",
@@ -219,7 +219,7 @@
     "objectiveNouns": ["marca", "apertura", "cierre", "texto"],
     "reasoningLexicon": ["guardo", "última", "quito", "pareja", "vacía"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C27-1"] },
   "reward": {
     "systemId": "sys.stacker",
     "effect": "broken → working",

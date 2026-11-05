@@ -10,7 +10,7 @@
 import type { Mission } from '../content/schema';
 import type { ExecutionCase } from '../execution/port';
 
-export function executionCases(mission: Mission): ExecutionCase[] {
+export function executionCases(mission: Pick<Mission, 'tests'>): ExecutionCase[] {
   const visible = new Set(mission.tests.visible.map((testCase) => testCase.id));
   return [
     ...mission.tests.visible,

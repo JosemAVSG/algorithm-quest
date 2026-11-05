@@ -8,9 +8,11 @@
 import { type ContentIssue, error } from './errors';
 import {
   ConceptRegistrySchema,
+  ReinforcementRegistrySchema,
   WorkshopRegistrySchema,
   WorldsRegistrySchema,
   type Concept,
+  type ReinforcementVariant,
   type World,
   type WorkshopSystem,
 } from './schema';
@@ -21,6 +23,8 @@ export interface ContentCatalog {
   concepts: Concept[];
   systems: WorkshopSystem[];
   worlds: World[];
+  /** Short review exercises, offered when a concept is weak (docs/05 §8). */
+  variants: ReinforcementVariant[];
 }
 
 export interface CatalogReport {
@@ -33,6 +37,7 @@ export interface RawCatalog {
   concepts: unknown;
   workshop: unknown;
   worlds: unknown;
+  reinforcement: unknown;
 }
 
 function failures(
@@ -51,8 +56,15 @@ export function assembleCatalog(raw: RawCatalog): CatalogReport {
   const concepts = ConceptRegistrySchema.safeParse(raw.concepts);
   const workshop = WorkshopRegistrySchema.safeParse(raw.workshop);
   const worlds = WorldsRegistrySchema.safeParse(raw.worlds);
+  const reinforcement = ReinforcementRegistrySchema.safeParse(raw.reinforcement);
 
-  if (!index.success || !concepts.success || !workshop.success || !worlds.success) {
+  if (
+    !index.success ||
+    !concepts.success ||
+    !workshop.success ||
+    !worlds.success ||
+    !reinforcement.success
+  ) {
     return {
       catalog: null,
       issues: [
@@ -60,6 +72,7 @@ export function assembleCatalog(raw: RawCatalog): CatalogReport {
         ...(concepts.success ? [] : failures('concepts', concepts.error.issues)),
         ...(workshop.success ? [] : failures('workshop', workshop.error.issues)),
         ...(worlds.success ? [] : failures('worlds', worlds.error.issues)),
+        ...(reinforcement.success ? [] : failures('reinforcement', reinforcement.error.issues)),
       ],
     };
   }
@@ -70,6 +83,7 @@ export function assembleCatalog(raw: RawCatalog): CatalogReport {
       concepts: concepts.data.concepts,
       systems: workshop.data.systems,
       worlds: worlds.data.worlds,
+      variants: reinforcement.data.variants,
     },
     issues: [],
   };

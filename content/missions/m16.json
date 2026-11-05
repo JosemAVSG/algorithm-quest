@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M16",
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "world": "w2",
   "order": 4,
@@ -4447,7 +4447,7 @@
     "objectiveNouns": ["ficha", "correo", "sucursal", "identificador"],
     "reasoningLexicon": ["separador", "limpio", "minúsculas", "igual", "misma persona"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C20-1"] },
   "reward": {
     "systemId": "sys.guard",
     "effect": "working → reliable",

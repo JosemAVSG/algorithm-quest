@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "id": "M26",
   "world": "w4",
@@ -200,7 +200,7 @@
     "objectiveNouns": ["llamada", "marco", "anotación", "función"],
     "reasoningLexicon": ["abre", "cierra", "termina", "interna", "última"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C30-1"] },
   "reward": {
     "systemId": "sys.frames",
     "effect": "absent → installed",

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "id": "M18",
   "world": "w3",
@@ -230,7 +230,7 @@
     "objectiveNouns": ["lista", "posición", "valor", "orden"],
     "reasoningLexicon": ["comparo", "avanzo", "menor", "sobra", "copio"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C22-1"] },
   "reward": {
     "systemId": "sys.merger",
     "effect": "broken → working",

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "id": "M36",
   "world": "w6",
@@ -185,7 +185,7 @@
     "objectiveNouns": ["escalón", "forma", "salto", "resultado"],
     "reasoningLexicon": ["guardo", "repito", "anteriores", "suelo", "una sola vez"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C40-1"] },
   "reward": {
     "systemId": "sys.memo",
     "effect": "absent → installed",

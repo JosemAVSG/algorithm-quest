@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "id": "M32",
   "world": "w5",
@@ -242,7 +242,7 @@
     "objectiveNouns": ["tarea", "círculo", "camino", "dependencia"],
     "reasoningLexicon": ["camino actual", "terminada", "marca", "exploro", "círculo"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C36-1"] },
   "reward": {
     "systemId": "sys.balance",
     "effect": "working → reliable",

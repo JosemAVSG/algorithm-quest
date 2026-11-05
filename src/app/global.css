@@ -1142,6 +1142,51 @@ textarea,
   min-width: 0;
 }
 
+/* ---------------------------------------------------------- reinforcement */
+
+.reinforce__prompt {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem 1.1rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.reinforce__prompt ul {
+  margin-top: 0.65rem;
+  padding-left: 1.1rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.reinforce {
+  padding-top: 2rem;
+}
+
+.concept-group {
+  margin-top: 2.25rem;
+}
+
+.concept-group .concept-list {
+  margin-top: 0;
+}
+
+.concept-group__title {
+  margin-bottom: 0.9rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.reinforcement__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
 /* ------------------------------------------------------------------ trace */
 
 .trace {

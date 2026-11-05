@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M11",
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "world": "transition",
   "order": 2,
@@ -365,7 +365,7 @@
   },
   "mastery": {
     "transferMissionId": "M12",
-    "reinforcementVariants": []
+    "reinforcementVariants": ["R-C14-1"]
   },
   "reward": {
     "systemId": "sys.index",

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "id": "M17",
   "world": "w3",
@@ -211,7 +211,7 @@
     "objectiveNouns": ["depósito", "movimiento", "unidades", "atasco"],
     "reasoningLexicon": ["después", "compruebo", "aplico", "primero", "devuelvo"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C21-1"] },
   "reward": {
     "systemId": "sys.balance",
     "effect": "broken → working",

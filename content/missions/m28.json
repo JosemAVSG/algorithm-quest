@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "id": "M28",
   "world": "w4",
@@ -1471,7 +1471,7 @@
     "objectiveNouns": ["zona", "lado", "número", "mapa"],
     "reasoningLexicon": ["izquierda", "derecha", "primero", "llamo", "null"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C32-1"] },
   "reward": {
     "systemId": "sys.tree",
     "effect": "absent → installed",

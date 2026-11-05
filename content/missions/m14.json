@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M14",
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "world": "w2",
   "order": 2,
@@ -732,7 +732,7 @@
     "objectiveNouns": ["zona", "producto", "lista", "sku"],
     "reasoningLexicon": ["creo", "añado", "recorro", "primera vez", "devuelvo"]
   },
-  "mastery": { "transferMissionId": "M16", "reinforcementVariants": [] },
+  "mastery": { "transferMissionId": "M16", "reinforcementVariants": ["R-C18-1"] },
   "reward": {
     "systemId": "sys.store",
     "effect": "working → reliable",

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "id": "M20",
   "world": "w3",
@@ -240,7 +240,7 @@
     "objectiveNouns": ["aviso", "priority", "orden", "copia"],
     "reasoningLexicon": ["comparación", "desempate", "copia", "negativo", "ordeno"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C24-1"] },
   "reward": {
     "systemId": "sys.sorter",
     "effect": "broken → working",

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "id": "M29",
   "world": "w5",
@@ -231,7 +231,7 @@
     "objectiveNouns": ["estación", "vía", "vecino", "lista"],
     "reasoningLexicon": ["anoto", "extremo", "lista", "orden", "cada"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C33-1"] },
   "reward": {
     "systemId": "sys.chain",
     "effect": "working → reliable",

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M05",
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "world": "w1",
   "order": 5,
@@ -304,7 +304,7 @@
   },
   "mastery": {
     "transferMissionId": "M11",
-    "reinforcementVariants": []
+    "reinforcementVariants": ["R-C08-1"]
   },
   "reward": {
     "systemId": "sys.log",

@@ -15,13 +15,16 @@ import {
   declineReinforcement,
   emptyProgress,
   recordCompletion,
+  recordReinforcement,
   type CompletedMissionRecord,
   type PlayerProgress,
 } from '../domain/persistence/port';
+import type { EvidenceEvent } from '../domain/mastery/evidence';
 import type { SessionSnapshot } from '../domain/session/mission-session';
 import { MissionFlow } from '../features/mission/MissionFlow';
 import { MissionGate } from '../features/mission/MissionGate';
 import { ProgressDashboard } from '../features/progress/ProgressDashboard';
+import { ReinforcementPractice } from '../features/reinforcement/ReinforcementPractice';
 import { WorkshopMap } from '../features/workshop-map/WorkshopMap';
 import { createComposition } from './composition';
 
@@ -34,6 +37,7 @@ export function App() {
   const [progress, setProgress] = useState<PlayerProgress | null>(null);
   const [storageWarning, setStorageWarning] = useState<string | null>(null);
   const [activeMissionId, setActiveMissionId] = useState<string | null>(null);
+  const [activeVariantId, setActiveVariantId] = useState<string | null>(null);
   const [view, setView] = useState<View>('map');
   const [openWorldId, setOpenWorldId] = useState<string | null>(null);
 
@@ -56,6 +60,18 @@ export function App() {
         void app.progress.save(next);
         return next;
       });
+    },
+    [app.progress],
+  );
+
+  const handleReinforced = useCallback(
+    (conceptId: string, evidence: EvidenceEvent[]) => {
+      setProgress((previous) => {
+        const next = recordReinforcement(previous ?? emptyProgress(), evidence, conceptId);
+        void app.progress.save(next);
+        return next;
+      });
+      setActiveVariantId(null);
     },
     [app.progress],
   );
@@ -136,6 +152,27 @@ export function App() {
     );
   }
 
+  const activeVariant =
+    activeVariantId === null
+      ? null
+      : (bundle.variants.find((variant) => variant.id === activeVariantId) ?? null);
+  if (activeVariant !== null) {
+    return (
+      <div className="app">
+        <ReinforcementPractice
+          variant={activeVariant}
+          conceptLabel={
+            bundle.concepts.find((concept) => concept.id === activeVariant.conceptId)?.label ??
+            activeVariant.conceptId
+          }
+          execution={app.execution}
+          onDone={(evidence) => handleReinforced(activeVariant.conceptId, evidence)}
+          onExit={() => setActiveVariantId(null)}
+        />
+      </div>
+    );
+  }
+
   if (activeMissionId !== null) {
     return (
       <div className="app">
@@ -183,6 +220,8 @@ export function App() {
           progress={progress}
           onBack={() => setView('map')}
           onDeclineReinforcement={handleDeclineReinforcement}
+          onPracticeVariant={setActiveVariantId}
+          onReplayMission={setActiveMissionId}
           onExport={handleExport}
           onImport={handleImport}
           onReset={handleReset}

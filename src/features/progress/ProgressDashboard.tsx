@@ -12,6 +12,8 @@
 
 import { useMemo, useState } from 'react';
 
+import { pickVariant } from '../../domain/mastery/variants';
+
 import type { ContentCatalog } from '../../domain/content/catalog';
 import {
   buildMasteryDashboard,
@@ -48,6 +50,10 @@ interface ProgressDashboardProps {
   progress: PlayerProgress;
   onBack: () => void;
   onDeclineReinforcement: (conceptId: string) => void;
+  /** Open a short review exercise. */
+  onPracticeVariant: (variantId: string) => void;
+  /** No exercise exists for the concept: replay the mission that taught it. */
+  onReplayMission: (missionId: string) => void;
   onExport: () => Promise<string>;
   onImport: (blob: string) => Promise<boolean>;
   onReset: () => Promise<void>;
@@ -113,6 +119,8 @@ export function ProgressDashboard({
   progress,
   onBack,
   onDeclineReinforcement,
+  onPracticeVariant,
+  onReplayMission,
   onExport,
   onImport,
   onReset,
@@ -183,27 +191,47 @@ export function ProgressDashboard({
         <section className="reinforcement" aria-label="Refuerzo pendiente">
           <p className="reinforcement__kicker">Refuerzo pendiente</p>
           <p className="reinforcement__note">
-            Las variantes cortas de refuerzo todavía no están disponibles. Puedes seguir jugando;
-            esto no bloquea nada.
+            Ejercicios cortos sobre conceptos que todavía te cuestan. Son opcionales: puedes
+            seguir jugando y esto no bloquea nada.
           </p>
           <ul className="reinforcement__list">
             {dashboard.pendingReinforcement.map((item) => {
               const concept = bundle.concepts.find(
                 (candidate) => candidate.id === item.conceptId,
               );
+              const variant = pickVariant(bundle.variants, item.conceptId, progress.events);
               return (
                 <li key={item.conceptId} className="reinforcement__row">
                   <span>
                     <strong>{concept?.label ?? item.conceptId}</strong> · {item.missionId} ·{' '}
                     {item.reason === 'revealed' ? 'solución revelada' : 'con ayuda'}
                   </span>
-                  <button
-                    type="button"
-                    className="btn btn--link"
-                    onClick={() => onDeclineReinforcement(item.conceptId)}
-                  >
-                    Ahora no
-                  </button>
+                  <span className="reinforcement__actions">
+                    {variant === null ? (
+                      <button
+                        type="button"
+                        className="btn btn--ghost"
+                        onClick={() => onReplayMission(item.missionId)}
+                      >
+                        Repetir {item.missionId}
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="btn btn--primary"
+                        onClick={() => onPracticeVariant(variant.id)}
+                      >
+                        Practicar · {variant.estimatedMinutes} min
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className="btn btn--link"
+                      onClick={() => onDeclineReinforcement(item.conceptId)}
+                    >
+                      Ahora no
+                    </button>
+                  </span>
                 </li>
               );
             })}
@@ -211,11 +239,20 @@ export function ProgressDashboard({
         </section>
       )}
 
-      <section className="concept-list" aria-label="Conceptos">
-        {dashboard.concepts.map((concept) => (
-          <ConceptCard key={concept.conceptId} view={concept} />
-        ))}
-      </section>
+      {bundle.worlds.map((world) => {
+        const inWorld = dashboard.concepts.filter((concept) => concept.world === world.id);
+        if (inWorld.length === 0) return null;
+        return (
+          <section key={world.id} className="concept-group" aria-label={world.name}>
+            <h2 className="concept-group__title">{world.name}</h2>
+            <div className="concept-list">
+              {inWorld.map((concept) => (
+                <ConceptCard key={concept.conceptId} view={concept} />
+              ))}
+            </div>
+          </section>
+        );
+      })}
 
       <section className="data" aria-label="Tus datos">
         <h2>Tus datos</h2>

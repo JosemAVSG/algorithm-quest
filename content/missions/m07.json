@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M07",
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "world": "w1",
   "order": 7,
@@ -309,7 +309,7 @@
   },
   "mastery": {
     "transferMissionId": "M11",
-    "reinforcementVariants": []
+    "reinforcementVariants": ["R-C10-1"]
   },
   "reward": {
     "systemId": "sys.dispatch",

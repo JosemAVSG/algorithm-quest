@@ -13,6 +13,7 @@
 
 import concepts from '../../../content/concepts.json';
 import missionIndex from '../../../content/index.json';
+import reinforcement from '../../../content/reinforcement.json';
 import workshop from '../../../content/workshop.json';
 import worlds from '../../../content/worlds.json';
 import { assembleCatalog, type CatalogReport } from '../../domain/content/catalog';
@@ -23,7 +24,7 @@ import {
 } from '../../domain/content/mission-loader';
 
 export function loadBrowserCatalog(): CatalogReport {
-  return assembleCatalog({ index: missionIndex, concepts, workshop, worlds });
+  return assembleCatalog({ index: missionIndex, concepts, workshop, worlds, reinforcement });
 }
 
 /** One lazy importer per mission file. Never `eager`: that would put them all in the main chunk. */

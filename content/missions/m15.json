@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M15",
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "world": "w2",
   "order": 3,
@@ -230,7 +230,7 @@
     "objectiveNouns": ["código", "registro", "cuenta", "mínimo"],
     "reasoningLexicon": ["anoto", "recorro", "cuenta", "al menos", "primera"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C19-1"] },
   "reward": {
     "systemId": "sys.log",
     "effect": "working → reliable",

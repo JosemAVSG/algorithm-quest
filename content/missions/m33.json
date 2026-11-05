@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "id": "M33",
   "world": "w5",
@@ -219,7 +219,7 @@
     "objectiveNouns": ["pieza", "forma", "suma", "elección"],
     "reasoningLexicon": ["incluir", "deshago", "copia", "pruebo", "decido"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C37-1"] },
   "reward": {
     "systemId": "sys.maze",
     "effect": "absent → installed",

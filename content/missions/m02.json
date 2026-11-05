@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M02",
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "world": "w1",
   "order": 2,
@@ -296,7 +296,7 @@
       ]
     }
   },
-  "mastery": { "transferMissionId": "M12", "reinforcementVariants": [] },
+  "mastery": { "transferMissionId": "M12", "reinforcementVariants": ["R-C04-1"] },
   "reward": {
     "systemId": "sys.sensor",
     "effect": "working → reliable",

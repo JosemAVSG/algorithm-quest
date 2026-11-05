@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "id": "M31",
   "world": "w5",
@@ -260,7 +260,7 @@
     "objectiveNouns": ["mancha", "casilla", "vecina", "plano"],
     "reasoningLexicon": ["exploro", "vistas", "fondo", "marco", "cuatro"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C35-1"] },
   "reward": {
     "systemId": "sys.stacker",
     "effect": "working → reliable",

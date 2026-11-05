@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "id": "M22",
   "world": "w3",
@@ -224,7 +224,7 @@
     "objectiveNouns": ["pasos", "crecimiento", "medida", "factor"],
     "reasoningLexicon": ["multiplica", "cociente", "factor", "penúltima", "último"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C26-1"] },
   "reward": {
     "systemId": "sys.growth",
     "effect": "absent → installed",

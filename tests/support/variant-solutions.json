@@ -1,0 +1,166 @@
+{
+ "R-C01-1": {
+  "entry": "needsHeating",
+  "source": "(t, m) => t < m"
+ },
+ "R-C02-1": {
+  "entry": "sumFirst",
+  "source": "(xs, n) => xs.slice(0, Math.max(n, 0)).reduce((a, b) => a + b, 0)"
+ },
+ "R-C03-1": {
+  "entry": "joinWithDashes",
+  "source": "(ws) => ws.join('-')"
+ },
+ "R-C04-1": {
+  "entry": "firstNegative",
+  "source": "(xs) => xs.findIndex((x) => x < 0)"
+ },
+ "R-C05-1": {
+  "entry": "lowStock",
+  "source": "(items, m) => items.filter((i) => i.qty < m).map((i) => i.name)"
+ },
+ "R-C06-1": {
+  "entry": "totalKg",
+  "source": "(bs) => bs.reduce((s, b) => s + b.kg, 0)"
+ },
+ "R-C07-1": {
+  "entry": "countAbove",
+  "source": "(xs, l) => xs.filter((x) => x > l).length"
+ },
+ "R-C08-1": {
+  "entry": "doubleAll",
+  "source": "(xs) => xs.map((x) => x * 2)"
+ },
+ "R-C09-1": {
+  "entry": "findByName",
+  "source": "(items, n) => items.find((i) => i.name === n) ?? null"
+ },
+ "R-C10-1": {
+  "entry": "heaviest",
+  "source": "(items) => { let best = null; for (const i of items) if (best === null || i.kg > best.kg) best = i; return best === null ? null : best.name; }"
+ },
+ "R-C11-1": {
+  "entry": "hasTwinTickets",
+  "source": "(xs) => { for (let i = 0; i < xs.length; i++) for (let j = i + 1; j < xs.length; j++) if (xs[i] === xs[j]) return true; return false; }"
+ },
+ "R-C12-1": {
+  "entry": "pairsToCheck",
+  "source": "(n) => (n * (n - 1)) / 2"
+ },
+ "R-C13-1": {
+  "entry": "firstRepeatedLetter",
+  "source": "(text) => { const seen = new Set(); for (const c of text) { if (seen.has(c)) return c; seen.add(c); } return null; }"
+ },
+ "R-C14-1": {
+  "entry": "mostCommonWord",
+  "source": "(ws) => { const m = new Map(); for (const w of ws) m.set(w, (m.get(w) ?? 0) + 1); let best = null, bc = 0; for (const [w, n] of m) if (n > bc || (n === bc && w < best)) { best = w; bc = n; } return best; }"
+ },
+ "R-C15-1": {
+  "entry": "averageOfPositives",
+  "source": "(xs) => { const p = xs.filter((x) => x > 0); return p.length === 0 ? 0 : p.reduce((a, b) => a + b, 0) / p.length; }"
+ },
+ "R-C16-1": {
+  "entry": "uniqueInOrder",
+  "source": "(xs) => [...new Set(xs)]"
+ },
+ "R-C17-1": {
+  "entry": "hasPairWithSum",
+  "source": "(xs, t) => { const seen = new Set(); for (const x of xs) { if (seen.has(t - x)) return true; seen.add(x); } return false; }"
+ },
+ "R-C18-1": {
+  "entry": "groupByInitial",
+  "source": "(ws) => { const o = Object.create(null); for (const w of ws) (o[w[0]] ??= []).push(w); return { ...o }; }"
+ },
+ "R-C19-1": {
+  "entry": "anyThrice",
+  "source": "(cs) => { const m = new Map(); for (const c of cs) { const n = (m.get(c) ?? 0) + 1; if (n >= 3) return true; m.set(c, n); } return false; }"
+ },
+ "R-C20-1": {
+  "entry": "distinctNames",
+  "source": "(ns) => new Set(ns.map((n) => n.trim().toLowerCase())).size"
+ },
+ "R-C21-1": {
+  "entry": "longestRun",
+  "source": "(xs) => { let best = 0, cur = 0; for (let i = 0; i < xs.length; i++) { cur = i > 0 && xs[i] >= xs[i - 1] ? cur + 1 : 1; best = Math.max(best, cur); } return best; }"
+ },
+ "R-C22-1": {
+  "entry": "isPalindrome",
+  "source": "(t) => t === [...t].reverse().join('')"
+ },
+ "R-C23-1": {
+  "entry": "minWindowSum",
+  "source": "(xs, k) => { if (k < 1 || k > xs.length) return null; let s = 0; for (let i = 0; i < k; i++) s += xs[i]; let b = s; for (let i = k; i < xs.length; i++) { s += xs[i] - xs[i - k]; b = Math.min(b, s); } return b; }"
+ },
+ "R-C24-1": {
+  "entry": "sortByLength",
+  "source": "(ws) => [...ws].sort((a, b) => a.length - b.length || (a < b ? -1 : a > b ? 1 : 0))"
+ },
+ "R-C25-1": {
+  "entry": "firstGreater",
+  "source": "(xs, x) => { let lo = 0, hi = xs.length; while (lo < hi) { const m = (lo + hi) >> 1; if (xs[m] > x) hi = m; else lo = m + 1; } return lo; }"
+ },
+ "R-C26-1": {
+  "entry": "stepsFor",
+  "source": "(n, k) => (k === 'constante' ? 1 : k === 'lineal' ? n : k === 'cuadrático' ? n * n : n <= 1 ? 0 : Math.ceil(Math.log2(n)))"
+ },
+ "R-C27-1": {
+  "entry": "evaluatePostfix",
+  "source": "(ts) => { const st = []; for (const t of ts) { if (t === '+' || t === '-' || t === '*') { const b = st.pop(), a = st.pop(); st.push(t === '+' ? a + b : t === '-' ? a - b : a * b); } else st.push(Number(t)); } return st.pop(); }"
+ },
+ "R-C28-1": {
+  "entry": "hotPotato",
+  "source": "(ns, k) => { const q = [...ns]; if (q.length === 0) return null; while (q.length > 1) { for (let i = 0; i < k - 1; i++) q.push(q.shift()); q.shift(); } return q[0]; }"
+ },
+ "R-C29-1": {
+  "entry": "chainLength",
+  "source": "(h) => { let n = 0; for (let c = h; c; c = c.next) n++; return n; }"
+ },
+ "R-C30-1": {
+  "entry": "traceCountdown",
+  "source": "(n) => { const log = []; const f = (k) => { log.push(`enter ${k}`); if (k > 0) f(k - 1); log.push(`exit ${k}`); }; f(n); return log; }"
+ },
+ "R-C31-1": {
+  "entry": "nestingDepth",
+  "source": "function nestingDepth(x) { return Array.isArray(x) ? 1 + Math.max(0, ...x.map(nestingDepth)) : 0; }"
+ },
+ "R-C32-1": {
+  "entry": "sumTree",
+  "source": "function sumTree(r) { return r === null ? 0 : r.value + sumTree(r.left) + sumTree(r.right); }"
+ },
+ "R-C33-1": {
+  "entry": "degrees",
+  "source": "(n, es) => { const d = new Array(n).fill(0); for (const [a, b] of es) { d[a]++; d[b]++; } return d; }"
+ },
+ "R-C34-1": {
+  "entry": "reachableWithin",
+  "source": "(nb, s, k) => { const dist = new Map([[s, 0]]); const q = [s]; for (let h = 0; h < q.length; h++) { const c = q[h]; if (dist.get(c) === k) continue; for (const x of nb[c]) if (!dist.has(x)) { dist.set(x, dist.get(c) + 1); q.push(x); } } return dist.size; }"
+ },
+ "R-C35-1": {
+  "entry": "regionSize",
+  "source": "(g, r, c) => { if (g[r][c] !== 1) return 0; const seen = new Set([`${r},${c}`]); const st = [[r, c]]; while (st.length) { const [a, b] = st.pop(); for (const [da, db] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const x = a + da, y = b + db; if (g[x]?.[y] === 1 && !seen.has(`${x},${y}`)) { seen.add(`${x},${y}`); st.push([x, y]); } } } return seen.size; }"
+ },
+ "R-C36-1": {
+  "entry": "canReach",
+  "source": "(nb, s, g) => { const seen = new Set([s]); const st = [s]; while (st.length) { const c = st.pop(); if (c === g) return true; for (const x of nb[c]) if (!seen.has(x)) { seen.add(x); st.push(x); } } return false; }"
+ },
+ "R-C37-1": {
+  "entry": "permutations",
+  "source": "(ls) => { const out = [], cur = [], used = ls.map(() => false); const go = () => { if (cur.length === ls.length) { out.push([...cur]); return; } for (let i = 0; i < ls.length; i++) { if (used[i]) continue; used[i] = true; cur.push(ls[i]); go(); cur.pop(); used[i] = false; } }; go(); return out; }"
+ },
+ "R-C38-1": {
+  "entry": "duplicateNumber",
+  "source": "(xs) => { const n = xs.length - 1; let s = (n * (n + 1)) / 2; let total = 0; for (const x of xs) total += x; return total - s; }"
+ },
+ "R-C39-1": {
+  "entry": "nextSmaller",
+  "source": "(xs) => { const o = xs.map(() => -1); const st = []; for (let i = 0; i < xs.length; i++) { while (st.length && xs[i] < xs[st[st.length - 1]]) o[st.pop()] = xs[i]; st.push(i); } return o; }"
+ },
+ "R-C40-1": {
+  "entry": "climb",
+  "source": "(n) => { const f = [1, 1]; for (let i = 2; i <= n; i++) f[i] = f[i - 1] + f[i - 2]; return f[n]; }"
+ },
+ "R-C41-1": {
+  "entry": "cheaperPlan",
+  "source": "(n, q) => { const lg = n <= 1 ? 0 : Math.ceil(Math.log2(n)); return n * lg + q * lg < n * q ? 'ordenar y buscar' : 'buscar cada vez'; }"
+ }
+}

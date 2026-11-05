@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "id": "M21",
   "world": "w3",
@@ -224,7 +224,7 @@
     "objectiveNouns": ["lote", "zona", "medio", "posición"],
     "reasoningLexicon": ["descarto", "mitad", "medio", "izquierda", "derecha"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C25-1"] },
   "reward": {
     "systemId": "sys.finder",
     "effect": "broken → working",

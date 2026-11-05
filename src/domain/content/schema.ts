@@ -422,10 +422,51 @@ export const WorldsRegistrySchema = z
 export type WorldsRegistry = z.infer<typeof WorldsRegistrySchema>;
 export type World = WorldsRegistry['worlds'][number];
 
+/**
+ * A reinforcement variant (docs/05-mastery.md §8): a short exercise on one
+ * concept, in a different fiction from the missions that taught it. It is
+ * offered when a concept is weak, runs in its own small screen, and produces
+ * one evidence event with role `reinforced` (weight 0.5). It has no briefing
+ * ceremony, no debrief and no workshop reward, so the schema is deliberately
+ * much smaller than a mission's.
+ */
+export const ReinforcementVariantSchema = z
+  .object({
+    id: z.string().regex(/^R-C\d{2}-\d$/, 'must match /^R-C\\d{2}-\\d$/'),
+    conceptId: ConceptIdSchema,
+    title: z.string().min(1),
+    estimatedMinutes: z.number().int().min(2).max(10),
+    prompt: z.string().min(1),
+    contract: z
+      .object({
+        entryPoint: z.string().min(1),
+        signature: z.string().min(1),
+        rules: z.array(z.string().min(1)).min(1),
+      })
+      .strict(),
+    constraints: z
+      .object({
+        bannedConstructs: z.array(z.string().min(1)),
+        mustNotMutate: z.boolean(),
+      })
+      .strict(),
+    starterCode: z.string().min(1),
+    tests: z
+      .object({
+        visible: z.array(TestCaseSchema).min(2).max(3),
+        hidden: z.array(TestCaseSchema).min(2).max(5),
+      })
+      .strict(),
+    hint: z.string().min(20),
+  })
+  .strict();
+
+export type ReinforcementVariant = z.infer<typeof ReinforcementVariantSchema>;
+
 export const ReinforcementRegistrySchema = z
   .object({
     schemaVersion: z.literal(1),
-    variants: z.array(z.object({ id: z.string().min(1) }).strict()),
+    variants: z.array(ReinforcementVariantSchema),
   })
   .strict();
 

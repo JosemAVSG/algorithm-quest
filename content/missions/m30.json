@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "id": "M30",
   "world": "w5",
@@ -240,7 +240,7 @@
     "objectiveNouns": ["estación", "parada", "ruta", "vecino"],
     "reasoningLexicon": ["capas", "visitadas", "cola", "cercanas", "ciclo"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C34-1"] },
   "reward": {
     "systemId": "sys.queue",
     "effect": "working → reliable",

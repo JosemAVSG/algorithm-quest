@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "id": "M25",
   "world": "w4",
@@ -1720,7 +1720,7 @@
     "objectiveNouns": ["eslabón", "cadena", "enlace", "siguiente"],
     "reasoningLexicon": ["next", "salto", "auxiliar", "anterior", "apunta"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C29-1"] },
   "reward": {
     "systemId": "sys.chain",
     "effect": "broken → working",

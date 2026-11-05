@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M13",
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "locale": "es",
   "world": "w2",
   "order": 1,
@@ -246,7 +246,7 @@
     "objectiveNouns": ["pareja", "pieza", "hueco", "posición"],
     "reasoningLexicon": ["falta", "recuerdo", "guardo", "comprueba", "devuelvo"]
   },
-  "mastery": { "reinforcementVariants": [] },
+  "mastery": { "reinforcementVariants": ["R-C17-1"] },
   "reward": {
     "systemId": "sys.dispatch",
     "effect": "working → reliable",
