@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M16",
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "world": "w2",
   "order": 4,
@@ -30,7 +30,7 @@
     "allowClosedForm": false,
     "mustNotMutate": true,
     "rotationInvariant": false,
-    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 200000 }
+    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 40000 }
   },
   "starterCode": "function duplicateRecords(records) {\n  // your code here\n}\n",
   "tests": {
@@ -4351,7 +4351,7 @@
     },
     {
       "code": "E16",
-      "message": "Tu respuesta es correcta y tarda demasiado. Con 4.000 fichas, comparar cada una con todas las demás son unos 8 millones de comparaciones. ¿Puedes calcular, para cada ficha, un identificador que sea igual si y solo si son de la misma persona?"
+      "message": "Tu solución hace demasiado trabajo para este tamaño de entrada. Con 4.000 fichas, comparar cada una con todas las demás son unos 8 millones de comparaciones. ¿Puedes calcular, para cada ficha, un identificador que sea igual si y solo si son de la misma persona?"
     },
     {
       "code": "E01",

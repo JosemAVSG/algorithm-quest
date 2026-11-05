@@ -60,10 +60,22 @@ export function MentorPanel({ state, onRequestHint, onOpenDebrief }: MentorPanel
   const card = describeDiagnosis(evaluation.diagnosis);
 
   if (evaluation.passed) {
+    // A correct solution that does more work than the mission expects still
+    // completes (unless the mission makes the budget a requirement). The mentor
+    // says so, because noticing the cost is half of what the mission teaches.
+    const costAdvice =
+      evaluation.cost?.over === true && evaluation.diagnosis.code === 'E16'
+        ? evaluation.diagnosis.evidence.message
+        : undefined;
     return (
       <section className="mentor mentor--clear" aria-label="Mentor">
         <h2>Mentor</h2>
         <p className="mentor__headline">Las pruebas pasan.</p>
+        {costAdvice === undefined ? null : (
+          <p className="mentor__detail mentor__detail--cost" data-testid="cost-advice">
+            <strong>Pero el coste se pasa.</strong> {costAdvice}
+          </p>
+        )}
         <p className="mentor__detail">
           Antes de cerrar la misión, explica por qué tu solución funciona.
         </p>

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "id": "M37",
   "world": "w6",
@@ -30,7 +30,7 @@
     "allowClosedForm": false,
     "mustNotMutate": true,
     "rotationInvariant": false,
-    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 300000 }
+    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 20000 }
   },
   "starterCode": "function planOrder(tasks) {\n  // your code here\n}\n",
   "tests": {
@@ -445,7 +445,7 @@
     },
     {
       "code": "E16",
-      "message": "Tu respuesta es correcta y tarda demasiado. Con 300 tareas, buscar en todo el listado qué tareas quedan libres cada vez que se ejecuta una repite mucho trabajo. Guarda, para cada tarea, cuántas necesidades le faltan, y, para cada una, quién la necesita."
+      "message": "Tu solución hace demasiado trabajo para este tamaño de entrada. Con 300 tareas, buscar en todo el listado qué tareas quedan libres cada vez que se ejecuta una repite mucho trabajo. Guarda, para cada tarea, cuántas necesidades le faltan, y, para cada una, quién la necesita."
     },
     {
       "code": "E01",

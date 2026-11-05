@@ -37,6 +37,18 @@ export function timeoutFor(request: {
   return request.timeoutMs ?? DEFAULT_TIMEOUT_MS;
 }
 
+/** Steps a case may take when the mission declares no budget: only a runaway loop reaches it. */
+export const DEFAULT_OP_LIMIT = 300_000_000;
+/** A case is stopped at this multiple of the budget: generous, so slow-but-correct still finishes. */
+export const OP_LIMIT_FACTOR = 20;
+const MIN_OP_LIMIT = 200_000;
+
+/** The step limit for one case. Deterministic, unlike the wall-clock timeout. */
+export function opLimitFor(request: { operationBudget?: number }): number {
+  if (request.operationBudget === undefined) return DEFAULT_OP_LIMIT;
+  return Math.max(request.operationBudget * OP_LIMIT_FACTOR, MIN_OP_LIMIT);
+}
+
 function toOutcome(response: WorkerResponse): ExecutionOutcome {
   switch (response.kind) {
     case 'completed':
@@ -131,6 +143,7 @@ export function createWorkerExecutionPort(): ExecutionPort {
           entryPoint: request.entryPoint,
           cases: request.cases,
           timeoutMs: request.timeoutMs,
+          opLimit: opLimitFor(request),
           probes: {
             mutation: request.probes?.mutation ?? false,
             determinism: request.probes?.determinism ?? true,

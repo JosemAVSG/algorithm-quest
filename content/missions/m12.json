@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M12",
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "world": "transition",
   "order": 3,
@@ -62,7 +62,7 @@
       "budgetMs": 400,
       "calibrated": true,
       "enforced": false,
-      "operationBudget": 500000
+      "operationBudget": 900000
     }
   },
   "starterCode": "function buildAuditReport(orders) {\n  // your code here\n}\n",
@@ -197,7 +197,7 @@
     },
     {
       "code": "E16",
-      "message": "Correcto y demasiado lento. Con 50.000 órdenes el bucle anidado hace más de mil millones de comparaciones. ¿Cuál de las tres respuestas necesita recordar algo?"
+      "message": "Tu solución hace demasiado trabajo para este tamaño de entrada. Con 50.000 órdenes el bucle anidado hace más de mil millones de comparaciones. ¿Cuál de las tres respuestas necesita recordar algo?"
     },
     {
       "code": "E01",

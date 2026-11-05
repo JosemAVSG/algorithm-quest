@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "id": "M34",
   "world": "w6",
@@ -29,7 +29,7 @@
     "bannedConstructs": ["[]", "{}", "new Set", "new Map", "new Array", "Array", ".sort", "indexOf", "includes"],
     "allowClosedForm": false,
     "mustNotMutate": true,
-    "efficiency": { "budgetMs": 150, "calibrated": true, "enforced": false, "operationBudget": 100000 }
+    "efficiency": { "budgetMs": 150, "calibrated": true, "enforced": false, "operationBudget": 20000 }
   },
   "starterCode": "function missingBox(arrived) {\n  // your code here\n}\n",
   "tests": {
@@ -101,7 +101,7 @@
     },
     {
       "code": "E16",
-      "message": "Tu respuesta es correcta y tarda demasiado. Con 6.000 cajas, comprobar si cada número del 0 al n está en la lista son decenas de millones de comparaciones. Hay una forma de resolverlo en un solo recorrido con unos pocos números sueltos."
+      "message": "Tu solución hace demasiado trabajo para este tamaño de entrada. Con 6.000 cajas, comprobar si cada número del 0 al n está en la lista son decenas de millones de comparaciones. Hay una forma de resolverlo en un solo recorrido con unos pocos números sueltos."
     },
     {
       "code": "E01",

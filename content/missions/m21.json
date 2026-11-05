@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "id": "M21",
   "world": "w3",
@@ -30,7 +30,7 @@
     "allowClosedForm": false,
     "mustNotMutate": true,
     "rotationInvariant": false,
-    "efficiency": { "budgetMs": 150, "calibrated": true, "enforced": false, "operationBudget": 100000 }
+    "efficiency": { "budgetMs": 150, "calibrated": true, "enforced": false, "operationBudget": 200 }
   },
   "starterCode": "function firstValidBatch(dates, today) {\n  // your code here\n}\n",
   "tests": {
@@ -123,7 +123,7 @@
     },
     {
       "code": "E16",
-      "message": "Tu respuesta es correcta y tarda demasiado. Con 20.000 lotes, mirarlos uno a uno son 20.000 comprobaciones por camión. Con la lista ordenada, cada comprobación puede descartar la mitad de lo que queda."
+      "message": "Tu solución hace demasiado trabajo para este tamaño de entrada. Con 20.000 lotes, mirarlos uno a uno son 20.000 comprobaciones por camión. Con la lista ordenada, cada comprobación puede descartar la mitad de lo que queda."
     },
     {
       "code": "E01",

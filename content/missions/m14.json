@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M14",
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "world": "w2",
   "order": 2,
@@ -30,7 +30,7 @@
     "allowClosedForm": false,
     "mustNotMutate": true,
     "rotationInvariant": false,
-    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 200000 }
+    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 50000 }
   },
   "starterCode": "function groupByZone(items) {\n  // your code here\n}\n",
   "tests": {
@@ -636,7 +636,7 @@
     },
     {
       "code": "E16",
-      "message": "Tu respuesta es correcta y tarda demasiado. Con 5.000 productos en 500 zonas, repasar todo el listado una vez por zona suma millones de pasos. ¿Puedes colocar cada producto en su zona en el mismo recorrido en que lo lees?"
+      "message": "Tu solución hace demasiado trabajo para este tamaño de entrada. Con 5.000 productos en 500 zonas, repasar todo el listado una vez por zona suma millones de pasos. ¿Puedes colocar cada producto en su zona en el mismo recorrido en que lo lees?"
     },
     {
       "code": "E01",

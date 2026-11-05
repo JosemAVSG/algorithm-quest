@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "id": "M36",
   "world": "w6",
@@ -30,7 +30,7 @@
     "allowClosedForm": false,
     "mustNotMutate": false,
     "rotationInvariant": false,
-    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 1000 }
+    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 2000 }
   },
   "starterCode": "function ways(n) {\n  // your code here\n}\n",
   "tests": {
@@ -93,7 +93,7 @@
     },
     {
       "code": "E16",
-      "message": "Tu respuesta es correcta y tarda demasiado. Para llegar a n = 40, probar todas las secuencias repite el mismo cálculo (por ejemplo, las formas de llegar al escalón 10) miles de millones de veces. Resuelve cada escalón una sola vez y guarda el resultado."
+      "message": "Tu solución hace demasiado trabajo para este tamaño de entrada. Para llegar a n = 40, probar todas las secuencias repite el mismo cálculo (por ejemplo, las formas de llegar al escalón 10) miles de millones de veces. Resuelve cada escalón una sola vez y guarda el resultado."
     },
     {
       "code": "E01",

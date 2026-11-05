@@ -85,7 +85,11 @@ export function Lab({
 
         <aside className="lab__panel" aria-live="polite">
           {illustration === null ? null : <div className="lab__visual">{illustration}</div>}
-          <TestPanel report={lastEvaluation?.report ?? null} running={state.running} />
+          <TestPanel
+            report={lastEvaluation?.report ?? null}
+            running={state.running}
+            cost={lastEvaluation?.cost ?? null}
+          />
           <MentorPanel
             state={state}
             onRequestHint={onRequestHint}

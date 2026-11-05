@@ -18,6 +18,8 @@ export interface WorkerRequest {
   entryPoint: string;
   cases: readonly ExecutionCase[];
   timeoutMs: number;
+  /** Steps one case may take before it is stopped (D13). */
+  opLimit: number;
   probes: {
     /** True only when the mission declares `mustNotMutate`. */
     mutation: boolean;

@@ -33,6 +33,10 @@ export interface TestResult {
   actual?: unknown;
   message?: string;
   line?: number;
+  /** Steps the case took, when the run measured them (D13). */
+  ops?: number;
+  /** True when the case was stopped for crossing the step limit. */
+  costExceeded?: boolean;
 }
 
 export interface GroupCount {
@@ -140,6 +144,8 @@ export function buildTestReport(mission: Mission, outcome: ExecutionOutcome): Te
         status: 'error',
         message: entry.message,
         ...(entry.line === undefined ? {} : { line: entry.line }),
+        ...(entry.ops === undefined ? {} : { ops: entry.ops }),
+        ...(entry.costExceeded === true ? { costExceeded: true } : {}),
       });
       failingIds.push(testCase.id);
       continue;
@@ -165,6 +171,7 @@ export function buildTestReport(mission: Mission, outcome: ExecutionOutcome): Te
       ...baseResult(group, testCase),
       status: passed ? 'pass' : 'fail',
       actual,
+      ...(entry.ops === undefined ? {} : { ops: entry.ops }),
     });
   }
 

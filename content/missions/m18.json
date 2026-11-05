@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "id": "M18",
   "world": "w3",
@@ -30,7 +30,7 @@
     "allowClosedForm": false,
     "mustNotMutate": true,
     "rotationInvariant": false,
-    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 200000 }
+    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 50000 }
   },
   "starterCode": "function joinSortedLists(first, second) {\n  // your code here\n}\n",
   "tests": {
@@ -129,7 +129,7 @@
     },
     {
       "code": "E16",
-      "message": "Tu respuesta es correcta y tarda demasiado. Con dos listas de 8.000 valores, quitar elementos del principio de una lista o insertar cada valor en su sitio repite mucho trabajo. Cada valor solo necesita mirarse una vez."
+      "message": "Tu solución hace demasiado trabajo para este tamaño de entrada. Con dos listas de 8.000 valores, quitar elementos del principio de una lista o insertar cada valor en su sitio repite mucho trabajo. Cada valor solo necesita mirarse una vez."
     },
     {
       "code": "E01",

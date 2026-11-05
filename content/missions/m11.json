@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M11",
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "world": "transition",
   "order": 2,
@@ -59,7 +59,8 @@
     "efficiency": {
       "budgetMs": 200,
       "calibrated": true,
-      "enforced": false
+      "enforced": false,
+      "operationBudget": 200000
     }
   },
   "starterCode": "function mostFrequentCategory(orders) {\n  // your code here\n}\n",

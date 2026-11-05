@@ -41,7 +41,11 @@ export interface ExecutionRequest {
   budgetMs?: number;
   /** True when the mission treats the budget as a hard requirement. */
   enforced?: boolean;
-  /** Operations the mission expects a correct solution to need, when declared. */
+  /**
+   * Steps the worst case of a correct, reasonable solution is allowed. Cases
+   * are stopped at a multiple of it, so a runaway solution ends quickly and
+   * deterministically instead of at the wall-clock timeout (D13).
+   */
   operationBudget?: number;
   /**
    * Behavioural probes to run after the cases. Mutation detection is opt-in per
@@ -69,10 +73,16 @@ export type CaseOutcome =
       value: unknown;
       /** True when the call left its arguments different from a pre-call clone (E11). */
       mutatedInput?: boolean;
+      /** Steps the call took (loop iterations, calls, built-in work). Absent when not measured. */
+      ops?: number;
     }
   | {
       testId: string;
       status: 'threw';
+      /** Steps taken before the case stopped. */
+      ops?: number;
+      /** True when the case was stopped for crossing the step limit, not for an error. */
+      costExceeded?: true;
       message: string;
       /** 1-based, in the player's own source. Absent when the engine will not say. */
       line?: number;

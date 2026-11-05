@@ -362,7 +362,7 @@ export function missionSessionReducer(
         maxHintLevel: state.maxHintLevel,
         solutionRevealed: false,
         strategySubmitted: state.strategy.length > 0,
-        actualMs: state.lastEvaluation.durationMs,
+        ...(state.lastEvaluation.cost === null ? {} : { actualOps: state.lastEvaluation.cost.maxOps }),
       });
 
       return {

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "id": "M24",
   "world": "w4",
@@ -30,7 +30,7 @@
     "allowClosedForm": false,
     "mustNotMutate": true,
     "rotationInvariant": false,
-    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 300000 }
+    "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 25000 }
   },
   "starterCode": "function runDesk(events) {\n  // your code here\n}\n",
   "tests": {
@@ -151,7 +151,7 @@
     },
     {
       "code": "E16",
-      "message": "Tu respuesta es correcta y tarda demasiado. Con 4.000 llegadas, sacar del principio de una lista obliga a mover todos los demás elementos cada vez. Puedes llevar una posición que avance en vez de sacar de verdad."
+      "message": "Tu solución hace demasiado trabajo para este tamaño de entrada. Con 4.000 llegadas, sacar del principio de una lista obliga a mover todos los demás elementos cada vez. Puedes llevar una posición que avance en vez de sacar de verdad."
     },
     {
       "code": "E01",

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "id": "M23",
   "world": "w4",
@@ -118,7 +118,7 @@
     },
     {
       "code": "E16",
-      "message": "Tu respuesta es correcta y tarda demasiado. Con 60.000 marcas, borrar parejas contiguas una y otra vez con replace vuelve a recorrer el texto muchas veces. Se puede decidir en una sola pasada."
+      "message": "Tu solución hace demasiado trabajo para este tamaño de entrada. Con 60.000 marcas, borrar parejas contiguas una y otra vez con replace vuelve a recorrer el texto muchas veces. Se puede decidir en una sola pasada."
     },
     {
       "code": "E01",

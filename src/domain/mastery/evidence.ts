@@ -45,15 +45,19 @@ export interface EvidenceInput {
   maxHintLevel: 0 | 1 | 2 | 3 | 4;
   solutionRevealed: boolean;
   strategySubmitted: boolean;
-  /** Measured duration of the run that passed, when a budget exists. */
-  actualMs?: number;
+  /**
+   * Steps of the most expensive case of the run that passed (D13). Wall-clock
+   * time used to feed this ratio, which is the signal D13 rejects: a throttled
+   * laptop would lower the mastery of a correct solution.
+   */
+  actualOps?: number;
 }
 
-function efficiencyRatio(mission: Mission, actualMs: number | undefined): number {
-  const budget = mission.constraints.efficiency?.budgetMs;
-  if (budget === undefined || actualMs === undefined) return 1;
-  if (actualMs <= 0) return 1;
-  return Math.min(1, budget / actualMs);
+function efficiencyRatio(mission: Mission, actualOps: number | undefined): number {
+  const budget = mission.constraints.efficiency?.operationBudget;
+  if (budget === undefined || actualOps === undefined) return 1;
+  if (actualOps <= 0) return 1;
+  return Math.min(1, budget / actualOps);
 }
 
 export function buildEvidenceEvents(
@@ -70,7 +74,7 @@ export function buildEvidenceEvents(
     edgePassed: counts.edge.passed,
     edgeTotal: counts.edge.total,
     reasoningScore: input.reasoningScore,
-    efficiencyRatio: efficiencyRatio(mission, input.actualMs),
+    efficiencyRatio: efficiencyRatio(mission, input.actualOps),
     attempts: input.attempts,
     hintsUsed: input.hintsUsed,
     maxHintLevel: input.maxHintLevel,

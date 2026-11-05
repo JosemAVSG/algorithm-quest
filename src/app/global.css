@@ -1138,6 +1138,21 @@ textarea,
 
 /* ------------------------------------------------------------------ tests */
 
+.tests__cost {
+  margin-top: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+.tests__cost--over {
+  color: var(--attention, #e0a53a);
+}
+
+.mentor__detail--cost strong {
+  color: var(--attention, #e0a53a);
+}
+
 .tests,
 .mentor {
   padding: 1rem 1.15rem 1.15rem;

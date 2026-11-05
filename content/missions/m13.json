@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M13",
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "world": "w2",
   "order": 1,
@@ -150,7 +150,7 @@
     },
     {
       "code": "E16",
-      "message": "Tu respuesta es correcta y tarda demasiado. Con 8.000 piezas probar todas las parejas son casi 32 millones de comparaciones. Para cada pieza solo hay un tamaño que la completa: ¿puedes saber si ya lo viste sin volver a recorrer la lista?"
+      "message": "Tu solución hace demasiado trabajo para este tamaño de entrada. Con 8.000 piezas probar todas las parejas son casi 32 millones de comparaciones. Para cada pieza solo hay un tamaño que la completa: ¿puedes saber si ya lo viste sin volver a recorrer la lista?"
     },
     {
       "code": "E01",
