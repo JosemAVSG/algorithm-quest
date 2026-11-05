@@ -2023,3 +2023,62 @@ textarea,
   color: var(--text-muted);
   font-size: 0.875rem;
 }
+
+.welcome,
+.review-notice {
+  margin-top: 2rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.welcome__title {
+  font-size: 1rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text);
+}
+
+.welcome__steps {
+  list-style: none;
+  margin: 0.75rem 0 1rem;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  counter-reset: step;
+}
+
+.welcome__step {
+  display: grid;
+  gap: 0.25rem;
+  counter-increment: step;
+}
+
+.welcome__step-title::before {
+  content: counter(step) '. ';
+  font-family: var(--font-mono);
+  color: var(--structure);
+}
+
+.welcome__step-title {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.welcome__step-text {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.review-notice {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  border-left: 3px solid var(--structure);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}

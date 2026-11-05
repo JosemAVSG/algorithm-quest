@@ -32,6 +32,7 @@ import {
   type WorldState,
 } from '../../domain/progression/worlds';
 import { STATE_LABEL } from './stateLabels';
+import { WelcomeGuide } from './WelcomeGuide';
 import { WorldGem } from './WorldGem';
 
 const WORLD_LABEL: Record<WorldState, string> = {
@@ -134,6 +135,22 @@ export function WorkshopMap({
           </button>
         </div>
       </header>
+
+      {openWorld === null && completed.size === 0 ? <WelcomeGuide /> : null}
+
+      {openWorld === null && progress.reinforcement.length > 0 ? (
+        <section className="review-notice" aria-label="Repaso disponible">
+          <p>
+            {progress.reinforcement.length === 1
+              ? '1 concepto listo para repasar.'
+              : `${progress.reinforcement.length} conceptos listos para repasar.`}{' '}
+            Es opcional y no afecta a tu avance.
+          </p>
+          <button type="button" className="btn btn--ghost" onClick={onOpenProgress}>
+            Ver repaso
+          </button>
+        </section>
+      ) : null}
 
       <section className="next" aria-label="Siguiente misión">
         {upcoming === null ? (
