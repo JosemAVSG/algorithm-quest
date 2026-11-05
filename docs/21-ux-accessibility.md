@@ -18,6 +18,25 @@ earlier; this is the second.
 | Controls around 28 px tall on a phone (the step rail, link buttons, the trace picker) | mission screens | At least 44 px on touch or narrow screens |
 | The reward moment showed `sys.sensor` and `broken → working` | mission complete | Shows the system's Spanish name and `averiado → operativo`, the same words as the map |
 
+## A mission that "could not be loaded" never recovered
+
+Found from a production report ("No se pudo cargar la misión" on the deployed site). The retry button asked the
+loader again, but a browser **caches a failed dynamic `import()` for the life of the page**: after the first
+failure, the second attempt fails at once without a request, even when the server is back. The experiment is
+three lines: import a URL that 404s, make the server healthy, import it again: no request is made and it fails;
+a fresh page succeeds. The loader's comment claimed the opposite, and the e2e that tested the retry had been
+failing on every run, which was filed as environment noise.
+
+This is also what a player meets after every deployment: the open tab asks for chunks whose hashed names no
+longer exist (every merge to the deployed branch replaces them) and stays stuck until the tab is reloaded.
+
+Fix: the button is now **"Recargar y reintentar"**. It marks the mission in `sessionStorage` and reloads; the app
+reads the mark once and reopens that mission (`src/app/reopen.ts`). The message names both causes (connection, or
+a new version while the tab was open). Covered by unit tests of the helper and by the e2e that failed before.
+
+Not verified: the live deployment itself. The environment this was written in cannot reach it, so the cause there
+is inferred from the behaviour above, not observed.
+
 ## What keeps it fixed
 
 `e2e/accessibility.spec.ts` scans the map, a world, progress, briefing, strategy, lab (after a passing run) and
