@@ -22,6 +22,11 @@ import {
 } from '../../domain/persistence/port';
 import { nextMission } from '../../domain/progression/unlock';
 import {
+  inPlayOrder,
+  systemStates,
+  worldSystems,
+} from '../../domain/progression/workshop';
+import {
   missionNodes,
   worldNodes,
   type MissionNodeState,
@@ -84,19 +89,27 @@ export function WorkshopMap({
     (world) => world.missionIds,
   ).length;
 
-  const bySystem = new Map(
-    bundle.systems.map((system) => [system.id, system.initialState]),
+  const ordered = inPlayOrder(bundle.missions, bundle.worlds);
+  const bySystem = systemStates(
+    bundle.systems,
+    bundle.missions,
+    bundle.worlds,
+    completed,
   );
-  const ordered = [...bundle.missions].sort((a, b) => a.order - b.order);
-  for (const mission of ordered) {
-    if (completed.has(mission.id))
-      bySystem.set(mission.workshop.systemId, mission.workshop.to);
-  }
 
   const replayable = ordered.filter((mission) => completed.has(mission.id));
   const worlds = worldNodes(bundle.worlds, completed);
   const openWorld =
     worlds.find((node) => node.world.id === openWorldId) ?? null;
+  const systemsHere =
+    openWorld === null
+      ? []
+      : worldSystems(
+          openWorld.world.id,
+          bundle.systems,
+          bundle.missions,
+          bundle.worlds,
+        );
 
   return (
     <div className="map">
@@ -213,9 +226,9 @@ export function WorkshopMap({
             )}
           </ol>
 
-          {openWorld.world.id === 'w1' ? (
+          {systemsHere.length > 0 ? (
             <section className="map__grid" aria-label="Sistemas del taller">
-              {bundle.systems.map((system) => {
+              {systemsHere.map((system) => {
                 const state = bySystem.get(system.id) ?? system.initialState;
                 return (
                   <article

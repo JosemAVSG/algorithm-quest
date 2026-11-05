@@ -88,6 +88,114 @@
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.balance",
+      "name": "Balance gauge",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.merger",
+      "name": "Merge table",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.window",
+      "name": "Window scanner",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.sorter",
+      "name": "Sorting arm",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.finder",
+      "name": "Bisect finder",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.growth",
+      "name": "Growth meter",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.stacker",
+      "name": "Stacking crane",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.queue",
+      "name": "Service queue",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.chain",
+      "name": "Link chain",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.frames",
+      "name": "Frame monitor",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.recurse",
+      "name": "Mirror room",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.tree",
+      "name": "Branch map",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
     }
   ]
 }
