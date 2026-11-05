@@ -105,6 +105,24 @@ describe('runCasesWith with a meter', () => {
     expect(outcome).toMatchObject({ costExceeded: true });
   });
 
+  it('does not run the cases after one was stopped at the limit', () => {
+    const meter = createMeter();
+    const fn = compileEntryPoint('function f(n) { while (n > 0) {} return n; }', 'f', { meter });
+    const outcomes = runCasesWith(
+      fn,
+      [
+        { testId: 'a', input: [1] },
+        { testId: 'b', input: [1] },
+        { testId: 'c', input: [0] },
+      ],
+      { meter, opLimit: 500 },
+    );
+    expect(outcomes[0]).toMatchObject({ costExceeded: true });
+    expect(outcomes[1]).toMatchObject({ costExceeded: true, message: expect.stringContaining('no se ejecutó') });
+    expect(outcomes[2]).toMatchObject({ costExceeded: true, message: expect.stringContaining('no se ejecutó') });
+    expect(outcomes[1]).not.toHaveProperty('ops');
+  });
+
   it('reports the steps of each case separately', () => {
     const meter = createMeter();
     const fn = compileEntryPoint('function f(n) { let s = 0; for (let i = 0; i < n; i++) s += i; return s; }', 'f', { meter });

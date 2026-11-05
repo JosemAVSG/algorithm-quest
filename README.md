@@ -1,25 +1,24 @@
 # Algorithm Quest — Specification Package
 
-Status: **Gates 1–3 approved. M0–M2 done; M3 partial. Worlds 2–6 (M13–M37) authored — see `15-world2.md` to `18-worlds5-6.md`.** M1 is *buildable*, not validated:
+Status: **Gates 1–3 approved. M0–M2 done; M3 partial. Worlds 2–6 (M13–M37) authored — see `15-world2.md` to `18-worlds5-6.md`. Step cost, E16 and a step-by-step trace — see `19-cost-and-trace.md`.** M1 is *buildable*, not validated:
 assumption A7 is still unsatisfied and there is no playtest evidence — see
 `11-delivery-plan.md` §6, `12-m1-walkthrough.md`, `13-m2-hardening.md` and
 `14-m3-mentor.md`.
 Version: `spec-0.1.0` · Date: 2026-10-27
 
-The design documents in `docs/` are the spec. The code today is the content pipeline plus the M1
-vertical slice, hardened by M2 and M3: M01 is playable from the workshop map to a repaired
-sensor, with Worker execution, a 1 MB output cap, mutation/determinism/rotation probes, a test
-panel, a mentor that produces E01–E15 and E17–E22 with a four-rung ladder and modality switching,
-and the four-block debrief. Only M01 is authored, and the rest of the map is deliberately inert.
-Calibration, E16, the trace table and efficiency verdicts are deliberately deferred (`13` §3,
-`14` §3).
+The design documents in `docs/` are the spec. The code is the content pipeline plus a playable
+game: **37 missions** in six worlds and the transition arc (`C01`–`C41` all covered), Worker
+execution with a 1 MB output cap, mutation/determinism/rotation probes, a mentor that produces
+E01–E22 with a four-rung ladder and modality switching, a test panel with the cost of each run
+in steps, a step-by-step trace of any visible case, and the four-block debrief. Nothing has been
+playtested, and the spaced-review content (`content/reinforcement.json`) is still empty.
 
 ```bash
 npm install
-npm run check       # typecheck + lint + validate:content + 124 unit/integration tests
+npm run check       # typecheck + lint + validate:content + unit/integration tests
 npx playwright install chromium
-npm run test:e2e    # X1–X6 + S1–S10 in a real browser
-npm run dev         # playable at 1280×900 or wider
+npm run test:e2e    # X1–X8, S1–S10 and the lab, cost and trace suites in a real browser
+npm run dev         # the lab stacks below 900 px, so it also works on a tablet or phone
 ```
 
 ---
@@ -84,6 +83,7 @@ Every deliverable from the brief maps to exactly one place.
 | — | World 3 missions M17–M22 | `docs/16-world3.md` |
 | — | World 4 missions M23–M28 | `docs/17-world4.md` |
 | — | Worlds 5–6 missions M29–M37 | `docs/18-worlds5-6.md` |
+| — | Step cost, E16 verdict, step-by-step trace | `docs/19-cost-and-trace.md` |
 
 ---
 
@@ -104,8 +104,7 @@ If you only have 20 minutes: `00`, `01` §5 (principles → enforcement), `03`, 
 
 - No authentication, database, or AI provider selection.
 - No world 2–6 mission content, and no M02–M12 records (roadmap only).
-- No mastery dashboard, trace table, or efficiency verdicts (`14` §3: the trace table needs a
-  streaming protocol, and E16 needs a calibrated budget).
+- No streaming trace protocol: the trace is a separate run of one visible case (`19`).
 - No playtest evidence (A7) — M1 is buildable, not validated.
 
 ## Non-negotiable invariants

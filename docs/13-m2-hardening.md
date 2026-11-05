@@ -58,6 +58,8 @@ kind M2 exists to prevent, so the gate now uses `passed` in `canOpenDebrief`,
 
 ### 3.1 No calibration
 
+> **Update:** cost is now counted in steps, so there is nothing to calibrate against the clock. See `19-cost-and-trace.md`.
+
 `docs/08` §6 asks for startup calibration with a fixed reference workload. It
 never defines the workload, the unit, the baseline, or the scope. D13 further
 argues that wall-clock budgets should not be enforced at all, because a throttled
@@ -69,6 +71,8 @@ mission that needs it (M12, after D13 is settled). Recorded here so the gap is
 visible rather than forgotten.
 
 ### 3.2 No trace table
+
+> **Update:** built by instrumenting the source; the columns are real. See `19-cost-and-trace.md` §3.
 
 `11` lists "trace table generation" in M2, `docs/04` §5 wants columns `i`,
 `element`, `condition`, `accumulator`, and `docs/04` §8 wants a trace of the first
@@ -83,6 +87,8 @@ drop the columns. Copying the doc's table shape without the data would be worse
 than the gap.
 
 ### 3.3 No E16, no operation budgets
+
+> **Update:** E16 is produced and the budgets are calibrated. See `19-cost-and-trace.md` §2.
 
 D12/D13 are open. `budgetMs`/`operationBudget` cross the port so the adapter can
 carry them, but nothing enforces a cost verdict and `E16` is never produced. An

@@ -30,9 +30,13 @@ test('en una pantalla estrecha el editor, las pruebas y el mentor son utilizable
 test('el editor muestra los operadores tal como se escriben, sin ligaduras', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await reachLab(page);
-  const ligatures = await editor(page).evaluate((element) =>
-    getComputedStyle(element).fontVariantLigatures,
-  );
+  // The rich editor loads on demand; until it does a textarea stands in for it.
+  // Check both, and the rich one once it is there.
+  await expect(page.locator('.cm-editor, textarea.editor__area').first()).toBeVisible();
+  await expect(page.locator('.cm-editor')).toBeVisible();
+  const ligatures = await page
+    .locator('.cm-content')
+    .evaluate((element) => getComputedStyle(element).fontVariantLigatures);
   expect(ligatures).toBe('none');
 });
 

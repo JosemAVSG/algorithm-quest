@@ -29,7 +29,14 @@ import {
 import { createConsoleCollector, createConsoleStub } from '../../../domain/execution/console';
 import { createMeter, installBuiltinMeter } from '../../../domain/execution/meter';
 import { installConsole, installPrelude } from './prelude';
-import type { WorkerConsoleMessage, WorkerRequest, WorkerResponse } from './protocol';
+import { traceCase } from '../../../domain/execution/trace';
+import {
+  isTraceRequest,
+  type WorkerConsoleMessage,
+  type WorkerMessage,
+  type WorkerRequest,
+  type WorkerResponse,
+} from './protocol';
 
 const send = globalThis.postMessage.bind(globalThis);
 installPrelude(globalThis);
@@ -163,7 +170,19 @@ function executeSafely(request: WorkerRequest): WorkerResponse {
   }
 }
 
-globalThis.onmessage = (event: MessageEvent<WorkerRequest>) => {
+globalThis.onmessage = (event: MessageEvent<WorkerMessage>) => {
+  if (isTraceRequest(event.data)) {
+    const { code, entryPoint, input, maxSteps, opLimit } = event.data;
+    try {
+      send(traceCase(code, entryPoint, input, { maxSteps, opLimit, meter }));
+    } catch (error) {
+      send({
+        kind: 'internal_error',
+        message: error instanceof Error ? `${error.name}: ${error.message}` : String(error),
+      });
+    }
+    return;
+  }
   const response = executeSafely(event.data);
   try {
     const message: WorkerConsoleMessage = { kind: 'console', report: consoleCollector.report() };

@@ -5,7 +5,7 @@
  * failed test. The run button is the only primary action.
  */
 
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 
 import type { MissionSessionState } from '../../domain/session/mission-session';
 import type { ConsoleReport } from '../../domain/execution/console';
@@ -13,6 +13,7 @@ import { ConsolePanel } from './ConsolePanel';
 import { Editor } from './Editor';
 import { MentorPanel } from './MentorPanel';
 import { TestPanel } from './TestPanel';
+import { TracePanel, type TraceView } from './TracePanel';
 
 interface LabProps {
   state: MissionSessionState;
@@ -25,6 +26,10 @@ interface LabProps {
   onRun: () => void;
   onRequestHint: () => void;
   onOpenDebrief: () => void;
+  /** Present only when the execution adapter can run a case step by step. */
+  onTrace?: (testId: string) => void;
+  traceView?: TraceView | null;
+  onCloseTrace?: () => void;
 }
 
 export function Lab({
@@ -36,8 +41,25 @@ export function Lab({
   onRun,
   onRequestHint,
   onOpenDebrief,
+  onTrace,
+  traceView = null,
+  onCloseTrace = () => {},
 }: LabProps) {
   const { mission, lastEvaluation } = state;
+
+  // The step the trace is showing. UI state only; a new trace starts at its first step.
+  const [step, setStep] = useState(0);
+  useEffect(() => setStep(0), [traceView?.testId, traceView?.outcome === 'running']);
+  const traced =
+    traceView !== null && traceView.outcome !== 'running' && traceView.outcome.kind === 'traced'
+      ? traceView.outcome
+      : null;
+  const markedLine = traced === null ? null : (traced.steps[Math.min(step, traced.steps.length - 1)]?.line ?? null);
+  const visibleResults = new Map(
+    (lastEvaluation?.report.results ?? [])
+      .filter((result) => result.group === 'visible')
+      .map((result) => [result.testId, result.status]),
+  );
   const consoleLabels = Object.fromEntries(
     mission.tests.visible.map((testCase) => [testCase.id, testCase.note ?? testCase.id]),
   );
@@ -70,18 +92,36 @@ export function Lab({
       </p>
 
       <div className="lab__grid">
-        <section className="lab__code" aria-label="Editor de código">
-          <div className="code__head">
-            <span>{mission.contract.entryPoint}</span>
-            <span className="code__hint">Cmd/Ctrl + Enter · Esc y Tab para salir</span>
-          </div>
-          <Editor
-            value={state.source}
-            onChange={onEditSource}
-            onRun={onRun}
-            disabled={state.running}
-          />
-        </section>
+        <div className="lab__left">
+          <section className="lab__code" aria-label="Editor de código">
+            <div className="code__head">
+              <span>{mission.contract.entryPoint}</span>
+              <span className="code__hint">Cmd/Ctrl + Enter · Esc y Tab para salir</span>
+            </div>
+            <Editor
+              value={state.source}
+              onChange={onEditSource}
+              onRun={onRun}
+              disabled={state.running}
+              highlightLine={markedLine}
+            />
+          </section>
+
+          {onTrace === undefined ? null : (
+            <TracePanel
+              tests={mission.tests.visible.map((testCase) => ({
+                id: testCase.id,
+                label: testCase.note ?? testCase.id,
+                status: visibleResults.get(testCase.id) ?? 'not_run',
+              }))}
+              view={traceView}
+              step={step}
+              onStep={setStep}
+              onTrace={onTrace}
+              onClose={onCloseTrace}
+            />
+          )}
+        </div>
 
         <aside className="lab__panel" aria-live="polite">
           {illustration === null ? null : <div className="lab__visual">{illustration}</div>}

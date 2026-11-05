@@ -80,7 +80,7 @@ function engineLineShift(): number {
   return calibratedShift;
 }
 
-function frameOf(stack: string | undefined): { line: number; column: number } | undefined {
+export function frameOf(stack: string | undefined): { line: number; column: number } | undefined {
   if (stack === undefined) return undefined;
   const shift = engineLineShift();
   if (shift < 0) return undefined;
@@ -130,7 +130,7 @@ export interface CompileOptions {
    */
   meter?: Meter;
   /** Receives a variable snapshot at each step. Only used for the trace. */
-  snapshot?: (line: number, read: () => [string, unknown][]) => void;
+  snapshot?: (line: number, read: () => [string, boolean, unknown?][]) => void;
 }
 
 export function compileEntryPoint(
@@ -147,7 +147,7 @@ export function compileEntryPoint(
   const source = instrumented ?? code;
   const body = `"use strict";\n${source}\nreturn typeof ${entryPoint} === "function" ? ${entryPoint} : undefined;`;
 
-  let factory: (tick: () => void, snap: (line: number, read: () => [string, unknown][]) => void) => unknown;
+  let factory: (tick: () => void, snap: (line: number, read: () => [string, boolean, unknown?][]) => void) => unknown;
   try {
     factory = new Function('__t', '__s', body) as typeof factory;
   } catch (error) {
@@ -201,16 +201,30 @@ export function runCasesWith(
     opLimit?: number;
   } = {},
 ): CaseOutcome[] {
-  return cases.map((testCase) => {
+  // Once a case crosses the step limit the verdict is already known, and each
+  // further runaway case would burn its own limit again. The rest are reported
+  // as not run, for that reason, instead of waiting for the wall-clock timeout.
+  let stoppedByCost = false;
+  return cases.map((testCase): CaseOutcome => {
+    if (stoppedByCost) {
+      return {
+        testId: testCase.testId,
+        status: 'threw',
+        message: 'no se ejecutó: un caso anterior superó el límite de pasos',
+        costExceeded: true,
+      };
+    }
     options.onCase?.before(testCase);
     try {
-      return runOne(
+      const outcome = runOne(
         fn,
         testCase,
         options.detectMutation === true,
         options.meter,
         options.opLimit ?? Number.POSITIVE_INFINITY,
       );
+      if (outcome.status === 'threw' && outcome.costExceeded === true) stoppedByCost = true;
+      return outcome;
     } finally {
       options.onCase?.after(testCase);
     }

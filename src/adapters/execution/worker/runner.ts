@@ -12,9 +12,20 @@
  * when they are not.
  */
 
-import type { ExecutionOutcome, ExecutionPort, ExecutionRequest } from '../../../domain/execution/port';
+import type {
+  ExecutionOutcome,
+  ExecutionPort,
+  ExecutionRequest,
+  TraceRequest,
+} from '../../../domain/execution/port';
+import type { TraceOutcome } from '../../../domain/execution/trace';
 import { parseConsoleReport } from '../../../domain/execution/console';
-import type { WorkerConsoleMessage, WorkerRequest, WorkerResponse } from './protocol';
+import type {
+  WorkerConsoleMessage,
+  WorkerRequest,
+  WorkerResponse,
+  WorkerTraceRequest,
+} from './protocol';
 
 /** A safety valve, not a mission budget: no M1 mission declares an efficiency budget. */
 export const DEFAULT_TIMEOUT_MS = 2_000;
@@ -38,7 +49,12 @@ export function timeoutFor(request: {
 }
 
 /** Steps a case may take when the mission declares no budget: only a runaway loop reaches it. */
-export const DEFAULT_OP_LIMIT = 300_000_000;
+/**
+ * About 0.6 s of work: low enough that a runaway loop is stopped by the step
+ * limit, deterministically, before the 2 s wall-clock timeout can be the one to
+ * end it. Missions with a budget are limited much lower (see `opLimitFor`).
+ */
+export const DEFAULT_OP_LIMIT = 100_000_000;
 /** A case is stopped at this multiple of the budget: generous, so slow-but-correct still finishes. */
 export const OP_LIMIT_FACTOR = 20;
 const MIN_OP_LIMIT = 200_000;
@@ -73,8 +89,56 @@ function toOutcome(response: WorkerResponse): ExecutionOutcome {
   }
 }
 
+export const TRACE_OP_LIMIT = 5_000_000;
+const DEFAULT_TRACE_STEPS = 400;
+
+function traceInWorker(request: TraceRequest): Promise<TraceOutcome> {
+  return new Promise<TraceOutcome>((resolve) => {
+    let settled = false;
+    let worker: Worker | null = null;
+    const finish = (outcome: TraceOutcome) => {
+      if (settled) return;
+      settled = true;
+      resolve(outcome);
+      worker?.terminate();
+    };
+
+    try {
+      worker = new Worker(new URL('./worker-entry.ts', import.meta.url), {
+        type: 'module',
+        name: 'algorithm-quest-trace',
+      });
+    } catch (error) {
+      finish({ kind: 'internal_error', message: error instanceof Error ? error.message : String(error) });
+      return;
+    }
+
+    globalThis.setTimeout(
+      () => finish({ kind: 'timeout', durationMs: request.timeoutMs }),
+      request.timeoutMs,
+    );
+    worker.onmessage = (event: MessageEvent<TraceOutcome>) => finish(event.data);
+    worker.onerror = (event: ErrorEvent) =>
+      finish({
+        kind: 'internal_error',
+        message: event.message === '' ? 'el worker falló sin mensaje' : event.message,
+      });
+
+    const message: WorkerTraceRequest = {
+      type: 'trace',
+      code: request.code,
+      entryPoint: request.entryPoint,
+      input: request.input,
+      maxSteps: request.maxSteps ?? DEFAULT_TRACE_STEPS,
+      opLimit: TRACE_OP_LIMIT,
+    };
+    worker.postMessage(message);
+  });
+}
+
 export function createWorkerExecutionPort(): ExecutionPort {
   return {
+    trace: traceInWorker,
     execute(request: ExecutionRequest): Promise<ExecutionOutcome> {
       return new Promise<ExecutionOutcome>((resolve) => {
         let settled = false;

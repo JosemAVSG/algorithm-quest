@@ -10,8 +10,15 @@ function run(source: string, entry: string, args: unknown[], snapshots = false) 
   const tick = () => {
     ticks += 1;
   };
-  const snap = (line: number, read: () => [string, unknown][]) => {
-    seen.push({ line, vars: Object.fromEntries(read().filter(([, v]) => v !== undefined)) });
+  const snap = (line: number, read: () => [string, boolean, unknown?][]) => {
+    seen.push({
+      line,
+      vars: Object.fromEntries(
+        read()
+          .filter(([, ok, v]) => ok && v !== undefined)
+          .map(([name, , value]) => [name, value]),
+      ),
+    });
   };
   const factory = new Function('__t', '__s', `"use strict";\n${code}\nreturn ${entry};`);
   const fn = factory(tick, snap) as (...a: unknown[]) => unknown;
@@ -93,9 +100,19 @@ describe('instrumentSource', () => {
       expect(seen[2]!.vars).toMatchObject({ total: 5, x: 7 });
     });
 
-    it('skips a variable that is still in its temporal dead zone', () => {
-      const { seen } = run('function f() { const a = g(); function g() { return 1; } return a; }', 'f', [], true);
-      expect(seen.length).toBeGreaterThan(0);
+    it('tells a variable holding undefined from one that does not exist yet', () => {
+      const code = instrumentSource('function f() { let kept; for (const x of [1]) { const later = x; } }', {
+        snapshots: true,
+      });
+      const reads: Record<string, boolean>[] = [];
+      new Function('__t', '__s', `"use strict";\n${code}\nf();`)(
+        () => {},
+        (_line: number, read: () => [string, boolean][]) => reads.push(Object.fromEntries(read().map(([n, ok]) => [n, ok]))),
+      );
+      // `kept` exists (holding undefined); `later` is not declared at the loop's first line
+      const loopStep = reads[1]!;
+      expect(loopStep.kept).toBe(true);
+      expect(loopStep.later).toBe(false);
     });
 
     it('sees the parameters of recursive calls', () => {

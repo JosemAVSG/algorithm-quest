@@ -92,6 +92,16 @@ describe('step cost (D13)', () => {
     expect(evaluation.cost!.over).toBe(true);
   });
 
+  it('without a budget, a case stopped at the limit is a loop that does not end (E03)', () => {
+    const evaluation = evaluate(
+      withBudget(undefined, false),
+      'function isOverLimit(t, l) { while (true) {} }',
+      200,
+    );
+    expect(evaluation.diagnosis!.code).toBe('E03');
+    expect(evaluation.passed).toBe(false);
+  });
+
   it('feeds mastery from steps, not from the clock', async () => {
     const { buildEvidenceEvents } = await import('../../../src/domain/mastery/evidence');
     const mission = withBudget(100, false);

@@ -150,10 +150,16 @@ function lineAt(starts: readonly number[], pos: number): number {
   return low + 1;
 }
 
-/** `__s(line, () => [[name, value], ...])`, each read guarded. */
+/**
+ * `__s(line, () => [[name, ok, value], ...])`, each read guarded.
+ *
+ * `ok` tells a variable that holds `undefined` from one that does not exist yet
+ * (temporal dead zone) or is not in scope here: the first belongs in the trace,
+ * the second does not.
+ */
 function snapshotCall(line: number, names: readonly string[]): string {
   const reads = names
-    .map((name) => `["${name}",(()=>{try{return ${name}}catch(e){return undefined}})()]`)
+    .map((name) => `(()=>{try{return ["${name}",true,${name}]}catch(e){return ["${name}",false]}})()`)
     .join(',');
   return `__s(${line},()=>[${reads}])`;
 }

@@ -13,6 +13,8 @@ export interface EditorProps {
   onChange: (value: string) => void;
   onRun: () => void;
   disabled: boolean;
+  /** 1-based line to mark while a trace is open; the textarea fallback ignores it. */
+  highlightLine?: number | null;
 }
 
 const INDENT = '  ';

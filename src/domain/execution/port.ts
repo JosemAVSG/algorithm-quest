@@ -8,6 +8,7 @@
  */
 
 import type { ConsoleReport } from './console';
+import type { TraceOutcome } from './trace';
 
 export interface ExecutionCase {
   testId: string;
@@ -126,6 +127,21 @@ export type ExecutionOutcome =
    */
   | { kind: 'internal_error'; message: string };
 
+/** One case, run step by step. Only ever asked for a case the player can already see. */
+export interface TraceRequest {
+  code: string;
+  entryPoint: string;
+  input: readonly unknown[];
+  /** How many steps to record before stopping the run. */
+  maxSteps?: number;
+  timeoutMs: number;
+}
+
 export interface ExecutionPort {
   execute(request: ExecutionRequest): Promise<ExecutionOutcome>;
+  /**
+   * Run a single case with the variables of every step recorded. Optional: an
+   * adapter that cannot trace simply does not offer the feature.
+   */
+  trace?(request: TraceRequest): Promise<TraceOutcome>;
 }

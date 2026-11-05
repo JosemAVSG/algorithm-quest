@@ -240,6 +240,19 @@ export function classify(input: ClassifyInput): Diagnosis {
   //     never finished. It sits above E02 for that reason, and it is the
   //     deterministic counterpart of the wall-clock timeout (D13).
   const stopped = report.results.find((result) => result.costExceeded === true);
+  if (stopped !== undefined && mission.constraints.efficiency?.operationBudget === undefined) {
+    // No budget was declared, so this is not a cost problem: only a loop that
+    // does not end gets here. It is the same fault the wall-clock timeout
+    // reports, found deterministically and sooner.
+    return {
+      code: 'E03',
+      confidence: 'certain',
+      evidence: evidenceFor(report, {
+        message: `${stopped.message ?? ''} Comprueba que el bucle llega a terminar.`.trim(),
+      }),
+      modifiers: [],
+    };
+  }
   if (stopped !== undefined) {
     return {
       code: 'E16',
