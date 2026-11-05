@@ -303,9 +303,22 @@ code {
   color: var(--working);
 }
 
+/* Not-yet-installed systems read as quieter, but dimming with `opacity` took
+   the text to a 2.6:1 contrast. The text keeps the muted token (>= 4.5:1) and
+   only the dot and the border fade. */
 .node--absent,
 .node--installed {
-  opacity: 0.55;
+  border-color: rgba(42, 52, 63, 0.7);
+}
+
+.node--absent .node__name,
+.node--installed .node__name {
+  color: var(--text-muted);
+}
+
+.node--absent .node__dot,
+.node--installed .node__dot {
+  opacity: 0.5;
 }
 
 .path {
@@ -647,12 +660,20 @@ code {
 /* Illustration beside the strategy form and the debrief. */
 .split {
   display: grid;
+  /* Without an explicit column the grid grows to its widest child: a <select>
+     in the debrief sentence pushed the whole page 20 px past a phone's edge. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.5rem;
   align-items: start;
 }
 
+.split__main,
 .split__aside {
   min-width: 0;
+}
+
+.explain__blank {
+  max-width: 100%;
 }
 
 @media (min-width: 48rem) {
@@ -1757,8 +1778,14 @@ textarea,
   border-radius: 6px;
 }
 
+/* Same reason as `.node--absent`: quiet, but still readable. */
 .concept--locked {
-  opacity: 0.6;
+  background: transparent;
+  border-color: rgba(42, 52, 63, 0.7);
+}
+
+.concept--locked .concept__head h2 {
+  color: var(--text-muted);
 }
 
 .concept__head {
@@ -1922,6 +1949,23 @@ textarea,
   .lab__code .cm-editor,
   .lab__code textarea {
     min-height: 16rem;
+  }
+}
+
+/* Touch targets: a fingertip needs about 44 px. The step rail and the small
+   link-style buttons were around 28 px tall on a phone. */
+@media (pointer: coarse), (max-width: 899px) {
+  .rail__button {
+    min-height: 2.75rem;
+  }
+
+  .rail ol {
+    gap: 0 1.25rem;
+  }
+
+  .btn--link,
+  .trace__pick select {
+    min-height: 2.75rem;
   }
 }
 

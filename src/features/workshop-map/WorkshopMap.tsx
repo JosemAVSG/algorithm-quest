@@ -15,7 +15,6 @@
 import type { CSSProperties } from 'react';
 
 import type { ContentCatalog } from '../../domain/content/catalog';
-import type { SystemState } from '../../domain/content/schema';
 import {
   completedMissionIds,
   type PlayerProgress,
@@ -32,15 +31,8 @@ import {
   type MissionNodeState,
   type WorldState,
 } from '../../domain/progression/worlds';
+import { STATE_LABEL } from './stateLabels';
 import { WorldGem } from './WorldGem';
-
-const STATE_LABEL: Record<SystemState, string> = {
-  broken: 'averiado',
-  working: 'operativo',
-  reliable: 'fiable',
-  absent: 'sin instalar',
-  installed: 'instalado',
-};
 
 const WORLD_LABEL: Record<WorldState, string> = {
   completed: 'completado',
@@ -112,7 +104,7 @@ export function WorkshopMap({
         );
 
   return (
-    <div className="map">
+    <main className="map">
       <header className="map__header">
         <p className="eyebrow">Taller de los datos</p>
         <h1>
@@ -312,6 +304,6 @@ export function WorkshopMap({
           sin puntos, sin rachas
         </p>
       ) : null}
-    </div>
+    </main>
   );
 }

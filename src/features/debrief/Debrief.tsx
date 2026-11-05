@@ -8,12 +8,15 @@
  * No confetti. The debrief is a document, and the reward is the workshop.
  */
 
+import { STATE_LABEL } from '../workshop-map/stateLabels';
 import { ExplainBlock } from './ExplainBlock';
 import type { MissionSessionState } from '../../domain/session/mission-session';
 import { REASONING_MIN_SCORE } from '../../domain/session/mission-session';
 
 interface DebriefProps {
   state: MissionSessionState;
+  /** The repaired system's name, from the workshop registry. Falls back to its id. */
+  systemName?: string;
   onAnswerComplexity: (index: number) => void;
   onEditReasoning: (text: string) => void;
   onAnswerExplain: (id: string, index: number) => void;
@@ -30,6 +33,7 @@ export function Debrief({
   onEditExplainNote,
   onSubmit,
   onFinish,
+  systemName,
 }: DebriefProps) {
   const { mission, assessment } = state;
   const debrief = mission.debrief;
@@ -43,11 +47,13 @@ export function Debrief({
         <p className="lede">{mission.reward.narrative}</p>
 
         <div className="complete__transition">
-          <span className="complete__system">{mission.reward.systemId}</span>
+          <span className="complete__system">{systemName ?? mission.reward.systemId}</span>
           <span className="complete__arrow" aria-hidden="true">
             →
           </span>
-          <span className="complete__state">{mission.reward.effect}</span>
+          <span className="complete__state">
+            {STATE_LABEL[mission.workshop.from]} → {STATE_LABEL[mission.workshop.to]}
+          </span>
         </div>
 
         {debrief.explain !== undefined ? (
