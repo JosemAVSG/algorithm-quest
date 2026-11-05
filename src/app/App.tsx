@@ -27,6 +27,7 @@ import { ProgressDashboard } from '../features/progress/ProgressDashboard';
 import { ReinforcementPractice } from '../features/reinforcement/ReinforcementPractice';
 import { WorkshopMap } from '../features/workshop-map/WorkshopMap';
 import { createComposition } from './composition';
+import { takeReopen } from './reopen';
 
 type View = 'map' | 'progress';
 
@@ -36,7 +37,8 @@ export function App() {
 
   const [progress, setProgress] = useState<PlayerProgress | null>(null);
   const [storageWarning, setStorageWarning] = useState<string | null>(null);
-  const [activeMissionId, setActiveMissionId] = useState<string | null>(null);
+  // After "Recargar y reintentar" the page comes back on the mission it was opening.
+  const [activeMissionId, setActiveMissionId] = useState<string | null>(() => takeReopen());
   const [activeVariantId, setActiveVariantId] = useState<string | null>(null);
   const [view, setView] = useState<View>('map');
   const [openWorldId, setOpenWorldId] = useState<string | null>(null);

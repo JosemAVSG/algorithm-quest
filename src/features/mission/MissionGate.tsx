@@ -10,6 +10,7 @@ import { useCallback, useEffect, useState, type ReactNode } from 'react';
 
 import type { Mission } from '../../domain/content/schema';
 import type { MissionLoader } from '../../domain/content/mission-loader';
+import { markReopen } from '../../app/reopen';
 
 const LOADING_DELAY_MS = 150;
 
@@ -22,11 +23,15 @@ interface MissionGateProps {
   loader: MissionLoader;
   missionId: string;
   onExit: () => void;
+  /**
+   * Reload the page. Injected so tests do not navigate; the default really
+   * reloads, after marking this mission to be reopened.
+   */
+  onReload?: () => void;
   children: (mission: Mission) => ReactNode;
 }
 
-export function MissionGate({ loader, missionId, onExit, children }: MissionGateProps) {
-  const [attempt, setAttempt] = useState(0);
+export function MissionGate({ loader, missionId, onExit, onReload, children }: MissionGateProps) {
   const [state, setState] = useState<GateState>(() => {
     const cached = loader.peek(missionId);
     return cached === null
@@ -61,9 +66,15 @@ export function MissionGate({ loader, missionId, onExit, children }: MissionGate
       alive = false;
       clearTimeout(timer);
     };
-  }, [loader, missionId, attempt]);
+  }, [loader, missionId]);
 
-  const retry = useCallback(() => setAttempt((value) => value + 1), []);
+  // Not `setAttempt`: the browser caches a failed module import for the life of
+  // the page, so asking the loader again returns the same failure without a
+  // request. A reload is the only retry that can work (see `app/reopen.ts`).
+  const reloadAndRetry = useCallback(() => {
+    markReopen(missionId);
+    (onReload ?? (() => window.location.reload()))();
+  }, [missionId, onReload]);
 
   if (state.status === 'ready') return <>{children(state.mission)}</>;
 
@@ -73,11 +84,13 @@ export function MissionGate({ loader, missionId, onExit, children }: MissionGate
         <p className="eyebrow">Algorithm Quest</p>
         <h1>No se pudo cargar la misión</h1>
         <p className="lede">
-          Revisa tu conexión e inténtalo de nuevo. Tu progreso no se ha perdido.
+          Puede ser la conexión, o que haya una versión nueva del juego mientras tenías esta
+          pestaña abierta. Recargar la página lo arregla en los dos casos y vuelve a abrir esta
+          misión. Tu progreso no se ha perdido.
         </p>
         <p>
-          <button type="button" className="btn btn--primary" onClick={retry}>
-            Reintentar
+          <button type="button" className="btn btn--primary" onClick={reloadAndRetry}>
+            Recargar y reintentar
           </button>{' '}
           <button type="button" className="btn btn--ghost" onClick={onExit}>
             Volver al taller

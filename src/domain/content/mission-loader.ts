@@ -2,8 +2,10 @@
  * On-demand mission loading (docs/07-architecture.md §7).
  *
  * Importers are injected: the browser adapter hands over `import()` thunks (one
- * async chunk per mission), tests hand over stubs. A failed load is never
- * cached, so "Reintentar" really asks the network again.
+ * async chunk per mission), tests hand over stubs. This loader never caches a
+ * failure, but a real browser does: it remembers a failed dynamic `import()` of
+ * an address for the life of the page and fails again without a request. So in
+ * the app a retry is a page reload (`app/reopen.ts`), not another `load()`.
  */
 
 import type { Mission } from './schema';
