@@ -1,6 +1,6 @@
 # Algorithm Quest — Specification Package
 
-Status: **Gates 1–3 approved. M0–M2 done; M3 partial. Worlds 2–6 (M13–M37) authored — see `15-world2.md` to `18-worlds5-6.md`. Step cost, E16 and a step-by-step trace — see `19-cost-and-trace.md`. Spaced review — see `20-reinforcement.md`.** M1 is *buildable*, not validated:
+Status: **Gates 1–3 approved. M0–M2 done; M3 partial. Worlds 2–7 (M13–M42) authored — see `15-world2.md` to `18-worlds5-6.md` and `22-world7.md`. Step cost, E16 and a step-by-step trace — see `19-cost-and-trace.md`. Spaced review — see `20-reinforcement.md`.** M1 is *buildable*, not validated:
 assumption A7 is still unsatisfied and there is no playtest evidence — see
 `11-delivery-plan.md` §6, `12-m1-walkthrough.md`, `13-m2-hardening.md` and
 `14-m3-mentor.md`.
@@ -86,6 +86,7 @@ Every deliverable from the brief maps to exactly one place.
 | — | Step cost, E16 verdict, step-by-step trace | `docs/19-cost-and-trace.md` |
 | — | Spaced review: reinforcement variants | `docs/20-reinforcement.md` |
 | — | UX and accessibility review | `docs/21-ux-accessibility.md` |
+| — | World 7 missions M38–M42 (classic algorithms) | `docs/22-world7.md` |
 
 ---
 

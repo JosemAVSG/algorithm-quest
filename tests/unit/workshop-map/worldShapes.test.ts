@@ -11,6 +11,7 @@ describe('worldShape', () => {
     ['w4', 'tower'],
     ['w5', 'network'],
     ['w6', 'archive'],
+    ['w7', 'forge'],
   ])('maps %s to %s', (id, kind) => {
     expect(worldShape(id).kind).toBe(kind);
   });
@@ -20,7 +21,7 @@ describe('worldShape', () => {
   });
 
   it('describes at least one part per shape with a positive primary size', () => {
-    for (const id of ['w1', 'transition', 'w2', 'w3', 'w4', 'w5', 'w6', 'nope']) {
+    for (const id of ['w1', 'transition', 'w2', 'w3', 'w4', 'w5', 'w6', 'w7', 'nope']) {
       const { parts } = worldShape(id);
       expect(parts.length).toBeGreaterThan(0);
       for (const part of parts) {

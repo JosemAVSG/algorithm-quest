@@ -703,6 +703,101 @@
       "reward": {
         "narrative": "El comité de diseño ya tiene un plan en el que cada tarea llega a su turno, y avisa cuando algo se espera a sí mismo."
       }
+    },
+    {
+      "id": "M38",
+      "world": "w7",
+      "order": 1,
+      "title": "La estantería por peso",
+      "subtitle": "Sacar siempre la más ligera",
+      "prerequisites": {
+        "missions": [
+          "M37"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.sorter",
+        "to": "reliable"
+      },
+      "reward": {
+        "narrative": "El brazo ordenador coloca cualquier tanda de cajas de la más ligera a la más pesada, sin saltarse ninguna."
+      }
+    },
+    {
+      "id": "M39",
+      "world": "w7",
+      "order": 2,
+      "title": "Partir el montón en dos",
+      "subtitle": "Resolver cada mitad con la misma idea",
+      "prerequisites": {
+        "missions": [
+          "M38"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.merger",
+        "to": "reliable"
+      },
+      "reward": {
+        "narrative": "La mesa de mezcla parte cualquier montón en dos y lo ordena en un momento, aunque haya miles de piezas."
+      }
+    },
+    {
+      "id": "M40",
+      "world": "w7",
+      "order": 3,
+      "title": "El mapa por plantas",
+      "subtitle": "Leer el mapa de las zonas fila a fila",
+      "prerequisites": {
+        "missions": [
+          "M39"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.levels",
+        "to": "installed"
+      },
+      "reward": {
+        "narrative": "El mapa de niveles se enciende: la torre de control ve el taller planta por planta, de la zona de arriba hacia abajo."
+      }
+    },
+    {
+      "id": "M41",
+      "world": "w7",
+      "order": 4,
+      "title": "La ruta más barata",
+      "subtitle": "Cuando cada tramo cuesta distinto",
+      "prerequisites": {
+        "missions": [
+          "M40"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.pathfinder",
+        "to": "installed"
+      },
+      "reward": {
+        "narrative": "El trazador de rutas calcula el viaje más barato entre dos puestos de la red, con todos los cruces y desvíos."
+      }
+    },
+    {
+      "id": "M42",
+      "world": "w7",
+      "order": 5,
+      "title": "Cubrir todo el taller con pocas emisoras",
+      "subtitle": "Elegir siempre lo que más aporta ahora",
+      "prerequisites": {
+        "missions": [
+          "M41"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.radio",
+        "to": "installed"
+      },
+      "reward": {
+        "narrative": "La red de emisoras se enciende con las justas: cada zona del taller recibe señal sin gastar emisoras de más."
+      }
     }
   ]
 }

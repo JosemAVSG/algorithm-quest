@@ -29,6 +29,7 @@ export const WORLD_IDS = [
   'w4',
   'w5',
   'w6',
+  'w7',
 ] as const;
 export type WorldId = (typeof WORLD_IDS)[number];
 

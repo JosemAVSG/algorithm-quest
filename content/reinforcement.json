@@ -2538,6 +2538,216 @@
         ]
       },
       "hint": "Calcula los dos costes con números y compáralos. Ordenar es una inversión que solo se amortiza si las búsquedas son suficientes."
+    },
+    {
+      "id": "R-C42-1",
+      "conceptId": "C42",
+      "title": "La pieza más ligera",
+      "estimatedMinutes": 5,
+      "prompt": "Una balanza compara piezas de una en una. Devuelve la posición de la pieza más ligera de una lista; si varias pesan lo mismo, la primera. Con una lista vacía, -1. No se permite Math.min ni ordenar.",
+      "contract": {
+        "entryPoint": "lightestIndex",
+        "signature": "lightestIndex(weights) -> number",
+        "rules": ["Devuelve la posición de la pieza que menos pesa", "En un empate, la posición más baja", "Con una lista vacía, devuelve -1", "No modifica la lista"]
+      },
+      "constraints": { "bannedConstructs": ["Math.min", ".sort"], "mustNotMutate": true },
+      "starterCode": "function lightestIndex(weights) {\n  // tu código aquí\n}\n",
+      "tests": {
+        "visible": [
+          { "id": "v1", "input": [[5, 2, 9, 2]], "expected": 1, "note": "dos piezas empatadas" },
+          { "id": "v2", "input": [[]], "expected": -1, "note": "sin piezas" }
+        ],
+        "hidden": [
+          { "id": "h1", "input": [[7]], "expected": 0, "note": "una pieza" },
+          { "id": "h2", "input": [[-3, 0, -8, 4]], "expected": 2, "note": "negativos" },
+          { "id": "h3", "input": [[1, 2, 3]], "expected": 0, "note": "la primera es la más ligera" },
+          { "id": "h4", "input": [[3, 2, 1]], "expected": 2, "note": "la última es la más ligera" }
+        ]
+      },
+      "hint": "Recuerda la posición de la mejor pieza vista hasta ahora y cámbiala solo si la nueva pesa estrictamente menos. ¿Con qué empiezas si la lista puede estar vacía?"
+    },
+    {
+      "id": "R-C43-1",
+      "conceptId": "C43",
+      "title": "Repartir en dos montones",
+      "estimatedMinutes": 5,
+      "prompt": "Para ordenar un cajón se reparten las piezas en dos montones: las que pesan lo mismo o menos que una pieza de referencia, y las que pesan más. Devuelve los dos montones como `[ligeras, pesadas]`, cada uno con las piezas en el mismo orden en que venían.",
+      "contract": {
+        "entryPoint": "splitAround",
+        "signature": "splitAround(values, reference) -> number[][]",
+        "rules": ["Devuelve [ligeras, pesadas]", "ligeras tiene los valores menores o iguales que reference", "pesadas tiene los valores mayores que reference", "Cada montón conserva el orden original", "No modifica la lista"]
+      },
+      "constraints": { "bannedConstructs": [], "mustNotMutate": true },
+      "starterCode": "function splitAround(values, reference) {\n  // tu código aquí\n}\n",
+      "tests": {
+        "visible": [
+          { "id": "v1", "input": [[4, 9, 1, 6], 5], "expected": [[4, 1], [9, 6]], "note": "dos montones" },
+          { "id": "v2", "input": [[], 5], "expected": [[], []], "note": "sin piezas" }
+        ],
+        "hidden": [
+          { "id": "h1", "input": [[5, 5], 5], "expected": [[5, 5], []], "note": "iguales a la referencia" },
+          { "id": "h2", "input": [[1, 2], 9], "expected": [[1, 2], []], "note": "todas ligeras" },
+          { "id": "h3", "input": [[7, 8], 0], "expected": [[], [7, 8]], "note": "todas pesadas" },
+          { "id": "h4", "input": [[-2, 3, -5], 0], "expected": [[-2, -5], [3]], "note": "negativos" }
+        ]
+      },
+      "hint": "Cada pieza cae en exactamente un montón: una de las dos comparaciones debe incluir la igualdad."
+    },
+    {
+      "id": "R-C44-1",
+      "conceptId": "C44",
+      "title": "Cuántas zonas hay en cada planta",
+      "estimatedMinutes": 7,
+      "prompt": "Un mapa de zonas cuelga de una zona de arriba; cada zona es `{ value, left, right }` con `null` si por ese lado no cuelga nada. Devuelve cuántas zonas hay en cada planta (la de arriba cuenta como primera planta), de arriba hacia abajo. Un mapa vacío (null) devuelve [].",
+      "contract": {
+        "entryPoint": "floorSizes",
+        "signature": "floorSizes(root) -> number[]",
+        "rules": ["Devuelve una lista con el número de zonas de cada planta", "La primera planta es la zona de arriba", "Un mapa vacío devuelve []", "No modifica el mapa"]
+      },
+      "constraints": { "bannedConstructs": [], "mustNotMutate": true },
+      "starterCode": "function floorSizes(root) {\n  // tu código aquí\n}\n",
+      "tests": {
+        "visible": [
+          {
+            "id": "v1",
+            "input": [
+              {
+                "value": 1,
+                "left": { "value": 2, "left": null, "right": null },
+                "right": { "value": 3, "left": { "value": 4, "left": null, "right": null }, "right": null }
+              }
+            ],
+            "expected": [1, 2, 1],
+            "note": "tres plantas"
+          },
+          { "id": "v2", "input": [null], "expected": [], "note": "mapa vacío" }
+        ],
+        "hidden": [
+          {
+            "id": "h1",
+            "input": [{ "value": 5, "left": null, "right": null }],
+            "expected": [1],
+            "note": "una sola zona"
+          },
+          {
+            "id": "h2",
+            "input": [
+              {
+                "value": 1,
+                "left": null,
+                "right": { "value": 2, "left": null, "right": { "value": 3, "left": null, "right": null } }
+              }
+            ],
+            "expected": [1, 1, 1],
+            "note": "una rama a la derecha"
+          },
+          {
+            "id": "h3",
+            "input": [
+              {
+                "value": 1,
+                "left": {
+                  "value": 2,
+                  "left": { "value": 4, "left": null, "right": null },
+                  "right": { "value": 5, "left": null, "right": null }
+                },
+                "right": {
+                  "value": 3,
+                  "left": { "value": 6, "left": null, "right": null },
+                  "right": { "value": 7, "left": null, "right": null }
+                }
+              }
+            ],
+            "expected": [1, 2, 4],
+            "note": "completo"
+          }
+        ]
+      },
+      "hint": "Guarda las zonas de la planta actual en una lista; su longitud es el tamaño de la planta y sus hijos existentes forman la siguiente."
+    },
+    {
+      "id": "R-C45-1",
+      "conceptId": "C45",
+      "title": "El siguiente puesto a resolver",
+      "estimatedMinutes": 5,
+      "prompt": "Cada puesto de una red tiene un coste conocido (`null` si todavía no se sabe llegar) y una marca de si ya está resuelto. Devuelve la posición del puesto no resuelto con el coste conocido más bajo; en un empate, la posición más baja. Si no hay ninguno, -1.",
+      "contract": {
+        "entryPoint": "nextToSettle",
+        "signature": "nextToSettle(costs, settled) -> number",
+        "rules": ["Ignora los puestos resueltos y los de coste null", "Devuelve la posición del coste más bajo entre los demás; en un empate, la primera", "Si no queda ninguno, devuelve -1", "No modifica las listas"]
+      },
+      "constraints": { "bannedConstructs": [], "mustNotMutate": true },
+      "starterCode": "function nextToSettle(costs, settled) {\n  // tu código aquí\n}\n",
+      "tests": {
+        "visible": [
+          {
+            "id": "v1",
+            "input": [[0, null, 4, 2], [true, false, false, false]],
+            "expected": 3,
+            "note": "el de coste 2"
+          },
+          {
+            "id": "v2",
+            "input": [[null, null], [false, false]],
+            "expected": -1,
+            "note": "ninguno alcanzable"
+          }
+        ],
+        "hidden": [
+          { "id": "h1", "input": [[3], [false]], "expected": 0, "note": "un solo puesto" },
+          {
+            "id": "h2",
+            "input": [[1, 1, 1], [true, false, false]],
+            "expected": 1,
+            "note": "empate sin el primero"
+          },
+          { "id": "h3", "input": [[2, 5], [true, true]], "expected": -1, "note": "todos resueltos" },
+          {
+            "id": "h4",
+            "input": [[0, 7, 5], [false, false, false]],
+            "expected": 0,
+            "note": "el primero es el más barato"
+          }
+        ]
+      },
+      "hint": "Recorre los puestos saltándote los resueltos y los de coste null, y recuerda la posición del más barato visto. Cámbiala solo si el nuevo es estrictamente menor."
+    },
+    {
+      "id": "R-C46-1",
+      "conceptId": "C46",
+      "title": "La opción que más aporta",
+      "estimatedMinutes": 6,
+      "prompt": "Ya tienen señal las zonas de `covered`. Cada opción de `options` es una lista de zonas que cubriría una emisora. Devuelve la posición de la opción que cubre más zonas distintas aún sin señal; en un empate, la primera. Si ninguna aporta una zona nueva, o no hay opciones, devuelve -1.",
+      "contract": {
+        "entryPoint": "mostNewZones",
+        "signature": "mostNewZones(covered, options) -> number",
+        "rules": ["Cuenta solo zonas distintas que no están en covered", "Devuelve la posición de la opción con la cuenta más alta; en un empate, la primera", "Si todas aportan 0 o no hay opciones, devuelve -1", "No modifica las listas"]
+      },
+      "constraints": { "bannedConstructs": [], "mustNotMutate": true },
+      "starterCode": "function mostNewZones(covered, options) {\n  // tu código aquí\n}\n",
+      "tests": {
+        "visible": [
+          {
+            "id": "v1",
+            "input": [["a"], [["a", "b"], ["b", "c"]]],
+            "expected": 1,
+            "note": "la segunda aporta dos"
+          },
+          { "id": "v2", "input": [["a"], []], "expected": -1, "note": "sin opciones" }
+        ],
+        "hidden": [
+          {
+            "id": "h1",
+            "input": [[], [["x", "x", "x"], ["y", "z"]]],
+            "expected": 1,
+            "note": "las repetidas cuentan una vez"
+          },
+          { "id": "h2", "input": [["a", "b"], [["a"], ["b"]]], "expected": -1, "note": "ninguna aporta" },
+          { "id": "h3", "input": [[], [["p", "q"], ["r", "s"]]], "expected": 0, "note": "empate: la primera" },
+          { "id": "h4", "input": [["z"], [["z", "y"]]], "expected": 0, "note": "una sola opción" }
+        ]
+      },
+      "hint": "Para cada opción cuenta las zonas distintas que no están en covered. Cambia la mejor solo cuando la cuenta sea estrictamente mayor, para que en un empate gane la primera."
     }
   ]
 }

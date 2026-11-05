@@ -1,0 +1,278 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "locale": "es",
+  "id": "M42",
+  "world": "w7",
+  "order": 5,
+  "title": "Cubrir todo el taller con pocas emisoras",
+  "subtitle": "Elegir siempre lo que más aporta ahora",
+  "difficulty": 4,
+  "estimatedMinutes": 25,
+  "concepts": { "primary": "C46", "secondary": ["C16"] },
+  "prerequisites": { "missions": ["M41"], "concepts": ["C16"] },
+  "workshop": { "systemId": "sys.radio", "from": "absent", "to": "installed" },
+  "briefing": {
+    "headline": "Una emisora tras otra, la que más zonas nuevas cubre",
+    "body": "El taller tiene que quedar cubierto por radio. Hay una lista de **zonas** que necesitan señal (`needed`) y una lista de **emisoras** (`stations`); cada emisora es `{ name, covers }`, donde `covers` son las zonas que cubre. Una emisora puede cubrir zonas que no hacen falta: esas no cuentan.\n\nPara elegir se sigue una regla fija, sin dar más vueltas: **en cada paso se enciende la emisora que cubre más zonas necesarias que aún no tienen señal**. Si dos cubren las mismas, gana la que aparece **antes** en la lista. Se repite hasta que todas las zonas necesarias tengan señal o ya ninguna emisora aporte una zona nueva.\n\nDevuelve los **nombres** de las emisoras encendidas, en el orden en que se encendieron. No se pide la mejor combinación posible, solo seguir la regla: a veces se enciende alguna emisora de más, y es lo esperado.",
+    "requirements": ["Recibe las zonas necesarias y la lista de emisoras con las zonas que cubre cada una", "En cada paso enciende la emisora que cubre más zonas necesarias aún sin señal; si hay empate, la primera de la lista", "Termina cuando todas las zonas necesarias tienen señal o ninguna emisora aporta una zona nueva", "Devuelve los nombres de las emisoras encendidas, en el orden en que se encendieron"],
+    "forbiddenVocabulary": ["voraz", "greedy", "recubrimiento", "set cover", "aproximación"]
+  },
+  "contract": {
+    "entryPoint": "pickStations",
+    "signature": "pickStations(needed, stations) -> string[]",
+    "inputShape": "needed: string[], stations: { name: string, covers: string[] }[]",
+    "outputShape": "string[]",
+    "rules": ["En cada paso se elige la emisora con más zonas necesarias aún sin señal", "En caso de empate se elige la que aparece antes en stations", "Las zonas que no están en needed no cuentan", "Una emisora que no aporta zonas nuevas nunca se enciende", "Si ninguna emisora aporta zonas nuevas se termina, aunque queden zonas sin señal", "Devuelve los nombres en el orden de encendido", "No modifica needed ni stations"]
+  },
+  "constraints": { "bannedConstructs": [], "allowClosedForm": false, "mustNotMutate": true },
+  "starterCode": "function pickStations(needed, stations) {\n  // your code here\n}\n",
+  "tests": {
+    "visible": [
+      {
+        "id": "v1",
+        "input": [[], [{ "name": "A", "covers": ["x", "y"] }]],
+        "expected": [],
+        "note": "no hay zonas necesarias"
+      },
+      {
+        "id": "v2",
+        "input": [
+          ["a", "b", "c", "d", "e"],
+          [{ "name": "A", "covers": ["a", "b", "c"] }, { "name": "B", "covers": ["c", "d"] }, { "name": "C", "covers": ["d", "e"] }]
+        ],
+        "expected": ["A", "C"],
+        "note": "la segunda elección depende de lo que ya está cubierto"
+      },
+      {
+        "id": "v3",
+        "input": [
+          ["a", "b", "c", "d", "e", "f"],
+          [{ "name": "L", "covers": ["a", "b", "c"] }, { "name": "R", "covers": ["d", "e", "f"] }, { "name": "M", "covers": ["a", "b", "d", "e"] }]
+        ],
+        "expected": ["M", "L", "R"],
+        "note": "la regla enciende una emisora de más"
+      }
+    ],
+    "hidden": [
+      {
+        "id": "h1",
+        "input": [["a", "b"], [{ "name": "A", "covers": ["a", "b", "z"] }]],
+        "expected": ["A"],
+        "note": "una emisora lo cubre todo"
+      },
+      {
+        "id": "h2",
+        "input": [
+          ["a", "b", "c", "d"],
+          [{ "name": "P", "covers": ["a", "b"] }, { "name": "Q", "covers": ["c", "d"] }, { "name": "R", "covers": ["a", "c"] }]
+        ],
+        "expected": ["P", "Q"],
+        "note": "empate: gana la primera de la lista"
+      },
+      {
+        "id": "h3",
+        "input": [
+          ["a", "b"],
+          [{ "name": "A", "covers": ["a", "q", "r", "s", "t"] }, { "name": "B", "covers": ["a", "b"] }]
+        ],
+        "expected": ["B"],
+        "note": "las zonas que no hacen falta no cuentan"
+      },
+      {
+        "id": "h4",
+        "input": [["a", "b", "c"], [{ "name": "A", "covers": ["a"] }, { "name": "B", "covers": ["a", "b"] }]],
+        "expected": ["B"],
+        "note": "la zona c no la cubre nadie"
+      },
+      {
+        "id": "h5",
+        "input": [
+          ["z0", "z1", "z2", "z3", "z4", "z5", "z6", "z7", "z8", "z9", "z10", "z11", "z12", "z13", "z14", "z15", "z16", "z17", "z18", "z19", "z20", "z21", "z22", "z23", "z24", "z25", "z26", "z27", "z28", "z29", "z30", "z31", "z32", "z33", "z34", "z35", "z36", "z37", "z38", "z39"],
+          [
+            { "name": "E0", "covers": ["z0", "z16", "z16", "z8", "z32", "z24", "z32"] },
+            { "name": "E1", "covers": ["z8", "z32", "z8", "z24", "z8", "z16"] },
+            { "name": "E2", "covers": ["z24", "z0", "z16", "z32", "z16", "z16"] },
+            { "name": "E3", "covers": ["z24", "z8", "z24", "z16", "z8", "z8", "z8", "z32"] },
+            { "name": "E4", "covers": ["z8", "z32", "z32", "z24", "z0", "z33"] },
+            { "name": "E5", "covers": ["z0", "z8", "z16", "z32", "z8", "z24"] },
+            { "name": "E6", "covers": ["z16", "z32", "z8", "z16", "z0", "z0", "z24", "z24"] },
+            { "name": "E7", "covers": ["z8", "z0", "z0", "z8", "z8", "z24"] },
+            { "name": "E8", "covers": ["z32", "z32", "z24", "z16", "z8", "z8"] },
+            { "name": "E9", "covers": ["z8", "z0", "z8", "z24"] },
+            { "name": "E10", "covers": ["z16", "z16", "z24", "z24", "z32", "z16", "z0", "z0"] },
+            { "name": "E11", "covers": ["z24", "z0", "z24", "z0", "z16", "z24"] },
+            { "name": "E12", "covers": ["z0", "z16", "z32", "z32"] },
+            { "name": "E13", "covers": ["z16", "z8", "z32", "z16", "z32", "z8"] },
+            { "name": "E14", "covers": ["z32", "z0", "z24", "z16"] },
+            { "name": "E15", "covers": ["z0", "z0", "z32", "z32", "z0", "z8", "z24", "z24"] },
+            { "name": "E16", "covers": ["z16", "z0", "z24", "z16"] },
+            { "name": "E17", "covers": ["z8", "z32", "z16", "z0"] },
+            { "name": "E18", "covers": ["z0", "z8", "z24", "z8", "z16", "z32", "z24", "z16"] },
+            { "name": "E19", "covers": ["z32", "z24", "z24", "z24"] },
+            { "name": "E20", "covers": ["z16", "z32", "z24", "z32", "z16", "z8"] },
+            { "name": "E21", "covers": ["z0", "z0", "z32", "z8", "z16", "z32"] },
+            { "name": "E22", "covers": ["z24", "z24", "z8", "z16"] },
+            { "name": "E23", "covers": ["z8", "z16", "z0", "z0", "z8", "z16"] }
+          ]
+        ],
+        "expected": ["E0", "E4"],
+        "note": "cuarenta zonas y veinticuatro emisoras"
+      }
+    ],
+    "edge": [
+      {
+        "id": "ed1",
+        "input": [["a"], []],
+        "expected": [],
+        "edge": true,
+        "edgeKind": "empty",
+        "note": "no hay emisoras"
+      },
+      {
+        "id": "ed2",
+        "input": [["a", "b"], [{ "name": "A", "covers": ["a", "a", "a"] }, { "name": "B", "covers": ["b", "b"] }]],
+        "expected": ["A", "B"],
+        "edge": true,
+        "edgeKind": "duplicate",
+        "note": "una emisora repite la misma zona"
+      },
+      {
+        "id": "ed3",
+        "input": [["a"], [{ "name": "A", "covers": ["x"] }, { "name": "B", "covers": ["y"] }]],
+        "expected": [],
+        "edge": true,
+        "edgeKind": "none-match",
+        "note": "ninguna emisora aporta nada"
+      }
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "E12",
+      "when": { "failingTestIds": ["v3"] },
+      "message": "Con la red de seis zonas del tercer caso, tu función enciende un conjunto distinto del que pide la regla. Recuerda que no se busca la mejor combinación: en cada paso se enciende la emisora que más zonas nuevas aporta ahora, aunque luego haga falta alguna más, y en un empate gana la primera de la lista."
+    },
+    {
+      "code": "E12",
+      "when": { "failingTestIds": ["v2"] },
+      "message": "En el segundo caso la elección de la segunda emisora cambia según lo que ya tiene señal. Cuenta, para cada emisora, solo las zonas necesarias que aún no tienen señal, no todas las que cubre."
+    },
+    {
+      "code": "E12",
+      "message": "El resultado no sigue la regla. Comprueba tres cosas: que en cada paso cuentas solo zonas necesarias sin señal, que en un empate gana la primera de la lista, y que paras cuando nadie aporta nada nuevo."
+    },
+    {
+      "code": "E08",
+      "message": "Con la lista de zonas vacía o sin emisoras el resultado correcto es []. Comprueba qué devuelve tu función en esos casos."
+    },
+    {
+      "code": "E11",
+      "message": "Tu función modificó needed o stations. Para llevar la cuenta de las zonas sin señal usa una copia o un conjunto aparte."
+    },
+    {
+      "code": "E02",
+      "message": "El código lanzó una excepción. Si repites mientras queden zonas sin señal, comprueba qué ocurre cuando ninguna emisora aporta una zona nueva: debes parar."
+    },
+    {
+      "code": "E01",
+      "message": "Hay un error de sintaxis antes de que el código pueda ejecutarse. Revisa la línea marcada: el motor no pudo interpretar esa expresión."
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Piensa en cómo decide una persona: de entre todas las emisoras, ¿cuál mira primero? ¿Cambia su elección después de encender la primera?"
+    },
+    {
+      "level": 2,
+      "text": "Lleva una lista de las zonas necesarias que aún no tienen señal. En cada vuelta, cuenta para cada emisora cuántas de sus zonas están en esa lista, quédate con la de mayor cuenta (la primera si empatan) y quítale a la lista esas zonas. ¿Cuándo paras?"
+    },
+    {
+      "level": 3,
+      "text": "sinSeñal = conjunto con las zonas de needed\nencendidas = []\nrepetir mientras sinSeñal no esté vacío:\n  mejor = ninguna; mejorCuenta = 0\n  para cada emisora en orden:\n    cuenta = zonas de la emisora que están en sinSeñal (sin repetir)\n    si cuenta > mejorCuenta: mejor = esa emisora\n  si mejor es ninguna: parar\n  añadir el nombre de mejor a encendidas; quitar sus zonas de sinSeñal\ndevolver encendidas\n\nUsa > y no >= para que en un empate quede la primera."
+    },
+    {
+      "level": 4,
+      "text": "Una agencia reparte repartidores para visitar barrios; cada repartidor cubre varios. Siempre se contrata al que cubre más barrios aún sin visitar:\n\nfunction contratar(barrios, repartidores) {\n  const pendientes = new Set(barrios);\n  const elegidos = [];\n  while (pendientes.size > 0) {\n    let mejor = null;\n    let mejorCuenta = 0;\n    for (const r of repartidores) {\n      let cuenta = 0;\n      for (const b of new Set(r.barrios)) if (pendientes.has(b)) cuenta += 1;\n      if (cuenta > mejorCuenta) { mejorCuenta = cuenta; mejor = r; }\n    }\n    if (mejor === null) break;\n    elegidos.push(mejor.nombre);\n    for (const b of mejor.barrios) pendientes.delete(b);\n  }\n  return elegidos;\n}",
+      "unlock": { "attempts": 4, "hintsUsed": 3 }
+    }
+  ],
+  "debrief": {
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe el caso, y responde las preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Guardo un conjunto con las zonas {b1}; en cada paso elijo la emisora que cubre {b2}, y si empatan, {b3}; la enciendo y quito {b4} del conjunto; paro cuando {b5}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": ["necesarias que aún no tienen señal", "que cubre cada emisora", "que no hacen falta", "ya cubiertas"],
+          "correctIndex": 0
+        },
+        {
+          "id": "b2",
+          "options": ["más zonas en total", "más zonas del conjunto", "menos zonas, para gastar menos", "las zonas de la lista de needed en orden"],
+          "correctIndex": 1
+        },
+        {
+          "id": "b3",
+          "options": ["la última de la lista", "la que tenga el nombre más largo", "la primera de la lista", "las dos a la vez"],
+          "correctIndex": 2
+        },
+        {
+          "id": "b4",
+          "options": ["solo la primera zona que cubre", "todas las zonas necesarias", "la emisora", "las zonas que cubre"],
+          "correctIndex": 3
+        },
+        {
+          "id": "b5",
+          "options": ["el conjunto queda vacío o ninguna emisora aporta una zona nueva", "se han encendido todas las emisoras", "se han recorrido las emisoras una vez", "la primera emisora cubre algo"],
+          "correctIndex": 0
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "En el tercer caso (zonas a–f, emisoras L: a b c, R: d e f, M: a b d e) la regla enciende M, L y R: tres emisoras, aunque L y R bastan. ¿Es un error?",
+          "options": ["Sí: debe encender L y R", "No: la regla solo mira lo que más aporta ahora, y no garantiza el menor número de emisoras", "Sí: M no cubre todas las zonas", "No: M es la única que cubre d y e"],
+          "correctIndex": 1,
+          "whyWrong": ["Seguir la regla da M, L, R, y eso es lo que se pide.", "", "No hace falta que una emisora cubra todo.", "L y R también cubren d y e."],
+          "explanation": "Elegir en cada paso lo que más aporta ahora es rápido y razonable, pero puede no dar la mejor combinación. Aquí M parece la mejor y luego obliga a encender las otras dos."
+        },
+        {
+          "id": "q2",
+          "question": "Una emisora cubre 5 zonas, pero 4 ya tienen señal. Otra cubre 2 zonas, ambas sin señal. ¿Cuál se enciende en el siguiente paso?",
+          "options": ["La primera: cubre más zonas en total", "Empatan y gana la primera de la lista", "La segunda: aporta 2 zonas nuevas, y la primera solo 1", "Ninguna: ya casi todo tiene señal"],
+          "correctIndex": 2,
+          "whyWrong": ["Contar zonas en total ignora lo que ya está cubierto.", "No hay empate: 1 contra 2.", "", "Una emisora que aporta algo nuevo sí se enciende."],
+          "explanation": "Cada paso cuenta solo lo que aún no tiene señal: 1 contra 2."
+        },
+        {
+          "id": "q3",
+          "question": "¿Por qué conviene probar la solución también con una emisora que repite la misma zona dos veces en `covers`?",
+          "options": ["Porque entonces hay que encenderla dos veces", "Porque el conjunto de zonas necesarias cambia", "Porque las repetidas no existen en la lista", "Porque si cuentas cada repetición, una emisora parece aportar más zonas de las que aporta"],
+          "correctIndex": 3,
+          "whyWrong": ["Una emisora se enciende una sola vez.", "Las zonas necesarias vienen de needed, no de covers.", "Sí pueden venir repetidas: es justo lo que se prueba.", ""],
+          "explanation": "Sin repetir, la cuenta de zonas nuevas de esa emisora sale inflada y puede ganar una elección que no le corresponde."
+        }
+      ]
+    },
+    "whyItWorks": "En cada paso se mira lo que cada emisora aporta ahora: cuántas zonas necesarias aún sin señal cubre. Se enciende la que más aporta, y sus zonas dejan de contar. El conjunto de zonas sin señal solo puede encoger, así que el proceso acaba: o queda vacío o ninguna emisora aporta nada nuevo. Esta forma de elegir, la mejor opción de cada momento y sin deshacer nada, es rápida y da un resultado razonable, pero no siempre el menor número de emisoras posible: el tercer caso lo muestra. Encontrar siempre la mejor combinación obliga a probar muchísimas más.",
+    "edgeCaseNote": "Sin zonas necesarias no se enciende ninguna emisora. Sin emisoras, o si ninguna cubre nada necesario, el resultado es []. Si una zona no la cubre nadie, se enciende lo que aporta y se termina cuando nadie aporta nada: no se queda en un bucle. Una zona repetida en covers no cuenta dos veces. Con un empate gana la primera de la lista.",
+    "complexity": {
+      "question": "Con z zonas y e emisoras, ¿cuántas emisoras se encienden como máximo, y cuánto trabajo hace cada paso?",
+      "options": ["Como máximo z emisoras, y cada paso mira todas las emisoras", "Como máximo e por z emisoras", "Una sola, y el paso mira solo la primera", "Tantas como combinaciones posibles de emisoras"],
+      "correctIndex": 0,
+      "explanation": "Cada emisora encendida aporta al menos una zona nueva, así que hay como máximo z pasos. Cada paso revisa las e emisoras y las zonas que cubren. Probar todas las combinaciones, en cambio, crece como 2 elevado a e."
+    },
+    "realWorld": "Se usa para elegir qué almacenes abrir para cubrir todas las ciudades, qué pruebas ejecutar para cubrir cada parte del código o qué antenas instalar. Cuando no hace falta lo óptimo, elegir lo mejor de cada momento ahorra muchísimo trabajo.",
+    "reasoningPrompt": "¿Por qué en cada paso solo se cuentan las zonas que aún no tienen señal? ¿Por qué este procedimiento no siempre da el menor número de emisoras?",
+    "objectiveNouns": ["emisoras", "zonas", "señal", "conjunto"],
+    "reasoningLexicon": ["aporta", "sin señal", "empate", "mejor opción", "ahora"]
+  },
+  "mastery": { "reinforcementVariants": ["R-C46-1"] },
+  "reward": {
+    "systemId": "sys.radio",
+    "effect": "absent → installed",
+    "narrative": "La red de emisoras se enciende con las justas: cada zona del taller recibe señal sin gastar emisoras de más."
+  }
+}
