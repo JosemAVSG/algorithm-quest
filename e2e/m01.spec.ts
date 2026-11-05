@@ -174,7 +174,7 @@ test('X4 · completar M01 y recargar mantiene el sensor operativo', async ({
   await expect(page.getByLabel('Sensor array: operativo')).toBeVisible();
 
   await page.reload();
-  await expect(page.getByText('1 de 12 sistemas')).toBeVisible();
+  await expect(page.getByText(/^1 de \d+ sistemas/)).toBeVisible();
   await openWorld1(page);
   await expect(page.getByLabel('Sensor array: operativo')).toBeVisible();
 });

@@ -16,8 +16,8 @@
     {
       "id": "w2",
       "name": "World 2 — The warehouse",
-      "status": "planned",
-      "missionIds": []
+      "status": "in-progress",
+      "missionIds": ["M13", "M14", "M15", "M16"]
     },
     {
       "id": "w3",

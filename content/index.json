@@ -228,6 +228,82 @@
       "reward": {
         "narrative": "El taller completa su primer anillo y una puerta nueva se ilumina en el mapa."
       }
+    },
+    {
+      "id": "M13",
+      "world": "w2",
+      "order": 1,
+      "title": "Las piezas que encajan",
+      "subtitle": "Buscar lo que falta",
+      "prerequisites": {
+        "missions": [
+          "M12"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.dispatch",
+        "to": "reliable"
+      },
+      "reward": {
+        "narrative": "El tablero de despacho propone la pareja de piezas exacta sin probar todas las combinaciones."
+      }
+    },
+    {
+      "id": "M14",
+      "world": "w2",
+      "order": 2,
+      "title": "El almacén por zonas",
+      "subtitle": "Ordenar por zona",
+      "prerequisites": {
+        "missions": [
+          "M13"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.store",
+        "to": "reliable"
+      },
+      "reward": {
+        "narrative": "El inventario se ordena solo por zonas: cada producto aparece donde está guardado."
+      }
+    },
+    {
+      "id": "M15",
+      "world": "w2",
+      "order": 3,
+      "title": "El parte de incidencias",
+      "subtitle": "Contar sin releer",
+      "prerequisites": {
+        "missions": [
+          "M14"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.log",
+        "to": "reliable"
+      },
+      "reward": {
+        "narrative": "El registro resume el día por sí mismo: solo marca los códigos que se repiten."
+      }
+    },
+    {
+      "id": "M16",
+      "world": "w2",
+      "order": 4,
+      "title": "Las fichas duplicadas",
+      "subtitle": "Decidir qué hace igual a dos registros",
+      "prerequisites": {
+        "missions": [
+          "M14"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.guard",
+        "to": "reliable"
+      },
+      "reward": {
+        "narrative": "El guardián reconoce a cada operario escrito de cualquier forma, y no confunde a dos personas distintas."
+      }
     }
   ]
 }
