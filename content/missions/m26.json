@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "locale": "es",
+  "id": "M26",
+  "world": "w4",
+  "order": 4,
+  "title": "El monitor de llamadas",
+  "subtitle": "Cada llamada abre un marco",
+  "difficulty": 4,
+  "estimatedMinutes": 22,
+  "concepts": { "primary": "C30", "secondary": ["C27"] },
+  "prerequisites": { "missions": ["M25"], "concepts": ["C27"] },
+  "workshop": { "systemId": "sys.frames", "from": "absent", "to": "installed" },
+  "briefing": {
+    "headline": "Qué hace la función, paso a paso",
+    "body": "El monitor del taller registra cada llamada a una función con dos anotaciones: **`\"enter k\"`** cuando empieza a ejecutarse con el valor `k`, y **`\"exit k\"`** cuando termina. Una función que llama a otra **no termina** hasta que la llamada interna ha terminado.\n\nLa función que se está vigilando es esta, escrita en palabras:\n\n- `medir(k)`: si `k` es 0 o 1, no llama a nadie.\n- Si `k` es 2 o más, llama primero a `medir(k - 1)` y, cuando esa llamada ha terminado, llama a `medir(k - 2)`.\n\nDevuelve la lista de anotaciones, en orden, que quedan al ejecutar `medir(n)`. Por ejemplo, `medir(2)` produce: `enter 2`, `enter 1`, `exit 1`, `enter 0`, `exit 0`, `exit 2`.\n\nHay que tener presente, en cada momento, qué llamadas están abiertas y cuál es la más reciente.",
+    "requirements": ["Recibe un número n (0 o más)", "Anota \"enter k\" al empezar cada llamada y \"exit k\" al terminarla", "Una llamada con k >= 2 llama primero a k - 1 y después a k - 2", "Devuelve las anotaciones de medir(n), en orden"],
+    "forbiddenVocabulary": ["recursión", "recursivo", "recursiva", "pila de llamadas", "call stack", "fibonacci"]
+  },
+  "contract": {
+    "entryPoint": "traceCalls",
+    "signature": "traceCalls(n) -> string[]",
+    "inputShape": "n: number (entero, 0 o más)",
+    "outputShape": "string[]",
+    "rules": ["Cada llamada a medir(k) añade \"enter k\" al empezar y \"exit k\" al terminar", "Si k >= 2, medir(k) llama primero a medir(k - 1) y, cuando esa llamada ha terminado, a medir(k - 2)", "Si k es 0 o 1, medir(k) no llama a nadie", "Una llamada solo termina cuando han terminado todas las que ella abrió", "La primera anotación es \"enter n\" y la última es \"exit n\""]
+  },
+  "constraints": {
+    "bannedConstructs": [],
+    "allowClosedForm": false,
+    "mustNotMutate": false,
+    "rotationInvariant": false
+  },
+  "starterCode": "function traceCalls(n) {\n  // your code here\n}\n",
+  "tests": {
+    "visible": [
+      { "id": "v1", "input": [1], "expected": ["enter 1", "exit 1"], "note": "una llamada sin hijos" },
+      {
+        "id": "v2",
+        "input": [3],
+        "expected": ["enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3"],
+        "note": "dos niveles de llamadas"
+      },
+      {
+        "id": "v3",
+        "input": [2],
+        "expected": ["enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2"],
+        "note": "la llamada más pequeña con hijos"
+      }
+    ],
+    "hidden": [
+      {
+        "id": "h1",
+        "input": [4],
+        "expected": ["enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4"],
+        "note": "cuatro niveles"
+      },
+      {
+        "id": "h2",
+        "input": [6],
+        "expected": ["enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6"],
+        "note": "trece llamadas internas"
+      },
+      {
+        "id": "h3",
+        "input": [8],
+        "expected": ["enter 8", "enter 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "exit 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "exit 8"],
+        "note": "un árbol de llamadas más ancho"
+      },
+      {
+        "id": "h4",
+        "input": [12],
+        "expected": ["enter 12", "enter 11", "enter 10", "enter 9", "enter 8", "enter 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "exit 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "exit 8", "enter 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "exit 7", "exit 9", "enter 8", "enter 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "exit 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "exit 8", "exit 10", "enter 9", "enter 8", "enter 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "exit 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "exit 8", "enter 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "exit 7", "exit 9", "exit 11", "enter 10", "enter 9", "enter 8", "enter 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "exit 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "exit 8", "enter 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "exit 7", "exit 9", "enter 8", "enter 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "exit 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "exit 8", "exit 10", "exit 12"],
+        "note": "465 llamadas"
+      }
+    ],
+    "edge": [
+      {
+        "id": "ed1",
+        "input": [0],
+        "expected": ["enter 0", "exit 0"],
+        "edge": true,
+        "edgeKind": "zero",
+        "note": "n es cero"
+      },
+      {
+        "id": "ed2",
+        "input": [10],
+        "expected": ["enter 10", "enter 9", "enter 8", "enter 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "exit 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "exit 8", "enter 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "exit 7", "exit 9", "enter 8", "enter 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "exit 7", "enter 6", "enter 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "exit 5", "enter 4", "enter 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "enter 1", "exit 1", "exit 3", "enter 2", "enter 1", "exit 1", "enter 0", "exit 0", "exit 2", "exit 4", "exit 6", "exit 8", "exit 10"],
+        "edge": true,
+        "edgeKind": "extreme",
+        "note": "177 llamadas"
+      }
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "E21",
+      "message": "Las anotaciones no salen en el orden que pide el enunciado. Comprueba tres cosas con n = 2: que también se anotan las llamadas con k = 1 y k = 0 (empiezan y terminan aunque no llamen a nadie); que primero se llama con k - 1 y, cuando esa llamada ha terminado, con k - 2; y que el «exit» de una llamada va después de todas las anotaciones de las llamadas que abrió."
+    },
+    {
+      "code": "E12",
+      "message": "El resultado debe ser una lista de textos como \"enter 3\" y \"exit 3\", en el orden en que ocurren. Comprueba el formato y el orden de lo que devuelves."
+    },
+    {
+      "code": "E08",
+      "message": "¿Qué devuelve tu función con n = 0? Compruébalo a mano: el contrato pide [\"enter 0\", \"exit 0\"]."
+    },
+    {
+      "code": "E02",
+      "message": "Tu función lanzó una excepción. Si tu función se llama a sí misma sin parar, comprueba qué ocurre cuando k es 0 o 1: ahí no debe hacer más llamadas."
+    },
+    {
+      "code": "E01",
+      "message": "Hay un error de sintaxis antes de que el código pueda ejecutarse. Revisa la línea marcada: el motor no pudo interpretar esa expresión."
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "text": "Dibuja las llamadas de n = 3 en un papel: cada una abre y, más tarde, se cierra. ¿Cuál es la última llamada que se abrió cuando se va a cerrar una? ¿Qué debes recordar mientras tanto?"
+    },
+    {
+      "level": 2,
+      "text": "Con n = 2 las anotaciones son: enter 2, enter 1, exit 1, enter 0, exit 0, exit 2. El «exit 2» llega al final, después de las dos llamadas internas. Una función puede llamarse a sí misma con valores más pequeños. ¿Cuándo debe dejar de hacerlo?"
+    },
+    {
+      "level": 3,
+      "text": "anotaciones = lista vacía\nfunción medir(k):\n    añadir \"enter \" + k\n    si k >= 2:\n        medir(k - 1)\n        medir(k - 2)\n    añadir \"exit \" + k\nmedir(n)\ndevolver anotaciones\n\nEl «exit» va después de las llamadas internas: la llamada solo termina cuando terminan las que abrió. Las llamadas con k = 0 o k = 1 no hacen más llamadas."
+    },
+    {
+      "level": 4,
+      "text": "Un contador regresivo anota «entra c» al empezar cada cuenta y «sale c» al terminar, y se llama a sí mismo con c - 1 hasta llegar a 0.\n\nfunction cuenta(c) {\n  const log = [];\n  function paso(x) {\n    log.push(\"entra \" + x);\n    if (x > 0) paso(x - 1);\n    log.push(\"sale \" + x);\n  }\n  paso(c);\n  return log;\n}",
+      "unlock": { "attempts": 4, "hintsUsed": 3 }
+    }
+  ],
+  "debrief": {
+    "explain": {
+      "prompt": "Completa la frase eligiendo en cada hueco la opción que describe el caso, y responde las preguntas. Puedes corregir y volver a comprobar tantas veces como quieras.",
+      "template": "Cada llamada abre {b1}; las llamadas internas {b2} antes de que la externa termine; por eso el \"exit\" de una llamada va {b3}; las llamadas abiertas se cierran de {b4}.",
+      "blanks": [
+        {
+          "id": "b1",
+          "options": ["un marco con su valor de k", "una lista nueva con todo el registro", "una copia de n", "un contador global"],
+          "correctIndex": 0
+        },
+        {
+          "id": "b2",
+          "options": ["solo empiezan", "empiezan y terminan", "solo terminan", "no existen"],
+          "correctIndex": 1
+        },
+        {
+          "id": "b3",
+          "options": ["antes de su \"enter\"", "al principio de todo", "después de las anotaciones de las llamadas que abrió", "justo después de su \"enter\""],
+          "correctIndex": 2
+        },
+        {
+          "id": "b4",
+          "options": ["la más antigua a la más reciente", "menor valor a mayor valor", "forma aleatoria", "la más reciente a la más antigua"],
+          "correctIndex": 3
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "question": "Con n = 3, ¿qué anotación va justo después de \"exit 1\" (la que cierra la llamada de k = 1 que abrió medir(2))?",
+          "options": ["\"exit 2\": la llamada ya ha acabado", "\"enter 0\": medir(2) llama ahora a medir(0)", "\"enter 1\": la siguiente llamada de medir(3)", "\"exit 0\": la llamada de k = 0"],
+          "correctIndex": 1,
+          "whyWrong": ["Todavía falta la llamada a medir(0).", "", "medir(3) todavía no ha llegado a su segunda llamada.", "No puede cerrarse sin abrirse antes."],
+          "explanation": "medir(2) llama a medir(1) y luego a medir(0). Hasta que no termina medir(0), medir(2) no puede terminar."
+        },
+        {
+          "id": "q2",
+          "question": "Con n = 12 hay 465 llamadas. ¿Cuántas llamadas están abiertas a la vez como máximo?",
+          "options": ["465", "12", "13: la cadena de 12 hasta 0, una dentro de otra", "2"],
+          "correctIndex": 2,
+          "whyWrong": ["Eso es el total de llamadas que ocurren, no las simultáneas.", "Son 13 contando la llamada con k = 0.", "", "Hay mucho más que dos abiertas en la cadena larga."],
+          "explanation": "Las llamadas que están abiertas a la vez forman una cadena: cada una dentro de la anterior. La profundidad máxima es n + 1 y no crece con el total de llamadas."
+        },
+        {
+          "id": "q3",
+          "question": "Con n = 2, una función devuelve `[\"enter 2\", \"exit 2\"]`. ¿Qué le falta?",
+          "options": ["El orden alfabético", "El valor de n", "Ninguna llamada: es correcto", "Las anotaciones de las llamadas internas a medir(1) y medir(0)"],
+          "correctIndex": 3,
+          "whyWrong": ["El orden no es alfabético, es cronológico.", "El valor de n ya aparece en las anotaciones.", "Con n = 2 son seis anotaciones.", ""],
+          "explanation": "Con k >= 2 la llamada debe abrir dos llamadas internas, cada una con su enter y su exit, antes de su propio exit."
+        }
+      ]
+    },
+    "whyItWorks": "Cada llamada a una función abre un marco con sus propios valores, y ese marco se queda abierto mientras la función no termina. Si la función llama a otra, el marco nuevo se pone encima y se cierra primero: la última llamada abierta es la primera que se cierra. Por eso un «exit» siempre va detrás de todas las anotaciones de las llamadas que su función abrió. La estructura de las llamadas abiertas es, por tanto, una pila, y el orden de las anotaciones sale de seguirla.",
+    "edgeCaseNote": "Con n = 0 y n = 1 no hay llamadas internas: solo «enter» y «exit». Con n = 2 aparecen las primeras llamadas internas, y con n a partir de 3, llamadas que se repiten con el mismo valor en ramas distintas. En ningún momento hay más de n + 1 llamadas abiertas a la vez, aunque en total ocurran cientos de llamadas.",
+    "complexity": {
+      "question": "Con n = 12 ocurren 465 llamadas. Si n sube a 24, ¿qué ocurre aproximadamente con el número de llamadas?",
+      "options": ["Se multiplica por unas 300 (más de 100.000 llamadas)", "Se duplica", "Pasa de 465 a unas 930", "No cambia"],
+      "correctIndex": 0,
+      "explanation": "Cada llamada con k >= 2 abre dos más: el número de llamadas crece muy deprisa, casi multiplicándose por 1,6 con cada +1 en n. Con n = 24 serían unas 75.000 llamadas. Aun así, las llamadas abiertas a la vez son solo 25."
+    },
+    "realWorld": "Entender un error en una traza de ejecución, depurar con puntos de interrupción, saber por qué una función se queda sin espacio (desbordamiento), leer la secuencia de llamadas en un perfil de rendimiento.",
+    "reasoningPrompt": "¿Por qué un «exit» va después de las llamadas internas de su función? ¿Qué llamada está siempre abierta mientras se ejecuta otra?",
+    "objectiveNouns": ["llamada", "marco", "anotación", "función"],
+    "reasoningLexicon": ["abre", "cierra", "termina", "interna", "última"]
+  },
+  "mastery": { "reinforcementVariants": [] },
+  "reward": {
+    "systemId": "sys.frames",
+    "effect": "absent → installed",
+    "narrative": "El monitor de marcos muestra qué llamadas están abiertas y en qué orden se van a cerrar."
+  }
+}

@@ -145,6 +145,57 @@
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.stacker",
+      "name": "Stacking crane",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.queue",
+      "name": "Service queue",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.chain",
+      "name": "Link chain",
+      "initialState": "broken",
+      "states": ["broken", "working", "reliable"],
+      "transitions": [
+        { "from": "broken", "to": "working" },
+        { "from": "working", "to": "reliable" }
+      ]
+    },
+    {
+      "id": "sys.frames",
+      "name": "Frame monitor",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.recurse",
+      "name": "Mirror room",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
+    },
+    {
+      "id": "sys.tree",
+      "name": "Branch map",
+      "initialState": "absent",
+      "states": ["absent", "installed"],
+      "transitions": [{ "from": "absent", "to": "installed" }]
     }
   ]
 }

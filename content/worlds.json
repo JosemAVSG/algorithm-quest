@@ -28,8 +28,8 @@
     {
       "id": "w4",
       "name": "World 4 — The control tower",
-      "status": "planned",
-      "missionIds": []
+      "status": "in-progress",
+      "missionIds": ["M23", "M24", "M25", "M26", "M27", "M28"]
     },
     {
       "id": "w5",

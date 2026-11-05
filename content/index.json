@@ -418,6 +418,120 @@
       "reward": {
         "narrative": "El medidor de crecimiento instalado en el taller avisa antes de que una función se quede corta con más datos."
       }
+    },
+    {
+      "id": "M23",
+      "world": "w4",
+      "order": 1,
+      "title": "Las marcas bien cerradas",
+      "subtitle": "Lo último que se abre es lo primero que se cierra",
+      "prerequisites": {
+        "missions": [
+          "M22"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.stacker",
+        "to": "working"
+      },
+      "reward": {
+        "narrative": "La grúa apila y desapila las órdenes en el orden correcto y detecta las que quedaron abiertas."
+      }
+    },
+    {
+      "id": "M24",
+      "world": "w4",
+      "order": 2,
+      "title": "La ventanilla del taller",
+      "subtitle": "El que llega primero se atiende primero",
+      "prerequisites": {
+        "missions": [
+          "M23"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.queue",
+        "to": "working"
+      },
+      "reward": {
+        "narrative": "La ventanilla atiende por orden de llegada y deja de saltarse a quien esperaba más."
+      }
+    },
+    {
+      "id": "M25",
+      "world": "w4",
+      "order": 3,
+      "title": "La cadena de eslabones",
+      "subtitle": "Quitar piezas sin romper la cadena",
+      "prerequisites": {
+        "missions": [
+          "M24"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.chain",
+        "to": "working"
+      },
+      "reward": {
+        "narrative": "La cadena se rehace sola al quitar un eslabón: los vecinos se enlazan sin dejar huecos."
+      }
+    },
+    {
+      "id": "M26",
+      "world": "w4",
+      "order": 4,
+      "title": "El monitor de llamadas",
+      "subtitle": "Cada llamada abre un marco",
+      "prerequisites": {
+        "missions": [
+          "M25"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.frames",
+        "to": "installed"
+      },
+      "reward": {
+        "narrative": "El monitor de marcos muestra qué llamadas están abiertas y en qué orden se van a cerrar."
+      }
+    },
+    {
+      "id": "M27",
+      "world": "w4",
+      "order": 5,
+      "title": "Cajas dentro de cajas",
+      "subtitle": "Un problema que contiene el mismo problema, más pequeño",
+      "prerequisites": {
+        "missions": [
+          "M26"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.recurse",
+        "to": "installed"
+      },
+      "reward": {
+        "narrative": "La sala de espejos resuelve una caja con la misma solución que usa para las cajas que lleva dentro."
+      }
+    },
+    {
+      "id": "M28",
+      "world": "w4",
+      "order": 6,
+      "title": "El mapa de ramas",
+      "subtitle": "Recorrer algo que se ramifica",
+      "prerequisites": {
+        "missions": [
+          "M27"
+        ]
+      },
+      "workshop": {
+        "systemId": "sys.tree",
+        "to": "installed"
+      },
+      "reward": {
+        "narrative": "El mapa de ramas se lee de arriba abajo sin perder ninguna zona, por muchas ramas que tenga."
+      }
     }
   ]
 }
