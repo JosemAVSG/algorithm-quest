@@ -30,11 +30,11 @@ function editor(page: Page) {
   return page.getByRole('textbox', { name: EDITOR });
 }
 
-/** Opens World 1 unless leaving a mission already left it open. */
+/** Opens World 1 (Mundo 1) unless leaving a mission already left it open. */
 async function openWorld1(page: Page) {
   const worlds = page.getByRole('list', { name: 'Mundos' });
   if (await worlds.isVisible())
-    await page.getByRole('button', { name: /^World 1/ }).click();
+    await page.getByRole('button', { name: /^Mundo 1/ }).click();
   await expect(page.getByRole('list', { name: 'Misiones' })).toBeVisible();
 }
 
@@ -103,7 +103,7 @@ test('X1 · recorre la misión de principio a fin y repara el sensor', async ({
   // Leaving a mission lands in its world, not on the list of worlds.
   await expect(page.getByRole('list', { name: 'Misiones' })).toBeVisible();
   await expect(page.getByRole('list', { name: 'Mundos' })).toHaveCount(0);
-  await expect(page.getByLabel('Sensor array: operativo')).toBeVisible();
+  await expect(page.getByLabel('Matriz de sensores: operativo')).toBeVisible();
   await expect(page.getByText('M02 · Salida temprana')).toBeVisible();
 });
 
@@ -171,12 +171,12 @@ test('X4 · completar M01 y recargar mantiene el sensor operativo', async ({
   await finishDebrief(page);
   await page.getByRole('button', { name: 'Volver al taller →' }).click();
   await openWorld1(page);
-  await expect(page.getByLabel('Sensor array: operativo')).toBeVisible();
+  await expect(page.getByLabel('Matriz de sensores: operativo')).toBeVisible();
 
   await page.reload();
   await expect(page.getByText(/^1 de \d+ sistemas/)).toBeVisible();
   await openWorld1(page);
-  await expect(page.getByLabel('Sensor array: operativo')).toBeVisible();
+  await expect(page.getByLabel('Matriz de sensores: operativo')).toBeVisible();
 });
 
 test('X5 · Tab alcanza el editor y Cmd/Ctrl + Enter ejecuta', async ({
@@ -209,7 +209,7 @@ test('X6 · recargar a mitad de misión conserva el intento y no el buffer', asy
 
   await page.reload();
   await openWorld1(page);
-  await expect(page.getByLabel('Sensor array: averiado')).toBeVisible();
+  await expect(page.getByLabel('Matriz de sensores: averiado')).toBeVisible();
   await page.getByRole('button', { name: 'Continuar →' }).click();
 
   await expect(editor(page)).toBeVisible();
@@ -248,7 +248,7 @@ test('X7 · exportar, borrar e importar conserva la maestría', async ({
 
   await page.getByRole('button', { name: '← Volver al taller' }).click();
   await openWorld1(page);
-  await expect(page.getByLabel('Sensor array: operativo')).toBeVisible();
+  await expect(page.getByLabel('Matriz de sensores: operativo')).toBeVisible();
 });
 
 test('X8 · el editor cierra llaves, indenta con Tab y deja salir con Esc + Tab', async ({

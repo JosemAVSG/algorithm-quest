@@ -46,7 +46,7 @@ test.beforeEach(async ({ page }) => {
 
 async function openMission(page: Page, prefix: RegExp) {
   await page.goto("/");
-  await page.getByRole("button", { name: /^World 1/ }).click();
+  await page.getByRole("button", { name: /^Mundo 1/ }).click();
   await page.getByRole("button", { name: prefix }).click();
 }
 

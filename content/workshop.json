@@ -3,7 +3,7 @@
   "systems": [
     {
       "id": "sys.sensor",
-      "name": "Sensor array",
+      "name": "Matriz de sensores",
       "initialState": "broken",
       "states": ["broken", "working", "reliable"],
       "transitions": [
@@ -13,7 +13,7 @@
     },
     {
       "id": "sys.line",
-      "name": "Conveyor line",
+      "name": "Cinta transportadora",
       "initialState": "broken",
       "states": ["broken", "working", "reliable"],
       "transitions": [
@@ -23,7 +23,7 @@
     },
     {
       "id": "sys.store",
-      "name": "Inventory store",
+      "name": "Almacén de inventario",
       "initialState": "broken",
       "states": ["broken", "working", "reliable"],
       "transitions": [
@@ -33,7 +33,7 @@
     },
     {
       "id": "sys.log",
-      "name": "Maintenance log",
+      "name": "Registro de mantenimiento",
       "initialState": "broken",
       "states": ["broken", "working", "reliable"],
       "transitions": [
@@ -43,7 +43,7 @@
     },
     {
       "id": "sys.guard",
-      "name": "Safety guard",
+      "name": "Guarda de seguridad",
       "initialState": "broken",
       "states": ["broken", "working", "reliable"],
       "transitions": [
@@ -53,7 +53,7 @@
     },
     {
       "id": "sys.dispatch",
-      "name": "Dispatch board",
+      "name": "Tablero de despacho",
       "initialState": "broken",
       "states": ["broken", "working", "reliable"],
       "transitions": [
@@ -63,35 +63,35 @@
     },
     {
       "id": "sys.meter",
-      "name": "Cost meter",
+      "name": "Medidor de coste",
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]
     },
     {
       "id": "sys.memory",
-      "name": "Memory cell",
+      "name": "Celda de memoria",
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]
     },
     {
       "id": "sys.index",
-      "name": "Index drawer",
+      "name": "Cajón de índices",
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]
     },
     {
       "id": "sys.audit",
-      "name": "Audit terminal",
+      "name": "Terminal de auditoría",
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]
     },
     {
       "id": "sys.balance",
-      "name": "Balance gauge",
+      "name": "Balanza",
       "initialState": "broken",
       "states": ["broken", "working", "reliable"],
       "transitions": [
@@ -101,7 +101,7 @@
     },
     {
       "id": "sys.merger",
-      "name": "Merge table",
+      "name": "Mesa de mezcla",
       "initialState": "broken",
       "states": ["broken", "working", "reliable"],
       "transitions": [
@@ -111,7 +111,7 @@
     },
     {
       "id": "sys.window",
-      "name": "Window scanner",
+      "name": "Escáner de turnos",
       "initialState": "broken",
       "states": ["broken", "working", "reliable"],
       "transitions": [
@@ -121,7 +121,7 @@
     },
     {
       "id": "sys.sorter",
-      "name": "Sorting arm",
+      "name": "Brazo ordenador",
       "initialState": "broken",
       "states": ["broken", "working", "reliable"],
       "transitions": [
@@ -131,7 +131,7 @@
     },
     {
       "id": "sys.finder",
-      "name": "Bisect finder",
+      "name": "Buscador de fronteras",
       "initialState": "broken",
       "states": ["broken", "working", "reliable"],
       "transitions": [
@@ -141,14 +141,14 @@
     },
     {
       "id": "sys.growth",
-      "name": "Growth meter",
+      "name": "Medidor de crecimiento",
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]
     },
     {
       "id": "sys.stacker",
-      "name": "Stacking crane",
+      "name": "Grúa apiladora",
       "initialState": "broken",
       "states": ["broken", "working", "reliable"],
       "transitions": [
@@ -158,7 +158,7 @@
     },
     {
       "id": "sys.queue",
-      "name": "Service queue",
+      "name": "Ventanilla de atención",
       "initialState": "broken",
       "states": ["broken", "working", "reliable"],
       "transitions": [
@@ -168,7 +168,7 @@
     },
     {
       "id": "sys.chain",
-      "name": "Link chain",
+      "name": "Cadena de eslabones",
       "initialState": "broken",
       "states": ["broken", "working", "reliable"],
       "transitions": [
@@ -178,56 +178,56 @@
     },
     {
       "id": "sys.frames",
-      "name": "Frame monitor",
+      "name": "Monitor de marcos",
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]
     },
     {
       "id": "sys.recurse",
-      "name": "Mirror room",
+      "name": "Sala de espejos",
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]
     },
     {
       "id": "sys.tree",
-      "name": "Branch map",
+      "name": "Mapa de ramas",
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]
     },
     {
       "id": "sys.maze",
-      "name": "Maze router",
+      "name": "Enrutador del laberinto",
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]
     },
     {
       "id": "sys.vault",
-      "name": "Space vault",
+      "name": "Bóveda de espacio",
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]
     },
     {
       "id": "sys.ledger",
-      "name": "Amortized ledger",
+      "name": "Libro de cuentas",
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]
     },
     {
       "id": "sys.memo",
-      "name": "Memo board",
+      "name": "Pizarra de memoria",
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]
     },
     {
       "id": "sys.council",
-      "name": "Design council",
+      "name": "Comité de diseño",
       "initialState": "absent",
       "states": ["absent", "installed"],
       "transitions": [{ "from": "absent", "to": "installed" }]

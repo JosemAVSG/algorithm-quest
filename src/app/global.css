@@ -437,6 +437,16 @@ code {
   white-space: nowrap;
 }
 
+/* Mission and world names are the content of the map: let them use two lines
+   instead of being cut at "La auditoría del inventa…". */
+.stop__name {
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-height: 1.25;
+}
+
 .stop__state {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
@@ -935,6 +945,16 @@ code {
   color: var(--working);
 }
 
+/* Code is read character by character: a ligature that draws >= as a single
+   glyph hides the difference between >=, ==, === and =>. */
+code,
+pre,
+textarea,
+.cm-editor {
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'calt' 0;
+}
+
 /* -------------------------------------------------------------------- lab */
 
 .lab__bar {
@@ -1114,17 +1134,6 @@ code {
 .lab__panel {
   display: grid;
   gap: 1rem;
-}
-
-.lab__note {
-  display: none;
-  margin-top: 1.5rem;
-  padding: 1rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--surface);
-  color: var(--text-muted);
-  font-size: 0.875rem;
 }
 
 /* ------------------------------------------------------------------ tests */
@@ -1699,12 +1708,24 @@ code {
     padding: 0 1rem 2.5rem;
   }
 
+  /* The lab used to be replaced by a "needs 900 px" notice. It now stacks:
+     code first, then tests and mentor, with Run always within reach. */
   .lab__grid {
-    display: none;
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .lab__note {
-    display: block;
+  .lab__bar {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    padding: 0.75rem 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .lab__code .cm-editor,
+  .lab__code textarea {
+    min-height: 16rem;
   }
 }
 

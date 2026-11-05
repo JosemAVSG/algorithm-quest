@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "M01",
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.0.1",
   "locale": "es",
   "world": "w1",
   "order": 1,
@@ -27,7 +27,7 @@
   },
 
   "briefing": {
-    "headline": "Sensor array — turno de noche",
+    "headline": "Matriz de sensores — turno de noche",
     "body": "El sensor del horno marca 95 °C. El límite seguro de la línea son 90 °C.\n\nEl panel de alarma solo tiene una entrada y espera un sí o un no. Si le mandamos cualquier otra cosa, se queda en blanco y nadie se entera del incendio.\n\nNecesito una función que reciba la lectura y el límite, y devuelva si hay que disparar la alarma.",
     "requirements": [
       "Recibe la lectura del sensor y el límite seguro",

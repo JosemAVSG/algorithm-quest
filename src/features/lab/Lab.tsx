@@ -86,19 +86,14 @@ export function Lab({
         <aside className="lab__panel" aria-live="polite">
           {illustration === null ? null : <div className="lab__visual">{illustration}</div>}
           <TestPanel report={lastEvaluation?.report ?? null} running={state.running} />
-          <ConsolePanel report={consoleReport} labels={consoleLabels} onClear={onClearConsole} />
           <MentorPanel
             state={state}
             onRequestHint={onRequestHint}
             onOpenDebrief={onOpenDebrief}
           />
+          <ConsolePanel report={consoleReport} labels={consoleLabels} onClear={onClearConsole} />
         </aside>
       </div>
-
-      <p className="lab__note">
-        El laboratorio necesita una pantalla de al menos 900 px. En una pantalla menor, el mapa y
-        el informe siguen funcionando.
-      </p>
     </div>
   );
 }

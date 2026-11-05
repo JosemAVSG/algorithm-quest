@@ -3,43 +3,43 @@
   "worlds": [
     {
       "id": "w1",
-      "name": "World 1 — The broken workshop",
+      "name": "Mundo 1 — El taller roto",
       "status": "in-progress",
       "missionIds": ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09"]
     },
     {
       "id": "transition",
-      "name": "Transition Arc — The index drawer",
+      "name": "Arco de transición — El cajón de índices",
       "status": "in-progress",
       "missionIds": ["M10", "M11", "M12"]
     },
     {
       "id": "w2",
-      "name": "World 2 — The warehouse",
+      "name": "Mundo 2 — El almacén",
       "status": "in-progress",
       "missionIds": ["M13", "M14", "M15", "M16"]
     },
     {
       "id": "w3",
-      "name": "World 3 — The sorting floor",
+      "name": "Mundo 3 — La planta de clasificación",
       "status": "in-progress",
       "missionIds": ["M17", "M18", "M19", "M20", "M21", "M22"]
     },
     {
       "id": "w4",
-      "name": "World 4 — The control tower",
+      "name": "Mundo 4 — La torre de control",
       "status": "in-progress",
       "missionIds": ["M23", "M24", "M25", "M26", "M27", "M28"]
     },
     {
       "id": "w5",
-      "name": "World 5 — The network yard",
+      "name": "Mundo 5 — El patio de la red",
       "status": "in-progress",
       "missionIds": ["M29", "M30", "M31", "M32", "M33"]
     },
     {
       "id": "w6",
-      "name": "World 6 — The archive",
+      "name": "Mundo 6 — El archivo",
       "status": "in-progress",
       "missionIds": ["M34", "M35", "M36", "M37"]
     }

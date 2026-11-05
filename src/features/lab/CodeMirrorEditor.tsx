@@ -40,7 +40,12 @@ const theme = EditorView.theme(
     },
     '&.cm-focused': { outline: '2px solid var(--structure)', outlineOffset: '-2px' },
     '.cm-scroller': { fontFamily: 'var(--font-mono)', lineHeight: '1.6', overflow: 'auto' },
-    '.cm-content': { padding: '1rem 0', caretColor: 'var(--text)' },
+    '.cm-content': {
+      padding: '1rem 0',
+      caretColor: 'var(--text)',
+      fontVariantLigatures: 'none',
+      fontFeatureSettings: '"liga" 0, "calt" 0',
+    },
     '.cm-cursor': { borderLeftColor: 'var(--text)' },
     '.cm-gutters': {
       backgroundColor: 'var(--surface-sunken)',
