@@ -44,6 +44,7 @@ import { Debrief } from '../debrief/Debrief';
 import { Lab } from '../lab/Lab';
 import type { TraceView } from '../lab/TracePanel';
 import { Strategy } from '../strategy/Strategy';
+import { worldAccentStyle } from '../workshop-map/worldAccent';
 
 const STEPS: Array<{ phase: StepPhase; label: string }> = [
   { phase: 'briefing', label: 'Briefing' },
@@ -248,7 +249,7 @@ export function MissionFlow({
 
   return (
     <div className="mission">
-      <header className="mission__bar">
+      <header className="mission__bar" style={worldAccentStyle(mission.world)}>
         <button type="button" className="btn btn--link" onClick={onExit}>
           ← Taller
         </button>
