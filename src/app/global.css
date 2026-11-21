@@ -2303,6 +2303,7 @@ textarea,
   }
 
   .btn--link,
+  .code__tab,
   .trace__pick select {
     min-height: 2.75rem;
   }

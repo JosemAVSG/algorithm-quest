@@ -95,7 +95,7 @@ const highlight = HighlightStyle.define([
   { tag: [tags.keyword, tags.controlKeyword, tags.operatorKeyword], color: '#ff7b72' },
   { tag: [tags.string, tags.special(tags.string)], color: '#a5d6ff' },
   { tag: [tags.number, tags.bool, tags.null], color: '#d29922' },
-  { tag: [tags.comment, tags.lineComment, tags.blockComment], color: '#6e7b88', fontStyle: 'italic' },
+  { tag: [tags.comment, tags.lineComment, tags.blockComment], color: '#8493a1', fontStyle: 'italic' },
   { tag: [tags.function(tags.variableName), tags.function(tags.propertyName)], color: '#d2a8ff' },
   { tag: [tags.definition(tags.variableName), tags.definition(tags.function(tags.variableName))], color: '#79c0ff' },
   { tag: tags.propertyName, color: '#e6edf3' },
