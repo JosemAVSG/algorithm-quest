@@ -150,6 +150,9 @@ export function MissionFlow({
   // the lab: never saved, never read by the evaluation. Editing the code
   // discards it, because its lines would no longer match.
   const [traceView, setTraceView] = useState<TraceView | null>(null);
+  // What a locked step tab says when it is tapped (touch has no hover).
+  const [railNote, setRailNote] = useState<string | null>(null);
+  useEffect(() => setRailNote(null), [state.phase]);
   useEffect(() => {
     setTraceView(null);
   }, [state.source]);
@@ -236,6 +239,9 @@ export function MissionFlow({
   }, [execution, mission, state]);
 
   const currentStep = stepIndex(state.phase);
+  const labNote =
+    state.phase === 'lab' && !allTestsPassed(state) ? 'Pasa las pruebas para abrir el Informe' : null;
+  const railMessage = railNote ?? labNote;
   const visual = mission.briefing.visual ? (
     <BriefingVisual id={mission.briefing.visual} />
   ) : null;
@@ -266,35 +272,54 @@ export function MissionFlow({
               // The debrief stays locked while the tests do not pass.
               (step.phase !== 'debrief' || allTestsPassed(state));
             const isCurrent = status === 'current';
+            const locked = !reached && !isCurrent;
+            const lockHint =
+              state.phase === 'complete'
+                ? 'La misión ya está cerrada'
+                : step.phase === 'debrief'
+                  ? allTestsPassed(state)
+                    ? 'Abre el Informe con el botón «Abrir el informe»'
+                    : 'Pasa las pruebas para abrir el Informe'
+                  : 'Aún no llegas aquí';
             return (
               <li
                 key={step.phase}
-                className={`rail__step rail__step--${status}`}
+                className={`rail__step rail__step--${status}${locked ? ' rail__step--locked' : ''}`}
               >
                 <button
                   type="button"
                   className="rail__button"
                   aria-current={isCurrent ? 'step' : undefined}
                   aria-label={isCurrent ? undefined : `Ir a ${step.label}`}
-                  disabled={!reached || isCurrent}
-                  title={
-                    reached || isCurrent
-                      ? undefined
-                      : state.phase === 'complete'
-                        ? 'La misión ya está cerrada'
-                        : 'Aún no llegas aquí'
-                  }
-                  onClick={() =>
-                    dispatch({ type: 'go_to_phase', phase: step.phase })
-                  }
+                  aria-disabled={locked ? 'true' : undefined}
+                  aria-describedby={locked ? `rail-hint-${step.phase}` : undefined}
+                  onClick={() => {
+                    if (isCurrent) return;
+                    if (locked) {
+                      setRailNote(lockHint);
+                      return;
+                    }
+                    setRailNote(null);
+                    dispatch({ type: 'go_to_phase', phase: step.phase });
+                  }}
                 >
                   <span className="rail__dot" aria-hidden="true" />
                   <span className="rail__label">{step.label}</span>
                 </button>
+                {locked ? (
+                  <span className="rail__tip" id={`rail-hint-${step.phase}`}>
+                    {lockHint}
+                  </span>
+                ) : null}
               </li>
             );
           })}
         </ol>
+        {railMessage === null ? null : (
+          <p className="rail__note" role="status">
+            {railMessage}
+          </p>
+        )}
       </nav>
 
       <main className="mission__screen">

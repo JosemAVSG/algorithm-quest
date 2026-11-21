@@ -29,7 +29,8 @@ test('el paso a paso muestra las variables de cada vuelta y marca la línea en e
   await reachLab(page);
   await editor(page).fill(WITH_LOOP);
 
-  const trace = page.getByRole('region', { name: 'Paso a paso' });
+  const trace = page.getByRole('tabpanel', { name: 'Paso a paso' });
+  await page.getByRole('tab', { name: 'Paso a paso' }).click();
   await trace.getByRole('button', { name: 'Ver paso a paso' }).click();
 
   await expect(trace.getByText(/Paso 1 de 4 · línea 1/)).toBeVisible();
@@ -54,7 +55,8 @@ test('un bucle que no termina se corta y se explica', async ({ page }) => {
     'function isOverLimit(temperature, limit) {\n  let i = 0;\n  while (true) {\n    i++;\n  }\n}',
   );
 
-  const trace = page.getByRole('region', { name: 'Paso a paso' });
+  const trace = page.getByRole('tabpanel', { name: 'Paso a paso' });
+  await page.getByRole('tab', { name: 'Paso a paso' }).click();
   await trace.getByRole('button', { name: 'Ver paso a paso' }).click();
   await expect(trace.getByText(/Paso 1 de 400/)).toBeVisible();
   await trace.getByRole('button', { name: 'Último paso' }).click();
@@ -67,11 +69,14 @@ test('editar el código cierra el paso a paso', async ({ page }) => {
   await reachLab(page);
   await editor(page).fill(WITH_LOOP);
 
-  const trace = page.getByRole('region', { name: 'Paso a paso' });
+  const trace = page.getByRole('tabpanel', { name: 'Paso a paso' });
+  await page.getByRole('tab', { name: 'Paso a paso' }).click();
   await trace.getByRole('button', { name: 'Ver paso a paso' }).click();
   await expect(trace.getByText(/Paso 1 de 4/)).toBeVisible();
 
+  await page.getByRole('tab', { name: 'Código' }).click();
   await editor(page).fill(`${WITH_LOOP}\n`);
+  await page.getByRole('tab', { name: 'Paso a paso' }).click();
   await expect(trace.getByText(/Paso 1 de 4/)).toHaveCount(0);
   await expect(trace.getByRole('button', { name: 'Ver paso a paso' })).toBeVisible();
 });
@@ -80,7 +85,25 @@ test('un error de sintaxis no rompe el paso a paso', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await reachLab(page);
   await editor(page).fill('function isOverLimit(temperature, limit) {');
-  const trace = page.getByRole('region', { name: 'Paso a paso' });
+  const trace = page.getByRole('tabpanel', { name: 'Paso a paso' });
+  await page.getByRole('tab', { name: 'Paso a paso' }).click();
   await trace.getByRole('button', { name: 'Ver paso a paso' }).click();
   await expect(trace.getByText(/no se puede interpretar/)).toBeVisible();
+});
+
+test('las pestañas Código y Paso a paso se manejan con las flechas', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await reachLab(page);
+  const code = page.getByRole('tab', { name: 'Código' });
+  const steps = page.getByRole('tab', { name: 'Paso a paso' });
+  await expect(code).toHaveAttribute('aria-selected', 'true');
+  await code.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(steps).toBeFocused();
+  await expect(steps).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByRole('tabpanel', { name: 'Paso a paso' })).toBeVisible();
+  await expect(editor(page)).toBeHidden();
+  await page.keyboard.press('Home');
+  await expect(code).toHaveAttribute('aria-selected', 'true');
+  await expect(editor(page)).toBeVisible();
 });

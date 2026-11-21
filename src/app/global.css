@@ -607,17 +607,54 @@ code {
   cursor: pointer;
 }
 
-.rail__button:disabled {
+.rail__step {
+  position: relative;
+}
+
+.rail__button[aria-current='step'] {
   cursor: default;
 }
 
-.rail__step--todo .rail__button:disabled {
+.rail__step--locked .rail__button {
   cursor: not-allowed;
-  opacity: 0.6;
+  color: var(--text-muted);
 }
 
-.rail__button:not(:disabled):hover .rail__label {
+.rail__step--locked .rail__dot {
+  border-style: dashed;
+}
+
+.rail__button:not([aria-disabled='true']):not([aria-current='step']):hover .rail__label {
   text-decoration: underline;
+}
+
+/* The reason a step is locked: on hover and keyboard focus, and again as a note below the rail. */
+.rail__tip {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  z-index: 6;
+  width: max-content;
+  max-width: 16rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 0.75rem;
+  pointer-events: none;
+  display: none;
+}
+
+.rail__step--locked:hover .rail__tip,
+.rail__step--locked:focus-within .rail__tip {
+  display: block;
+}
+
+.rail__note {
+  margin-top: 0.6rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
 
 .rail__button:focus-visible {
@@ -643,12 +680,20 @@ code {
 
 .rail__step--current {
   color: var(--text);
+  font-weight: 600;
+}
+
+.rail__step--current .rail__label {
+  border-bottom: 2px solid var(--structure);
+  padding-bottom: 0.1rem;
 }
 
 .rail__step--current .rail__dot {
+  width: 0.65rem;
+  height: 0.65rem;
   background: var(--structure);
   border-color: var(--structure);
-  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.25);
 }
 
 .mission__screen {
@@ -1026,32 +1071,123 @@ textarea,
 
 .code__head {
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.6rem 0.9rem;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  padding: 0.5rem 0.9rem;
   border-bottom: 1px solid var(--border);
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--text-muted);
 }
 
+.code__fn {
+  color: var(--text);
+}
+
+.code__tabs {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.code__tab {
+  font: inherit;
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  padding: 0.4rem 0.75rem;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.code__tab[aria-selected='true'] {
+  color: var(--text);
+  font-weight: 600;
+  border-bottom-color: var(--structure);
+}
+
+.code__tab:hover {
+  color: var(--text);
+}
+
+.code__tab:focus-visible {
+  outline: 2px solid var(--structure);
+  outline-offset: 1px;
+}
+
+.code__run {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.code__kbd {
+  padding: 0.15rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
 .code__hint {
+  padding: 0.35rem 0.9rem;
   font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+/* Run lives in the editor bar on desktop; on a phone the sticky top bar carries it. */
+.lab__run--sticky {
+  display: none;
+}
+
+.lab__success {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  margin-top: 1rem;
+  padding: 0.85rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--working);
+  border-left-width: 4px;
+  border-radius: 6px;
+  animation: lab-success-in 0.5s ease-out 1, repair-glow 1.4s ease-out 1;
+}
+
+.lab__success-title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+@keyframes lab-success-in {
+  from {
+    transform: translateY(-0.6rem) scale(0.99);
+  }
+  to {
+    transform: none;
+  }
 }
 
 .editor {
-  height: 26rem;
   background: var(--surface-sunken);
 }
 
 .editor--cm .cm-editor {
-  height: 100%;
+  min-height: 10rem;
+  max-height: 60vh;
 }
 
 .editor__area {
   display: block;
   width: 100%;
-  height: 100%;
+  min-height: 10rem;
+  max-height: 60vh;
   padding: 1rem;
   font-family: var(--font-mono);
   font-size: 0.8125rem;
@@ -1062,7 +1198,8 @@ textarea,
   border: none;
   resize: none;
   outline: none;
-  white-space: pre;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   overflow: auto;
 }
 
@@ -1211,9 +1348,6 @@ textarea,
 /* ------------------------------------------------------------------ trace */
 
 .trace {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
   padding: 1rem 1.1rem;
 }
 
@@ -1267,6 +1401,13 @@ textarea,
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--text-muted);
+}
+
+.trace__line {
+  margin: 0.25rem 0 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
 }
 
 .trace__vars {
@@ -1407,8 +1548,26 @@ textarea,
   line-height: 1.5;
 }
 
+.test__icon {
+  display: inline-block;
+  transition: color 0.3s;
+}
+
 .test--pass .test__icon {
   color: var(--working);
+  animation: test-pass-pop 0.45s ease-out 1;
+}
+
+@keyframes test-pass-pop {
+  0% {
+    transform: scale(0.5);
+  }
+  60% {
+    transform: scale(1.35);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .test--error .test__icon {
@@ -1446,7 +1605,7 @@ textarea,
   display: grid;
   gap: 0.15rem;
   margin-top: 0.5rem;
-  padding: 0.55rem 0.65rem;
+  padding: 0.45rem 0.55rem;
   background: var(--surface-sunken);
   border-radius: 4px;
   font-size: 0.6875rem;
@@ -1455,7 +1614,39 @@ textarea,
 .diff__row {
   display: grid;
   grid-template-columns: 4.6rem minmax(0, 1fr);
+  align-items: baseline;
   gap: 0.5rem;
+}
+
+.diff__pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.diff__block {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.3rem 0.6rem 0.4rem;
+  border: 1px solid var(--border);
+  border-top-width: 3px;
+  border-radius: 4px;
+}
+
+.diff__block--expected {
+  border-top-color: var(--working);
+}
+
+.diff__block--actual {
+  border-top-color: var(--attention);
+}
+
+.diff__block .diff__key {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .diff__key {
@@ -1946,9 +2137,17 @@ textarea,
     border-bottom: 1px solid var(--border);
   }
 
-  .lab__code .cm-editor,
-  .lab__code textarea {
-    min-height: 16rem;
+  .lab__run--sticky {
+    display: inline-flex;
+  }
+
+  .lab__run--editor,
+  .code__kbd {
+    display: none;
+  }
+
+  .diff__pair {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -2183,7 +2382,9 @@ textarea,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .complete__transition {
+  .complete__transition,
+  .lab__success,
+  .test--pass .test__icon {
     animation: none;
   }
 }

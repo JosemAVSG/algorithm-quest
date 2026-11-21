@@ -21,6 +21,12 @@ interface TracePanelProps {
   onStep: (step: number) => void;
   onTrace: (testId: string) => void;
   onClose: () => void;
+  /** The code that was traced, so the current line can be quoted while the editor tab is hidden. */
+  source: string;
+  /** Wiring for the tab this panel belongs to (the lab's "Código | Paso a paso" tabs). */
+  tabId: string;
+  panelId: string;
+  hidden: boolean;
 }
 
 function describeEnd(outcome: Extract<TraceOutcome, { kind: 'traced' }>, steps: number): string {
@@ -37,12 +43,27 @@ function describeEnd(outcome: Extract<TraceOutcome, { kind: 'traced' }>, steps: 
   }
 }
 
-function StepView({ step, total, current }: { step: TraceStep; total: number; current: number }) {
+function StepView({
+  step,
+  total,
+  current,
+  lineText,
+}: {
+  step: TraceStep;
+  total: number;
+  current: number;
+  lineText: string | undefined;
+}) {
   return (
     <>
       <p className="trace__where" aria-live="polite">
         Paso {current + 1} de {total} · línea {step.line}
       </p>
+      {lineText === undefined || lineText.trim() === '' ? null : (
+        <p className="trace__line">
+          <code>{lineText.trim()}</code>
+        </p>
+      )}
       {step.variables.length === 0 ? (
         <p className="trace__empty">En este punto no hay variables todavía.</p>
       ) : (
@@ -71,7 +92,18 @@ function StepView({ step, total, current }: { step: TraceStep; total: number; cu
   );
 }
 
-export function TracePanel({ tests, view, step, onStep, onTrace, onClose }: TracePanelProps) {
+export function TracePanel({
+  tests,
+  view,
+  step,
+  onStep,
+  onTrace,
+  onClose,
+  source,
+  tabId,
+  panelId,
+  hidden,
+}: TracePanelProps) {
   const defaultTest = tests.find((test) => test.status !== 'pass') ?? tests[0];
   const selected = view?.testId ?? defaultTest?.id ?? '';
 
@@ -81,9 +113,8 @@ export function TracePanel({ tests, view, step, onStep, onTrace, onClose }: Trac
   const at = Math.min(step, last);
 
   return (
-    <section className="trace" aria-label="Paso a paso">
+    <div className="trace" role="tabpanel" id={panelId} aria-labelledby={tabId} hidden={hidden}>
       <header className="trace__head">
-        <h2>Paso a paso</h2>
         <div className="trace__pick">
           <label className="sr-only" htmlFor="trace-case">
             Caso para ejecutar paso a paso
@@ -169,7 +200,12 @@ export function TracePanel({ tests, view, step, onStep, onTrace, onClose }: Trac
               ⏭
             </button>
           </div>
-          <StepView step={traced.steps[at]!} total={traced.steps.length} current={at} />
+          <StepView
+            step={traced.steps[at]!}
+            total={traced.steps.length}
+            current={at}
+            lineText={source.split('\n')[traced.steps[at]!.line - 1]}
+          />
           {at === last ? (
             <p className="trace__end" data-status={traced.result.status}>
               {describeEnd(traced, traced.steps.length)}
@@ -177,6 +213,6 @@ export function TracePanel({ tests, view, step, onStep, onTrace, onClose }: Trac
           ) : null}
         </>
       ) : null}
-    </section>
+    </div>
   );
 }

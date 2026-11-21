@@ -11,17 +11,20 @@ test.beforeEach(async ({ page }) => {
 
 test("el riel navega hacia atrás y adelante sin perder nada", async ({ page }) => {
   await reachLab(page);
+  const rail = page.getByRole("navigation", { name: "Pasos de la misión" });
+  const locked = rail.getByRole("button", { name: "Informe" });
+  await expect(locked).toHaveAttribute("aria-disabled", "true");
+  await expect(locked).toHaveAccessibleDescription("Pasa las pruebas para abrir el Informe");
+  await expect(page.getByRole("status").filter({ hasText: "Pasa las pruebas para abrir el Informe" })).toBeVisible();
+  await locked.focus(); // aria-disabled keeps it focusable, so the hint reaches keyboard users
+  await expect(rail.locator(".rail__tip")).toBeVisible();
+  await locked.click({ force: true });
+  await expect(editor(page)).toBeVisible(); // a locked step does not navigate
+
   await editor(page).fill("function isOverLimit(t, l) { return t > l; }");
   await page.getByRole("button", { name: "Ejecutar" }).click();
   await expect(page.getByRole("button", { name: "Ejecutar" })).toBeEnabled();
   const code = await editorText(page);
-
-  const rail = page.getByRole("navigation", { name: "Pasos de la misión" });
-  await expect(rail.getByRole("button", { name: "Informe" })).toBeDisabled();
-  await expect(rail.getByRole("button", { name: "Informe" })).toHaveAttribute(
-    "title",
-    "Aún no llegas aquí",
-  );
 
   await rail.getByRole("button", { name: "Ir a Briefing" }).click();
   await expect(page.getByRole("heading", { name: "El primer diagnóstico" })).toBeVisible();
@@ -63,5 +66,5 @@ test("la ilustración queda a la derecha del formulario y del editor", async ({ 
   const labImg = (await img.boundingBox())!;
   const editorBox = (await editor(page).boundingBox())!;
   expect(labImg.x).toBeGreaterThan(editorBox.x + editorBox.width - 1);
-  await expect(page.getByRole("heading", { name: "Pruebas" }).or(page.getByText("Pruebas").first())).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Pruebas" })).toBeVisible();
 });

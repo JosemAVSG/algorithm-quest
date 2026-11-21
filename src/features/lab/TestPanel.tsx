@@ -79,17 +79,19 @@ export function TestPanel({ report, running, cost = null }: TestPanelProps) {
 
               {result.status === 'fail' ? (
                 <span className="diff">
-                  <span className="diff__row">
+                  <span className="diff__row diff__row--input">
                     <span className="diff__key">entrada</span>
                     <code>{result.input.map(renderValue).join(', ')}</code>
                   </span>
-                  <span className="diff__row">
-                    <span className="diff__key">esperado</span>
-                    <Marked text={renderValue(result.expected)} other={renderValue(result.actual)} />
-                  </span>
-                  <span className="diff__row">
-                    <span className="diff__key">obtenido</span>
-                    <Marked text={renderValue(result.actual)} other={renderValue(result.expected)} />
+                  <span className="diff__pair">
+                    <span className="diff__block diff__block--expected">
+                      <span className="diff__key">esperado</span>
+                      <Marked text={renderValue(result.expected)} other={renderValue(result.actual)} />
+                    </span>
+                    <span className="diff__block diff__block--actual">
+                      <span className="diff__key">obtenido</span>
+                      <Marked text={renderValue(result.actual)} other={renderValue(result.expected)} />
+                    </span>
                   </span>
                 </span>
               ) : null}
