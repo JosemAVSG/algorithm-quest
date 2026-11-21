@@ -67,3 +67,8 @@ export async function fillM01Explain(page: Page, options: { wrongBlank?: boolean
     .getByLabel('Solo lo que está por encima del límite es peligroso; el límite en sí es seguro')
     .check();
 }
+
+/** Answers the cost question of any mission's debrief (the first option; the answer is not graded). */
+export async function answerCostAny(page: Page) {
+  await page.locator('input[name="complexity"]').first().check();
+}

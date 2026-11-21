@@ -1747,16 +1747,142 @@ textarea,
 
 /* ---------------------------------------------------------------- debrief */
 
-.debrief__echo,
 .debrief__meta {
   margin-top: 1rem;
   font-size: 0.875rem;
   color: var(--text-muted);
 }
 
-.debrief__echo q {
+/* The player's own strategy, quoted back to them. */
+.debrief__echo {
+  margin: 1.25rem 0 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--structure);
+  background: var(--surface);
+  border-radius: 0 4px 4px 0;
+  max-width: 64ch;
+}
+
+.debrief__echo-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.debrief__echo-text {
+  margin-top: 0.3rem;
+  font-size: 1rem;
+  line-height: 1.6;
   color: var(--text);
-  quotes: '«' '»';
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.debrief__progress {
+  margin-top: 1.25rem;
+}
+
+.debrief__progress-text {
+  font-size: 0.875rem;
+  color: var(--text);
+}
+
+.debrief__progress-track {
+  margin-top: 0.4rem;
+  height: 0.375rem;
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.debrief__progress-fill {
+  height: 100%;
+  background: var(--structure);
+}
+
+.debrief__head,
+.debrief__fold > summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+}
+
+.debrief__fold > summary {
+  cursor: pointer;
+  list-style: none;
+  min-height: 2.75rem;
+}
+
+.debrief__fold > summary::-webkit-details-marker {
+  display: none;
+}
+
+.debrief__fold > summary:focus-visible {
+  outline: 2px solid var(--structure);
+  outline-offset: 2px;
+}
+
+.block__status {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.block__status--done {
+  color: var(--working);
+}
+
+.block__status--done::before {
+  content: '✓ ';
+}
+
+/* Always-reachable close action with the reason it may not be ready. */
+.debrief__bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  margin-top: 2rem;
+  padding: 0.75rem 0 calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+
+.debrief__bar-reason {
+  font-size: 0.875rem;
+  color: var(--text);
+}
+
+.debrief__bar-reason--ready {
+  color: var(--working);
+}
+
+.debrief__bar .btn[aria-disabled='true'],
+.debrief__bar .btn[aria-disabled='true']:hover {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.debrief__bar .btn:focus-visible {
+  outline: 2px solid var(--structure);
+  outline-offset: 2px;
+}
+
+.complete__hint {
+  margin-top: 0.75rem;
+  max-width: 56ch;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--text-muted);
 }
 
 .debrief__block {

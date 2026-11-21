@@ -8,10 +8,13 @@
  * No confetti. The debrief is a document, and the reward is the workshop.
  */
 
+import { useRef } from 'react';
+
 import { STATE_LABEL } from '../workshop-map/stateLabels';
 import { ExplainBlock } from './ExplainBlock';
 import type { MissionSessionState } from '../../domain/session/mission-session';
 import { REASONING_MIN_SCORE } from '../../domain/session/mission-session';
+import { debriefProgress, missingLabel } from './progress';
 
 interface DebriefProps {
   state: MissionSessionState;
@@ -43,6 +46,31 @@ export function Debrief({
   const { mission, assessment } = state;
   const debrief = mission.debrief;
   const complexity = mission.debrief.complexity;
+
+  const rootRef = useRef<HTMLDivElement>(null);
+  const explainSpec = debrief.explain;
+  const progress = debriefProgress({
+    structured:
+      explainSpec === undefined
+        ? null
+        : {
+            blanks: explainSpec.blanks.map((b) => b.id),
+            questions: explainSpec.questions.map((q) => q.id),
+          },
+    complexityAnswered: state.debriefComplexityIndex !== null,
+    reasoning: state.reasoning,
+    explainAnswers: state.explainAnswers,
+  });
+
+  // The close button stays reachable (aria-disabled, not disabled) so that
+  // pressing it names what is missing and moves focus there.
+  const handleClose = () => {
+    if (!progress.complete) {
+      focusAnswer(rootRef.current, progress.firstMissing);
+      return;
+    }
+    onSubmit();
+  };
 
   if (state.phase === 'complete') {
     return (
@@ -83,6 +111,11 @@ export function Debrief({
             <dd>{assessment?.score ?? 0} / 3</dd>
           </div>
         </dl>
+        <p className="complete__hint">
+          {debrief.explain !== undefined
+            ? 'Razonamiento: 3 significa que completaste la explicación sin ningún fallo a la primera; 2, que la afinaste tras repensar algún hueco. No son puntos: solo refleja cuánto te costó afinarla.'
+            : 'Razonamiento: 3 significa que tu explicación nombró el mecanismo, el objetivo y el coste; 2, que nombró el mecanismo y el objetivo. No son puntos: valora la explicación, no a ti.'}
+        </p>
 
         <div className="actions">
           {upcoming !== null && onOpenUpcoming !== undefined ? (
@@ -115,14 +148,15 @@ export function Debrief({
     assessment.score < REASONING_MIN_SCORE;
 
   return (
-    <div className="debrief">
+    <div className="debrief" ref={rootRef}>
       <p className="eyebrow">Informe de la misión</p>
       <h1>{mission.title}</h1>
 
       {state.strategy !== '' ? (
-        <p className="debrief__echo">
-          Empezaste diciendo: <q>{state.strategy}</q>
-        </p>
+        <blockquote className="debrief__echo">
+          <p className="debrief__echo-label">Empezaste diciendo:</p>
+          <p className="debrief__echo-text">{state.strategy}</p>
+        </blockquote>
       ) : null}
       <p className="debrief__meta">
         Lo resolviste en {state.attempts}{' '}
@@ -130,34 +164,63 @@ export function Debrief({
         {state.hintsUsed === 1 ? 'pista' : 'pistas'}.
       </p>
 
-      <section className="debrief__block">
-        <h2>
-          <span className="block__index" aria-hidden="true">
-            1
-          </span>
-          Por qué funciona
-        </h2>
+      <div
+        className="debrief__progress"
+        role="progressbar"
+        aria-label="Respuestas del informe"
+        aria-valuemin={0}
+        aria-valuemax={progress.total}
+        aria-valuenow={progress.answered}
+        aria-valuetext={`${progress.answered} de ${progress.total} respondidas`}
+      >
+        <p className="debrief__progress-text">
+          {progress.answered} de {progress.total} respondidas
+        </p>
+        <div className="debrief__progress-track" aria-hidden="true">
+          <div
+            className="debrief__progress-fill"
+            style={{ width: `${(progress.answered / progress.total) * 100}%` }}
+          />
+        </div>
+      </div>
+
+      <details className="debrief__block debrief__fold" open>
+        <summary>
+          <h2>
+            <span className="block__index" aria-hidden="true">
+              1
+            </span>
+            Por qué funciona
+          </h2>
+          <span className="block__status">Para leer</span>
+        </summary>
         <p>{debrief.whyItWorks}</p>
         <p className="debrief__aside">{debrief.realWorld}</p>
-      </section>
+      </details>
 
-      <section className="debrief__block">
-        <h2>
-          <span className="block__index" aria-hidden="true">
-            2
-          </span>
-          Casos límite
-        </h2>
+      <details className="debrief__block debrief__fold" open>
+        <summary>
+          <h2>
+            <span className="block__index" aria-hidden="true">
+              2
+            </span>
+            Casos límite
+          </h2>
+          <span className="block__status">Para leer</span>
+        </summary>
         <p>{debrief.edgeCaseNote}</p>
-      </section>
+      </details>
 
       <section className="debrief__block">
-        <h2>
-          <span className="block__index" aria-hidden="true">
-            3
-          </span>
-          Coste
-        </h2>
+        <div className="debrief__head">
+          <h2>
+            <span className="block__index" aria-hidden="true">
+              3
+            </span>
+            Coste
+          </h2>
+          <SectionStatus {...progress.cost} />
+        </div>
         <fieldset className="choice">
           <legend>{complexity.question}</legend>
           {complexity.options.map((option, index) => (
@@ -165,6 +228,7 @@ export function Debrief({
               <input
                 type="radio"
                 name="complexity"
+                data-answer-key={index === 0 ? 'complexity' : undefined}
                 value={index}
                 checked={state.debriefComplexityIndex === index}
                 onChange={() => onAnswerComplexity(index)}
@@ -179,12 +243,15 @@ export function Debrief({
       </section>
 
       <section className="debrief__block">
-        <h2>
-          <span className="block__index" aria-hidden="true">
-            4
-          </span>
-          Explica con tus palabras
-        </h2>
+        <div className="debrief__head">
+          <h2>
+            <span className="block__index" aria-hidden="true">
+              4
+            </span>
+            Explica con tus palabras
+          </h2>
+          <SectionStatus {...progress.explain} />
+        </div>
         {structured ? (
           <ExplainBlock
             state={state}
@@ -200,6 +267,7 @@ export function Debrief({
               <textarea
                 className="field__area"
                 rows={4}
+                data-answer-key="reasoning"
                 value={state.reasoning}
                 onChange={(event) => onEditReasoning(event.target.value)}
                 aria-describedby={rejected ? 'reasoning-feedback' : undefined}
@@ -244,12 +312,50 @@ export function Debrief({
           </>
         )}
 
-        <div className="actions">
-          <button type="button" className="btn btn--primary" onClick={onSubmit}>
-            Cerrar la misión
-          </button>
-        </div>
       </section>
+
+      <div className="debrief__bar">
+        <p
+          className={`debrief__bar-reason${progress.complete ? ' debrief__bar-reason--ready' : ''}`}
+          id="debrief-close-reason"
+        >
+          {progress.complete
+            ? 'Todo respondido. Puedes cerrar la misión.'
+            : `${missingLabel(progress.total - progress.answered)}.`}
+        </p>
+        <button
+          type="button"
+          className="btn btn--primary"
+          aria-disabled={!progress.complete}
+          aria-describedby="debrief-close-reason"
+          onClick={handleClose}
+        >
+          Cerrar la misión
+        </button>
+      </div>
     </div>
   );
+}
+
+/** Done/pending as text, so colour is never the only signal. */
+function SectionStatus({ answered, total }: { answered: number; total: number }) {
+  const done = answered === total;
+  return (
+    <span className={`block__status${done ? ' block__status--done' : ''}`}>
+      {done ? 'Completado' : `Pendiente · ${answered} de ${total}`}
+    </span>
+  );
+}
+
+/** Move keyboard focus to the first unanswered item and bring it into view. */
+function focusAnswer(root: HTMLElement | null, key: string | null): void {
+  if (root === null || key === null) return;
+  const target = root.querySelector<HTMLElement>(`[data-answer-key="${key}"]`);
+  if (target === null) return;
+  const focusable =
+    target instanceof HTMLFieldSetElement
+      ? (target.querySelector<HTMLElement>('input') ?? target)
+      : target;
+  focusable.focus();
+  focusable.scrollIntoView({ block: 'center' });
 }

@@ -64,6 +64,7 @@ export function ExplainBlock({
               key={position}
               className={`explain__blank${wrong ? ' explain__blank--wrong' : ''}`}
               aria-label={`Hueco ${blankNumber.get(blank.id)}`}
+              data-answer-key={`blank:${blank.id}`}
               aria-invalid={wrong}
               value={given ?? ''}
               onChange={(event) =>
@@ -89,7 +90,11 @@ export function ExplainBlock({
         const reason =
           wrong && given !== undefined ? question.whyWrong?.[given] : undefined;
         return (
-          <fieldset key={question.id} className="choice explain__question">
+          <fieldset
+            key={question.id}
+            className="choice explain__question"
+            data-answer-key={`question:${question.id}`}
+          >
             <legend>
               {number + 1}. {question.question}
             </legend>
