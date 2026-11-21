@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { editor } from './helpers';
+import { answerCostAny, editor } from './helpers';
 
 /**
  * M11 and M12 briefing illustrations are reachable by accessible name and
@@ -71,6 +71,7 @@ test('el informe de M11: una respuesta incorrecta da pista y la correcta cierra'
   await page.getByRole('button', { name: 'Ejecutar' }).click();
   await page.getByRole('button', { name: 'Abrir el informe →' }).click();
   await expect(page.getByRole('heading', { name: 'Explica con tus palabras' })).toBeVisible();
+  await answerCostAny(page);
 
   const answerQuestions = async () => {
     await page.getByLabel('a, porque en un empate gana la que va antes alfabéticamente').check();

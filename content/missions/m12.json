@@ -65,7 +65,7 @@
       "operationBudget": 900000
     }
   },
-  "starterCode": "function buildAuditReport(orders) {\n  // your code here\n}\n",
+  "starterCode": "function buildAuditReport(orders) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       {

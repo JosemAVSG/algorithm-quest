@@ -31,7 +31,7 @@
     "mustNotMutate": false,
     "rotationInvariant": false
   },
-  "starterCode": "function traceCalls(n) {\n  // your code here\n}\n",
+  "starterCode": "function traceCalls(n) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       { "id": "v1", "input": [1], "expected": ["enter 1", "exit 1"], "note": "una llamada sin hijos" },

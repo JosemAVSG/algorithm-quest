@@ -26,7 +26,7 @@
     "rules": ["En cada paso se elige la emisora con más zonas necesarias aún sin señal", "En caso de empate se elige la que aparece antes en stations", "Las zonas que no están en needed no cuentan", "Una emisora que no aporta zonas nuevas nunca se enciende", "Si ninguna emisora aporta zonas nuevas se termina, aunque queden zonas sin señal", "Devuelve los nombres en el orden de encendido", "No modifica needed ni stations"]
   },
   "constraints": { "bannedConstructs": [], "allowClosedForm": false, "mustNotMutate": true },
-  "starterCode": "function pickStations(needed, stations) {\n  // your code here\n}\n",
+  "starterCode": "function pickStations(needed, stations) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       {

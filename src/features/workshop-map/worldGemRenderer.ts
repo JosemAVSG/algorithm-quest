@@ -37,6 +37,8 @@ export interface GemOptions {
   state: WorldState;
   /** Skip the rotation loop and draw one frame (prefers-reduced-motion). */
   reducedMotion: boolean;
+  /** World identity colour; replaces the generic blue/green for open worlds. */
+  accent?: string;
 }
 
 /** Mirrors the tokens in app/global.css; the computed style wins when present. */
@@ -61,7 +63,8 @@ function geometryFor(part: ShapePart): BufferGeometry {
   }
 }
 
-function stateColor(canvas: HTMLCanvasElement, state: WorldState): Color {
+function stateColor(canvas: HTMLCanvasElement, state: WorldState, accent?: string): Color {
+  if (accent !== undefined && state !== 'locked') return new Color(accent);
   if (state === 'completed') return new Color(token(canvas, '--working', FALLBACK_COLORS.working));
   if (state === 'current') return new Color(token(canvas, '--structure', FALLBACK_COLORS.structure));
   // Locked: desaturated and dimmed.
@@ -71,7 +74,7 @@ function stateColor(canvas: HTMLCanvasElement, state: WorldState): Color {
 
 /** Throws when WebGL is unavailable; the caller falls back to the 2D dot. */
 export function mountGem(canvas: HTMLCanvasElement, options: GemOptions): GemHandle {
-  const { worldId, state, reducedMotion } = options;
+  const { worldId, state, reducedMotion, accent } = options;
   const size = canvas.clientWidth || 64;
   const renderer = new WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -87,11 +90,11 @@ export function mountGem(canvas: HTMLCanvasElement, options: GemOptions): GemHan
   scene.add(key);
 
   const material = new MeshStandardMaterial({
-    color: stateColor(canvas, state),
+    color: stateColor(canvas, state, accent),
     roughness: 0.55,
     metalness: 0.1,
     flatShading: true,
-    emissive: state === 'completed' ? stateColor(canvas, state).multiplyScalar(0.25) : 0x000000,
+    emissive: state === 'completed' ? stateColor(canvas, state, accent).multiplyScalar(0.25) : 0x000000,
   });
   const geometries: BufferGeometry[] = [];
   const group = new Group();

@@ -31,7 +31,7 @@
     "mustNotMutate": true,
     "rotationInvariant": false
   },
-  "starterCode": "function totalWeight(box) {\n  // your code here\n}\n",
+  "starterCode": "function totalWeight(box) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       { "id": "v1", "input": [[]], "expected": 0, "note": "caja vacía" },

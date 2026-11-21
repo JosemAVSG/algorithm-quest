@@ -5,13 +5,14 @@
  * failed test. The run button is the only primary action.
  */
 
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 
-import type { MissionSessionState } from '../../domain/session/mission-session';
+import { canOpenDebrief, type MissionSessionState } from '../../domain/session/mission-session';
 import type { ConsoleReport } from '../../domain/execution/console';
 import { ConsolePanel } from './ConsolePanel';
 import { Editor } from './Editor';
 import { MentorPanel } from './MentorPanel';
+import { currentRunShortcut } from './shortcut';
 import { SymbolBar } from './SymbolBar';
 import { TestPanel } from './TestPanel';
 import { TracePanel, type TraceView } from './TracePanel';
@@ -33,6 +34,12 @@ interface LabProps {
   onCloseTrace?: () => void;
 }
 
+type EditorTab = 'code' | 'trace';
+const TABS: { id: EditorTab; label: string }[] = [
+  { id: 'code', label: 'Código' },
+  { id: 'trace', label: 'Paso a paso' },
+];
+
 export function Lab({
   state,
   illustration = null,
@@ -48,6 +55,47 @@ export function Lab({
 }: LabProps) {
   const { mission, lastEvaluation } = state;
   const insertRef = useRef<((text: string) => void) | null>(null);
+  const [tab, setTab] = useState<EditorTab>('code');
+  const tabRefs = useRef<Record<EditorTab, HTMLButtonElement | null>>({ code: null, trace: null });
+  const shortcut = currentRunShortcut();
+  const hasTrace = onTrace !== undefined;
+  const activeTab: EditorTab = hasTrace ? tab : 'code';
+  const cleared =
+    !state.running &&
+    lastEvaluation?.passed === true &&
+    lastEvaluation.diagnosis !== null &&
+    canOpenDebrief(state);
+
+  const onTabKey = (event: KeyboardEvent<HTMLButtonElement>) => {
+    const at = TABS.findIndex((entry) => entry.id === activeTab);
+    const next =
+      event.key === 'ArrowRight'
+        ? (at + 1) % TABS.length
+        : event.key === 'ArrowLeft'
+          ? (at - 1 + TABS.length) % TABS.length
+          : event.key === 'Home'
+            ? 0
+            : event.key === 'End'
+              ? TABS.length - 1
+              : -1;
+    if (next === -1) return;
+    event.preventDefault();
+    const target = TABS[next]!.id;
+    setTab(target);
+    tabRefs.current[target]?.focus();
+  };
+
+  const runButton = (className: string) => (
+    <button
+      type="button"
+      className={`btn btn--primary ${className}`}
+      onClick={onRun}
+      disabled={state.running}
+      aria-keyshortcuts="Control+Enter Meta+Enter"
+    >
+      {state.running ? 'Ejecutando…' : 'Ejecutar'}
+    </button>
+  );
 
   // The step the trace is showing. UI state only; a new trace starts at its first step.
   const [step, setStep] = useState(0);
@@ -78,16 +126,19 @@ export function Lab({
         <div className="lab__meta">
           <span className="lab__counter">intentos {state.attempts}</span>
           <span className="lab__counter">pistas {state.hintsUsed}</span>
-          <button
-            type="button"
-            className="btn btn--primary"
-            onClick={onRun}
-            disabled={state.running}
-          >
-            {state.running ? 'Ejecutando…' : 'Ejecutar'}
-          </button>
+          {/* Only shown on narrow screens, where this bar is sticky and the editor bar scrolls away. */}
+          {runButton('lab__run lab__run--sticky')}
         </div>
       </header>
+
+      {cleared ? (
+        <section className="lab__success" role="status" aria-label="Pruebas superadas">
+          <p className="lab__success-title">¡Las pruebas pasan!</p>
+          <button type="button" className="btn btn--primary" onClick={onOpenDebrief}>
+            Abrir el informe →
+          </button>
+        </section>
+      ) : null}
 
       <p className="lab__contract">
         <code>{mission.contract.signature}</code>
@@ -97,51 +148,87 @@ export function Lab({
         <div className="lab__left">
           <section className="lab__code" aria-label="Editor de código">
             <div className="code__head">
-              <span>{mission.contract.entryPoint}</span>
-              <span className="code__hint">Cmd/Ctrl + Enter · Esc y Tab para salir</span>
+              <span className="code__fn">{mission.contract.entryPoint}</span>
+              {hasTrace ? (
+                <div className="code__tabs" role="tablist" aria-label="Vista del editor">
+                  {TABS.map((entry) => (
+                    <button
+                      key={entry.id}
+                      ref={(node) => {
+                        tabRefs.current[entry.id] = node;
+                      }}
+                      type="button"
+                      role="tab"
+                      id={`lab-tab-${entry.id}`}
+                      aria-selected={activeTab === entry.id}
+                      aria-controls={`lab-panel-${entry.id}`}
+                      tabIndex={activeTab === entry.id ? 0 : -1}
+                      className="code__tab"
+                      onClick={() => setTab(entry.id)}
+                      onKeyDown={onTabKey}
+                    >
+                      {entry.label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+              <span className="code__run">
+                <kbd className="code__kbd" aria-hidden="true">
+                  {shortcut}
+                </kbd>
+                {runButton('lab__run lab__run--editor')}
+              </span>
             </div>
-            <Editor
-              value={state.source}
-              onChange={onEditSource}
-              onRun={onRun}
-              disabled={state.running}
-              highlightLine={markedLine}
-              onReady={(insert) => {
-                insertRef.current = insert;
-              }}
-            />
-            <SymbolBar disabled={state.running} onInsert={(text) => insertRef.current?.(text)} />
+            <div
+              role={hasTrace ? 'tabpanel' : undefined}
+              id="lab-panel-code"
+              aria-labelledby={hasTrace ? 'lab-tab-code' : undefined}
+              hidden={activeTab !== 'code'}
+            >
+              <Editor
+                value={state.source}
+                onChange={onEditSource}
+                onRun={onRun}
+                disabled={state.running}
+                highlightLine={markedLine}
+                onReady={(insert) => {
+                  insertRef.current = insert;
+                }}
+              />
+              <SymbolBar disabled={state.running} onInsert={(text) => insertRef.current?.(text)} />
+              <p className="code__hint">Esc y Tab para salir del editor</p>
+            </div>
+            {onTrace === undefined ? null : (
+              <TracePanel
+                tests={mission.tests.visible.map((testCase) => ({
+                  id: testCase.id,
+                  label: testCase.note ?? testCase.id,
+                  status: visibleResults.get(testCase.id) ?? 'not_run',
+                }))}
+                view={traceView}
+                step={step}
+                onStep={setStep}
+                onTrace={onTrace}
+                onClose={onCloseTrace}
+                source={state.source}
+                tabId="lab-tab-trace"
+                panelId="lab-panel-trace"
+                hidden={activeTab !== 'trace'}
+              />
+            )}
           </section>
-
-          {onTrace === undefined ? null : (
-            <TracePanel
-              tests={mission.tests.visible.map((testCase) => ({
-                id: testCase.id,
-                label: testCase.note ?? testCase.id,
-                status: visibleResults.get(testCase.id) ?? 'not_run',
-              }))}
-              view={traceView}
-              step={step}
-              onStep={setStep}
-              onTrace={onTrace}
-              onClose={onCloseTrace}
-            />
-          )}
         </div>
 
         <aside className="lab__panel" aria-live="polite">
-          {illustration === null ? null : <div className="lab__visual">{illustration}</div>}
           <TestPanel
             report={lastEvaluation?.report ?? null}
             running={state.running}
             cost={lastEvaluation?.cost ?? null}
           />
-          <MentorPanel
-            state={state}
-            onRequestHint={onRequestHint}
-            onOpenDebrief={onOpenDebrief}
-          />
+          <MentorPanel state={state} onRequestHint={onRequestHint} />
           <ConsolePanel report={consoleReport} labels={consoleLabels} onClear={onClearConsole} />
+          {/* Below the verdict: the picture must not push the tests off the first screen. */}
+          {illustration === null ? null : <div className="lab__visual">{illustration}</div>}
         </aside>
       </div>
     </div>

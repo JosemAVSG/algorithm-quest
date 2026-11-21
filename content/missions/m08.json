@@ -59,7 +59,7 @@
     "mustNotMutate": true
   },
 
-  "starterCode": "function findFirstDuplicatePair(ids) {\n  // your code here\n}\n",
+  "starterCode": "function findFirstDuplicatePair(ids) {\n  // tu código aquí\n}\n",
 
   "tests": {
     "visible": [

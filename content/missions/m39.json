@@ -31,7 +31,7 @@
     "mustNotMutate": true,
     "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 300000 }
   },
-  "starterCode": "function arrangeBySplitting(weights) {\n  // your code here\n}\n",
+  "starterCode": "function arrangeBySplitting(weights) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       { "id": "v1", "input": [[]], "expected": [], "note": "sin piezas" },

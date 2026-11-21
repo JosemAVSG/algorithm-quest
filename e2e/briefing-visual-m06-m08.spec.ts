@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-import { editor } from "./helpers";
+import { answerCostAny, editor } from "./helpers";
 
 /**
  * M06-M08 briefing illustrations are found by their accessible name, and M06's
@@ -104,6 +104,7 @@ test("M06: el informe estructurado da pista al fallar y cierra al corregir", asy
   await page.getByRole("button", { name: "Ejecutar" }).click();
   await page.getByRole("button", { name: "Abrir el informe →" }).click();
   await expect(page.getByRole("heading", { name: "Explica con tus palabras" })).toBeVisible();
+  await answerCostAny(page);
 
   const pick = async (n: number, text: string) =>
     page.getByLabel(`Hueco ${n}`).selectOption(text);

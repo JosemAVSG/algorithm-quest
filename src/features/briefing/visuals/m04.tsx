@@ -106,6 +106,9 @@ export function RunningTotal() {
           </text>
         </g>
       </svg>
+      <figcaption className="visual__legend" aria-hidden="true">
+        <span>Ejemplo: el total se conserva fuera del bucle; la otra barra se reinicia</span>
+      </figcaption>
     </figure>
   );
 }

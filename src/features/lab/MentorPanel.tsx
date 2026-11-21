@@ -13,15 +13,14 @@
 import { describeDiagnosis } from '../../domain/diagnosis/hints';
 import { renderValue } from '../../domain/evaluation/test-engine';
 import type { MissionSessionState } from '../../domain/session/mission-session';
-import { canOpenDebrief, canRequestHint } from '../../domain/session/mission-session';
+import { canRequestHint } from '../../domain/session/mission-session';
 
 interface MentorPanelProps {
   state: MissionSessionState;
   onRequestHint: () => void;
-  onOpenDebrief: () => void;
 }
 
-export function MentorPanel({ state, onRequestHint, onOpenDebrief }: MentorPanelProps) {
+export function MentorPanel({ state, onRequestHint }: MentorPanelProps) {
   const evaluation = state.lastEvaluation;
 
   if (state.running) {
@@ -79,11 +78,6 @@ export function MentorPanel({ state, onRequestHint, onOpenDebrief }: MentorPanel
         <p className="mentor__detail">
           Antes de cerrar la misión, explica por qué tu solución funciona.
         </p>
-        {canOpenDebrief(state) ? (
-          <button type="button" className="btn btn--primary" onClick={onOpenDebrief}>
-            Abrir el informe →
-          </button>
-        ) : null}
       </section>
     );
   }

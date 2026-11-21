@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { loadPreferences, savePreferences, type Preferences } from '../../app/preferences';
 
+/** The two reading toggles. Rendered inside the settings menu. */
 export function ReadingOptions() {
   const [preferences, setPreferences] = useState<Preferences>(() => loadPreferences());
   const update = (next: Preferences) => {

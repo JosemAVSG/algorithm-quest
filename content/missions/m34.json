@@ -31,7 +31,7 @@
     "mustNotMutate": true,
     "efficiency": { "budgetMs": 150, "calibrated": true, "enforced": false, "operationBudget": 20000 }
   },
-  "starterCode": "function missingBox(arrived) {\n  // your code here\n}\n",
+  "starterCode": "function missingBox(arrived) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       { "id": "v1", "input": [[3, 0, 1]], "expected": 2, "note": "falta una caja de en medio" },

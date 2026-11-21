@@ -63,7 +63,7 @@
       "operationBudget": 200000
     }
   },
-  "starterCode": "function mostFrequentCategory(orders) {\n  // your code here\n}\n",
+  "starterCode": "function mostFrequentCategory(orders) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       {

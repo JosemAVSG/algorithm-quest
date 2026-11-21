@@ -56,7 +56,7 @@
     "mustNotMutate": false
   },
 
-  "starterCode": "function worstCaseComparisons(n) {\n  // your code here\n}\n",
+  "starterCode": "function worstCaseComparisons(n) {\n  // tu código aquí\n}\n",
 
   "tests": {
     "visible": [

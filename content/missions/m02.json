@@ -59,7 +59,7 @@
     "allowClosedForm": false,
     "mustNotMutate": true
   },
-  "starterCode": "function anyDeviceFaulty(readings, limit) {\n  // your code here\n}\n",
+  "starterCode": "function anyDeviceFaulty(readings, limit) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       {

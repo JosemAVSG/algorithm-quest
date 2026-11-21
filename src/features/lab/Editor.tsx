@@ -6,7 +6,16 @@
  * accessible name and the same props contract keeps the lab fully usable.
  */
 
-import { Component, lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
+import {
+  Component,
+  lazy,
+  Suspense,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 
 export interface EditorProps {
   value: string;
@@ -28,6 +37,13 @@ export function PlainEditor({ value, onChange, onRun, disabled, onReady }: Edito
   const area = useRef<HTMLTextAreaElement>(null);
   const latest = useRef({ value, onChange });
   latest.current = { value, onChange };
+  // Grow with the code; the stylesheet clamps the height between a min and a max.
+  useLayoutEffect(() => {
+    const target = area.current;
+    if (target === null) return;
+    target.style.height = 'auto';
+    target.style.height = `${target.scrollHeight}px`;
+  }, [value]);
   useEffect(() => {
     onReady?.((text) => {
       const target = area.current;

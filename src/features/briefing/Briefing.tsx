@@ -10,6 +10,7 @@
 
 import type { Mission } from '../../domain/content/schema';
 import { BriefingVisual } from './BriefingVisual';
+import { renderRichText } from './renderRichText';
 
 interface BriefingProps {
   mission: Mission;
@@ -17,8 +18,6 @@ interface BriefingProps {
 }
 
 export function Briefing({ mission, onContinue }: BriefingProps) {
-  const paragraphs = mission.briefing.body.split(/\n{2,}/).filter((part) => part.trim() !== '');
-
   return (
     <div className="brief">
       <p className="eyebrow">{mission.briefing.headline}</p>
@@ -26,9 +25,7 @@ export function Briefing({ mission, onContinue }: BriefingProps) {
 
       <div className={mission.briefing.visual ? 'brief__intro brief__intro--visual' : 'brief__intro'}>
         <div className="brief__body">
-          {paragraphs.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
+          {renderRichText(mission.briefing.body)}
         </div>
         {mission.briefing.visual ? <BriefingVisual id={mission.briefing.visual} /> : null}
       </div>

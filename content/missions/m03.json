@@ -49,7 +49,7 @@
     "allowClosedForm": false,
     "mustNotMutate": true
   },
-  "starterCode": "function collectFaultyDevices(devices, limit) {\n  // your code here\n}\n",
+  "starterCode": "function collectFaultyDevices(devices, limit) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       {

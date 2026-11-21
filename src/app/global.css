@@ -222,7 +222,7 @@ code {
 /* -------------------------------------------------------------------- map */
 
 .map {
-  max-width: 68rem;
+  max-width: 84rem;
   margin: 0 auto;
   padding: 3.5rem 2rem 4rem;
 }
@@ -364,7 +364,8 @@ code {
   border-left: 2px dotted var(--text-muted);
   opacity: 0.7;
   transform-origin: top center;
-  transform: rotate(atan2(calc(var(--dx) * -1), var(--seg)));
+  --rot: rotate(atan2(calc(var(--dx) * -1), var(--seg)));
+  transform: var(--rot);
   pointer-events: none;
 }
 
@@ -388,7 +389,7 @@ code {
   gap: 0.9rem;
   width: 100%;
   max-width: 100%;
-  height: calc(var(--dot) + 1rem + 2px);
+  min-height: calc(var(--dot) + 1rem + 2px);
   padding: 0.5rem 1.1rem 0.5rem 0.5rem;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -443,8 +444,7 @@ code {
   font-weight: 500;
 }
 
-.stop__name,
-.stop__state {
+.stop__name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -465,17 +465,20 @@ code {
   font-size: 0.6875rem;
   letter-spacing: 0.04em;
   color: var(--text-muted);
+  /* The unlock hint is read in full: it wraps instead of being cut with an ellipsis. */
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .stop--current,
 .stop--available {
-  border-color: var(--structure);
+  border-color: var(--world-accent, var(--structure));
 }
 
 .stop--current .stop__dot,
 .stop--available .stop__dot {
-  border-color: var(--structure);
-  color: var(--structure);
+  border-color: var(--world-accent, var(--structure));
+  color: var(--world-accent, var(--structure));
 }
 
 .stop--completed .stop__dot {
@@ -483,10 +486,20 @@ code {
   color: var(--working);
 }
 
+/* Locked: desaturated and dashed, but the text keeps the muted token (>= 4.5:1);
+   dimming with opacity would sink it below the contrast floor. */
 .stop--locked,
 .stop--soon {
-  opacity: 0.55;
   cursor: not-allowed;
+  border-style: dashed;
+  background: var(--surface-sunken);
+  color: var(--text-muted);
+}
+
+.stop--locked .stop__dot,
+.stop--soon .stop__dot {
+  border-style: dashed;
+  color: var(--text-muted);
 }
 
 .map__locked {
@@ -562,6 +575,7 @@ code {
 }
 
 .mission__bar {
+  border-top: 3px solid var(--world-accent, transparent);
   display: flex;
   align-items: center;
   gap: 1.5rem;
@@ -572,7 +586,7 @@ code {
 .mission__id {
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--world-accent, var(--text-muted));
 }
 
 .rail {
@@ -607,17 +621,54 @@ code {
   cursor: pointer;
 }
 
-.rail__button:disabled {
+.rail__step {
+  position: relative;
+}
+
+.rail__button[aria-current='step'] {
   cursor: default;
 }
 
-.rail__step--todo .rail__button:disabled {
+.rail__step--locked .rail__button {
   cursor: not-allowed;
-  opacity: 0.6;
+  color: var(--text-muted);
 }
 
-.rail__button:not(:disabled):hover .rail__label {
+.rail__step--locked .rail__dot {
+  border-style: dashed;
+}
+
+.rail__button:not([aria-disabled='true']):not([aria-current='step']):hover .rail__label {
   text-decoration: underline;
+}
+
+/* The reason a step is locked: on hover and keyboard focus, and again as a note below the rail. */
+.rail__tip {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  z-index: 6;
+  width: max-content;
+  max-width: 16rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 0.75rem;
+  pointer-events: none;
+  display: none;
+}
+
+.rail__step--locked:hover .rail__tip,
+.rail__step--locked:focus-within .rail__tip {
+  display: block;
+}
+
+.rail__note {
+  margin-top: 0.6rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
 
 .rail__button:focus-visible {
@@ -643,12 +694,20 @@ code {
 
 .rail__step--current {
   color: var(--text);
+  font-weight: 600;
+}
+
+.rail__step--current .rail__label {
+  border-bottom: 2px solid var(--structure);
+  padding-bottom: 0.1rem;
 }
 
 .rail__step--current .rail__dot {
+  width: 0.65rem;
+  height: 0.65rem;
   background: var(--structure);
   border-color: var(--structure);
-  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.25);
 }
 
 .mission__screen {
@@ -1026,32 +1085,123 @@ textarea,
 
 .code__head {
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.6rem 0.9rem;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  padding: 0.5rem 0.9rem;
   border-bottom: 1px solid var(--border);
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--text-muted);
 }
 
+.code__fn {
+  color: var(--text);
+}
+
+.code__tabs {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.code__tab {
+  font: inherit;
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  padding: 0.4rem 0.75rem;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.code__tab[aria-selected='true'] {
+  color: var(--text);
+  font-weight: 600;
+  border-bottom-color: var(--structure);
+}
+
+.code__tab:hover {
+  color: var(--text);
+}
+
+.code__tab:focus-visible {
+  outline: 2px solid var(--structure);
+  outline-offset: 1px;
+}
+
+.code__run {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.code__kbd {
+  padding: 0.15rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
 .code__hint {
+  padding: 0.35rem 0.9rem;
   font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+/* Run lives in the editor bar on desktop; on a phone the sticky top bar carries it. */
+.lab__run--sticky {
+  display: none;
+}
+
+.lab__success {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  margin-top: 1rem;
+  padding: 0.85rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--working);
+  border-left-width: 4px;
+  border-radius: 6px;
+  animation: lab-success-in 0.5s ease-out 1, repair-glow 1.4s ease-out 1;
+}
+
+.lab__success-title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+@keyframes lab-success-in {
+  from {
+    transform: translateY(-0.6rem) scale(0.99);
+  }
+  to {
+    transform: none;
+  }
 }
 
 .editor {
-  height: 26rem;
   background: var(--surface-sunken);
 }
 
 .editor--cm .cm-editor {
-  height: 100%;
+  min-height: 10rem;
+  max-height: 60vh;
 }
 
 .editor__area {
   display: block;
   width: 100%;
-  height: 100%;
+  min-height: 10rem;
+  max-height: 60vh;
   padding: 1rem;
   font-family: var(--font-mono);
   font-size: 0.8125rem;
@@ -1062,7 +1212,8 @@ textarea,
   border: none;
   resize: none;
   outline: none;
-  white-space: pre;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   overflow: auto;
 }
 
@@ -1211,9 +1362,6 @@ textarea,
 /* ------------------------------------------------------------------ trace */
 
 .trace {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
   padding: 1rem 1.1rem;
 }
 
@@ -1267,6 +1415,13 @@ textarea,
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--text-muted);
+}
+
+.trace__line {
+  margin: 0.25rem 0 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
 }
 
 .trace__vars {
@@ -1407,8 +1562,26 @@ textarea,
   line-height: 1.5;
 }
 
+.test__icon {
+  display: inline-block;
+  transition: color 0.3s;
+}
+
 .test--pass .test__icon {
   color: var(--working);
+  animation: test-pass-pop 0.45s ease-out 1;
+}
+
+@keyframes test-pass-pop {
+  0% {
+    transform: scale(0.5);
+  }
+  60% {
+    transform: scale(1.35);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .test--error .test__icon {
@@ -1446,7 +1619,7 @@ textarea,
   display: grid;
   gap: 0.15rem;
   margin-top: 0.5rem;
-  padding: 0.55rem 0.65rem;
+  padding: 0.45rem 0.55rem;
   background: var(--surface-sunken);
   border-radius: 4px;
   font-size: 0.6875rem;
@@ -1455,7 +1628,39 @@ textarea,
 .diff__row {
   display: grid;
   grid-template-columns: 4.6rem minmax(0, 1fr);
+  align-items: baseline;
   gap: 0.5rem;
+}
+
+.diff__pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.diff__block {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.3rem 0.6rem 0.4rem;
+  border: 1px solid var(--border);
+  border-top-width: 3px;
+  border-radius: 4px;
+}
+
+.diff__block--expected {
+  border-top-color: var(--working);
+}
+
+.diff__block--actual {
+  border-top-color: var(--attention);
+}
+
+.diff__block .diff__key {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .diff__key {
@@ -1556,16 +1761,142 @@ textarea,
 
 /* ---------------------------------------------------------------- debrief */
 
-.debrief__echo,
 .debrief__meta {
   margin-top: 1rem;
   font-size: 0.875rem;
   color: var(--text-muted);
 }
 
-.debrief__echo q {
+/* The player's own strategy, quoted back to them. */
+.debrief__echo {
+  margin: 1.25rem 0 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--structure);
+  background: var(--surface);
+  border-radius: 0 4px 4px 0;
+  max-width: 64ch;
+}
+
+.debrief__echo-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.debrief__echo-text {
+  margin-top: 0.3rem;
+  font-size: 1rem;
+  line-height: 1.6;
   color: var(--text);
-  quotes: '«' '»';
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.debrief__progress {
+  margin-top: 1.25rem;
+}
+
+.debrief__progress-text {
+  font-size: 0.875rem;
+  color: var(--text);
+}
+
+.debrief__progress-track {
+  margin-top: 0.4rem;
+  height: 0.375rem;
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.debrief__progress-fill {
+  height: 100%;
+  background: var(--structure);
+}
+
+.debrief__head,
+.debrief__fold > summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+}
+
+.debrief__fold > summary {
+  cursor: pointer;
+  list-style: none;
+  min-height: 2.75rem;
+}
+
+.debrief__fold > summary::-webkit-details-marker {
+  display: none;
+}
+
+.debrief__fold > summary:focus-visible {
+  outline: 2px solid var(--structure);
+  outline-offset: 2px;
+}
+
+.block__status {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.block__status--done {
+  color: var(--working);
+}
+
+.block__status--done::before {
+  content: '✓ ';
+}
+
+/* Always-reachable close action with the reason it may not be ready. */
+.debrief__bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  margin-top: 2rem;
+  padding: 0.75rem 0 calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+
+.debrief__bar-reason {
+  font-size: 0.875rem;
+  color: var(--text);
+}
+
+.debrief__bar-reason--ready {
+  color: var(--working);
+}
+
+.debrief__bar .btn[aria-disabled='true'],
+.debrief__bar .btn[aria-disabled='true']:hover {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.debrief__bar .btn:focus-visible {
+  outline: 2px solid var(--structure);
+  outline-offset: 2px;
+}
+
+.complete__hint {
+  margin-top: 0.75rem;
+  max-width: 56ch;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--text-muted);
 }
 
 .debrief__block {
@@ -1946,9 +2277,17 @@ textarea,
     border-bottom: 1px solid var(--border);
   }
 
-  .lab__code .cm-editor,
-  .lab__code textarea {
-    min-height: 16rem;
+  .lab__run--sticky {
+    display: inline-flex;
+  }
+
+  .lab__run--editor,
+  .code__kbd {
+    display: none;
+  }
+
+  .diff__pair {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -1964,6 +2303,7 @@ textarea,
   }
 
   .btn--link,
+  .code__tab,
   .trace__pick select {
     min-height: 2.75rem;
   }
@@ -2134,7 +2474,7 @@ textarea,
   margin-top: 0.4rem;
   border-radius: 2px;
   background: var(--border);
-  background-image: linear-gradient(var(--working), var(--working));
+  background-image: linear-gradient(var(--world-accent, var(--working)), var(--world-accent, var(--working)));
   background-repeat: no-repeat;
   background-size: var(--percent, 0%) 100%;
 }
@@ -2183,7 +2523,9 @@ textarea,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .complete__transition {
+  .complete__transition,
+  .lab__success,
+  .test--pass .test__icon {
     animation: none;
   }
 }
@@ -2224,17 +2566,6 @@ html[data-contrast='high'] {
   color: var(--text-muted);
 }
 
-.finder__select {
-  min-height: 44px;
-  max-width: 28rem;
-  padding: 0 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--surface);
-  color: var(--text);
-  font: inherit;
-}
-
 .finder__list {
   list-style: none;
   margin: 0;
@@ -2242,4 +2573,387 @@ html[data-contrast='high'] {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+}
+
+/* ------------------------------------------------- map: header and layout */
+
+.map__header {
+  max-width: none;
+}
+
+.map__nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.map__back {
+  margin-right: auto;
+}
+
+.map__header .lede {
+  max-width: 46rem;
+}
+
+.settings {
+  position: relative;
+}
+
+.settings__button {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+}
+
+.settings__panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  z-index: 10;
+  min-width: 15rem;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 12px 32px -12px #000;
+}
+
+.settings__panel[hidden],
+.finder__options[hidden] {
+  display: none;
+}
+
+.settings__title {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.settings .reading {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.progress {
+  margin-top: 1.25rem;
+  max-width: 46rem;
+}
+
+.progress__label {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--text);
+}
+
+.progress__track {
+  margin-top: 0.5rem;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.progress__fill {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--working);
+}
+
+.map__layout {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+
+.map__aside {
+  display: grid;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.map__aside > *,
+.map__body > .path {
+  margin-top: 0;
+}
+
+.map__body {
+  min-width: 0;
+}
+
+.map__body > .path {
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 1100px) {
+  .map__layout {
+    grid-template-columns: minmax(22rem, 28rem) minmax(0, 1fr);
+    gap: 3rem;
+  }
+
+  .map__aside {
+    position: sticky;
+    top: 1.5rem;
+  }
+}
+
+/* Main mission: the one dominant card of the screen. */
+.next {
+  margin-top: 0;
+  padding: 1.75rem 1.75rem 1.5rem;
+  background: #212b36;
+  border: 1px solid var(--structure);
+  border-left-width: 4px;
+  box-shadow: 0 10px 30px -18px var(--structure);
+  display: grid;
+  gap: 1.25rem;
+}
+
+.next__kicker {
+  font-size: 0.8125rem;
+}
+
+.next__body h2 {
+  font-size: 1.625rem;
+  line-height: 1.2;
+}
+
+.next__note {
+  font-size: 0.9375rem;
+  max-width: none;
+}
+
+.next__actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.btn--large {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  padding: 0.85rem 1.75rem;
+}
+
+.next__actions .btn--link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+html[data-contrast='high'] .next {
+  background: var(--surface);
+}
+
+.welcome,
+.review-notice {
+  margin-top: 0;
+}
+
+.map__footer {
+  margin-top: 2rem;
+}
+
+/* Systems of the world */
+.systems {
+  margin-top: 2.5rem;
+}
+
+.systems__title {
+  font-size: 1.0625rem;
+}
+
+.systems__intro {
+  margin-top: 0.35rem;
+  max-width: 46rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.systems .map__grid {
+  margin-top: 1rem;
+}
+
+/* Concept finder: combobox */
+.finder {
+  margin-top: 0;
+  padding: 1.25rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.finder__title {
+  font-size: 1rem;
+}
+
+.finder__combo {
+  position: relative;
+  max-width: 28rem;
+}
+
+.finder__input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-sunken);
+  color: var(--text);
+  font: inherit;
+}
+
+.finder__input:focus-visible {
+  outline: 2px solid var(--structure);
+  outline-offset: 2px;
+}
+
+.finder__options {
+  position: absolute;
+  z-index: 10;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  max-height: 16rem;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 12px 32px -12px #000;
+}
+
+.finder__option,
+.finder__empty {
+  padding: 0.6rem 0.75rem;
+  border-radius: 4px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.finder__option {
+  cursor: pointer;
+}
+
+.finder__option--active {
+  background: var(--surface-sunken);
+  outline: 2px solid var(--structure);
+  outline-offset: -2px;
+}
+
+.finder__empty {
+  color: var(--text-muted);
+}
+
+/* ------------------------------------------------------- world identity */
+
+.path--world {
+  --rail: var(--world-accent, var(--structure));
+}
+
+.path--world .path__item--done:not(:last-child)::after {
+  border-left-color: var(--rail);
+}
+
+.path--world .stop--available {
+  box-shadow: 0 0 0 1px var(--rail), 0 0 16px -6px var(--rail);
+}
+
+.stop--current {
+  box-shadow: 0 0 0 1px var(--world-accent), 0 0 16px -6px var(--world-accent);
+}
+
+.stop--completed {
+  border-color: var(--working);
+}
+
+.lock-icon {
+  display: block;
+}
+
+/* ------------------------------------------------------ unlock animation */
+
+@keyframes path-light {
+  from {
+    transform: var(--rot) scaleY(0);
+  }
+  to {
+    transform: var(--rot) scaleY(1);
+  }
+}
+
+@keyframes node-unlock {
+  from {
+    transform: scale(0.94);
+    border-color: var(--border);
+    box-shadow: 0 0 0 0 transparent;
+  }
+  60% {
+    transform: scale(1.03);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.path__item--lit:not(:last-child)::after {
+  animation: path-light 700ms ease-out 1 both;
+}
+
+.stop--unlocking {
+  animation: node-unlock 800ms ease-out 600ms 1 both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .path__item--lit:not(:last-child)::after,
+  .stop--unlocking {
+    animation: none;
+  }
+}
+
+@media (max-width: 899px) {
+  .next {
+    padding: 1.25rem;
+  }
+
+  .next__body h2 {
+    font-size: 1.375rem;
+  }
+
+  .next__actions {
+    flex-wrap: wrap;
+  }
+}
+
+/* Padlock badge over a locked world's gem; the glyph fallback is hidden when it shows. */
+.stop__dot {
+  position: relative;
+}
+
+.stop__badge {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--surface-sunken);
+  color: var(--text-muted);
+}
+
+.stop__badge .lock-icon {
+  width: 1rem;
+  height: 1rem;
 }

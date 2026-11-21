@@ -67,3 +67,15 @@ export async function fillM01Explain(page: Page, options: { wrongBlank?: boolean
     .getByLabel('Solo lo que está por encima del límite es peligroso; el límite en sí es seguro')
     .check();
 }
+
+/** Answers the cost question of any mission's debrief (the first option; the answer is not graded). */
+export async function answerCostAny(page: Page) {
+  await page.locator('input[name="complexity"]').first().check();
+}
+
+/** Opens the map's settings menu (gear button, top right). */
+export async function openSettings(page: Page) {
+  const gear = page.getByRole('button', { name: 'Ajustes de lectura' });
+  if ((await gear.getAttribute('aria-expanded')) !== 'true') await gear.click();
+  await expect(gear).toHaveAttribute('aria-expanded', 'true');
+}

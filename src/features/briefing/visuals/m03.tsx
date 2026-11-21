@@ -119,6 +119,9 @@ export function CollectLine() {
           </text>
         </g>
       </svg>
+      <figcaption className="visual__legend" aria-hidden="true">
+        <span>Ejemplo: seis unidades, una a una, hasta la última</span>
+      </figcaption>
     </figure>
   );
 }

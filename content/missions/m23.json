@@ -32,7 +32,7 @@
     "rotationInvariant": false,
     "efficiency": { "budgetMs": 150, "calibrated": true, "enforced": false, "operationBudget": 200000 }
   },
-  "starterCode": "function isWellClosed(text) {\n  // your code here\n}\n",
+  "starterCode": "function isWellClosed(text) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       { "id": "v1", "input": [""], "expected": true, "note": "texto vacío" },
