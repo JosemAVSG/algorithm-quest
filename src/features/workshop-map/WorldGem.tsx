@@ -4,7 +4,7 @@
  * every failure path (no WebGL, jsdom, import error) simply keeps the 2D dot.
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import type { WorldState } from '../../domain/progression/worlds';
 
@@ -12,10 +12,14 @@ interface WorldGemProps {
   worldId: string;
   state: WorldState;
   /** 2D glyph shown until (or instead of) the 3D layer. */
-  glyph: string | number;
+  glyph: ReactNode;
+  /** Identity colour of the world; tints the gem when the world is open. */
+  accent?: string;
+  /** Always-visible mark on top of the gem (the padlock of a locked world). */
+  badge?: ReactNode;
 }
 
-export function WorldGem({ worldId, state, glyph }: WorldGemProps) {
+export function WorldGem({ worldId, state, glyph, accent, badge }: WorldGemProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [ready, setReady] = useState(false);
 
@@ -30,7 +34,7 @@ export function WorldGem({ worldId, state, glyph }: WorldGemProps) {
       .then(({ mountGem }) => {
         if (cancelled) return;
         try {
-          const handle = mountGem(canvas, { worldId, state, reducedMotion });
+          const handle = mountGem(canvas, { worldId, state, reducedMotion, accent });
           dispose = handle.dispose;
           setReady(true);
         } catch {
@@ -46,12 +50,13 @@ export function WorldGem({ worldId, state, glyph }: WorldGemProps) {
       dispose?.();
       setReady(false);
     };
-  }, [worldId, state]);
+  }, [worldId, state, accent]);
 
   return (
     <span className={`stop__dot${ready ? ' stop__dot--gem' : ''}`} aria-hidden="true">
       <canvas key={`${worldId}-${state}`} ref={canvasRef} className="stop__gem" hidden={!ready} aria-hidden="true" />
       {ready ? null : glyph}
+      {badge === undefined ? null : <span className="stop__badge">{badge}</span>}
     </span>
   );
 }
