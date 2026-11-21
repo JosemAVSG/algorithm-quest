@@ -32,7 +32,7 @@
     "rotationInvariant": false,
     "efficiency": { "budgetMs": 150, "calibrated": true, "enforced": false, "operationBudget": 200 }
   },
-  "starterCode": "function firstValidBatch(dates, today) {\n  // your code here\n}\n",
+  "starterCode": "function firstValidBatch(dates, today) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       { "id": "v1", "input": [[], 10], "expected": 0, "note": "sin lotes" },

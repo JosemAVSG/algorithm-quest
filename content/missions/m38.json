@@ -26,7 +26,7 @@
     "rules": ["El resultado contiene exactamente los mismos valores que weights, de menor a mayor", "Los valores repetidos aparecen tantas veces como en weights", "Devuelve una lista nueva y no modifica weights", "Una lista vacía devuelve []", "No se permiten .sort ni .toSorted"]
   },
   "constraints": { "bannedConstructs": [".sort", "toSorted"], "allowClosedForm": false, "mustNotMutate": true },
-  "starterCode": "function sortByLightest(weights) {\n  // your code here\n}\n",
+  "starterCode": "function sortByLightest(weights) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       { "id": "v1", "input": [[]], "expected": [], "note": "sin cajas" },

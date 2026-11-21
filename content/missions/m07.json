@@ -53,7 +53,7 @@
     "rotationInvariant": false,
     "mustNotMutate": true
   },
-  "starterCode": "function findMostUrgent(orders) {\n  // your code here\n}\n",
+  "starterCode": "function findMostUrgent(orders) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       {

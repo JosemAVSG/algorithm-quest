@@ -66,7 +66,7 @@
       "operationBudget": 200000
     }
   },
-  "starterCode": "function findFirstDuplicateValue(ids) {\n  // your code here\n}\n",
+  "starterCode": "function findFirstDuplicateValue(ids) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       {

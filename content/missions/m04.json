@@ -41,7 +41,7 @@
     "allowClosedForm": false,
     "mustNotMutate": true
   },
-  "starterCode": "function auditInventory(items) {\n  // your code here\n}\n",
+  "starterCode": "function auditInventory(items) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       {

@@ -101,6 +101,9 @@ export function CopyRows() {
           </text>
         </g>
       </svg>
+      <figcaption className="visual__legend" aria-hidden="true">
+        <span>Ejemplo: cuatro filas, una copia nueva por cada una</span>
+      </figcaption>
     </figure>
   );
 }

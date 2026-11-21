@@ -32,7 +32,7 @@ export function validMission(): Draft {
     workshop: { systemId: 'sys.sensor', from: 'broken', to: 'working' },
 
     briefing: {
-      headline: 'Sensor array',
+      headline: 'Matriz de sensores',
       body: 'El sensor marca 95 y el límite es 90. Devuelve si hay que disparar la alarma.',
       requirements: ['Recibe la lectura', 'Devuelve un boolean'],
       forbiddenVocabulary: [],
@@ -52,7 +52,7 @@ export function validMission(): Draft {
       mustNotMutate: false,
     },
 
-    starterCode: 'function isOverLimit(temperature, limit) {\n  // your code here\n}\n',
+    starterCode: 'function isOverLimit(temperature, limit) {\n  // tu código aquí\n}\n',
 
     tests: {
       visible: [
@@ -146,7 +146,7 @@ export function workshopRegistry() {
     systems: [
       {
         id: 'sys.sensor',
-        name: 'Sensor array',
+        name: 'Matriz de sensores',
         initialState: 'broken',
         states: ['broken', 'working', 'reliable'],
         transitions: [

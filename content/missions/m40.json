@@ -26,7 +26,7 @@
     "rules": ["Cada número aparece exactamente una vez en el resultado", "La planta k contiene las zonas que están k pasos por debajo de la de arriba", "Dentro de cada planta, el orden es de izquierda a derecha", "Un mapa vacío (null) devuelve []", "No modifica el mapa"]
   },
   "constraints": { "bannedConstructs": [], "allowClosedForm": false, "mustNotMutate": true },
-  "starterCode": "function readByFloors(root) {\n  // your code here\n}\n",
+  "starterCode": "function readByFloors(root) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       { "id": "v1", "input": [null], "expected": [], "note": "mapa vacío" },

@@ -32,7 +32,7 @@
     "rotationInvariant": false,
     "efficiency": { "budgetMs": 200, "calibrated": true, "enforced": false, "operationBudget": 35000 }
   },
-  "starterCode": "function fewestStops(neighbors, start, goal) {\n  // your code here\n}\n",
+  "starterCode": "function fewestStops(neighbors, start, goal) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       {

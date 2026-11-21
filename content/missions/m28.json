@@ -31,7 +31,7 @@
     "mustNotMutate": true,
     "rotationInvariant": false
   },
-  "starterCode": "function readMap(root) {\n  // your code here\n}\n",
+  "starterCode": "function readMap(root) {\n  // tu código aquí\n}\n",
   "tests": {
     "visible": [
       { "id": "v1", "input": [null], "expected": [], "note": "mapa vacío" },

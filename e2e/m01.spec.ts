@@ -222,7 +222,7 @@ test('X6 · recargar a mitad de misión conserva el intento y no el buffer', asy
     page.getByText('La comparación falla justo en el límite.'),
   ).toBeVisible();
   expect(await editorText(page)).toBe(
-    'function isOverLimit(temperature, limit) {\n  // your code here\n}\n',
+    'function isOverLimit(temperature, limit) {\n  // tu código aquí\n}\n',
   );
 });
 

@@ -200,6 +200,9 @@ export function M12Visual() {
           </text>
         </g>
       </svg>
+      <figcaption className="visual__legend" aria-hidden="true">
+        <span>Ejemplo: una misma orden, tres preguntas distintas</span>
+      </figcaption>
     </figure>
   );
 }
